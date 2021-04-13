@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-
+import 'package:rewind_app/home/home.dart';
+import 'package:flutter/services.dart';
+import 'package:rewind_app/home/journal.dart';
 import 'authentication/local.dart';
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MyApp());
 }
 
@@ -23,7 +29,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: LocalAuth(),
+      home: Home(),
     );
   }
 }
