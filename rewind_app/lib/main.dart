@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:rewind_app/home/home.dart';
 import 'package:flutter/services.dart';
 import 'package:rewind_app/home/journal.dart';
+import 'package:rewind_app/todolist/createtask.dart';
+import 'package:rewind_app/todolist/viewtask.dart';
 import 'authentication/local.dart';
+import 'home/achievements.dart';
+import 'todolist/todolist.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+  /*WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);*/
   runApp(MyApp());
 }
 
@@ -18,18 +22,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: Home(),
+      routes: <String, WidgetBuilder> {
+        '/ach': (BuildContext context) => new Achievements(),
+        '/jou' : (BuildContext context) => new Journal(),
+        '/tdl' : (BuildContext context) => new ToDoList(),
+        '/add' : (BuildContext context) => new CreateTask(),
+        '/vt' : (BuildContext context) => new EditTask(),
+      },
     );
   }
 }

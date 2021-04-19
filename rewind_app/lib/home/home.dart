@@ -1,5 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -7,153 +8,420 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String titleText = "dfv";
-  bool titleInViewMode = true;
-  bool contentInViewMode = true;
-  void changeTitleMode() {
-    setState(() {
-      titleInViewMode = !titleInViewMode;
-    });
-  }
-
-  void changeContentMode() {
-    setState(() {
-      contentInViewMode = !contentInViewMode;
-    });
-  }
-
-  FocusNode titleFocus;
-
-  Container createStat(Container c) {
+  Container createStat(
+    String label, {
+    IconData statIconData,
+    Color iconColor,
+    int statCurrent,
+    int statMax,
+  }) {
     Container stat = new Container(
-      constraints: BoxConstraints(
-        maxWidth: 100.0,
-        maxHeight: 30.0,
-      ),
+      //height: 36.0,
       decoration: BoxDecoration(
-        //color: Colors.grey,
-        border: Border.all(color: Colors.grey, width: 1.5),
+        color: Color(0xFFB2E5E3),
         borderRadius: BorderRadius.all(
-          Radius.circular(10.0),
+          Radius.circular(5.0),
+        ),
+      ),
+      child: Container(
+        padding: EdgeInsets.fromLTRB(0.0, 3.0, 12.0, 5.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              constraints: BoxConstraints(),
+              padding: EdgeInsets.fromLTRB(4.5, 0.0, 3.5, 0.0),
+              iconSize: 22.0,
+              color: Colors.white,
+              onPressed: () {
+                print(label);
+              },
+              tooltip: "$statCurrent/$statMax",
+              icon: Icon(
+                statIconData,
+                color: iconColor,
+                size: 22,
+              ),
+            ),
+            /*Icon(
+              statIconData,
+              size: 20,
+              color: iconColor,
+            ),*/
+
+            /* Expanded(
+              child: Container(),
+            ),*/
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    label,
+                    textAlign: TextAlign.left,
+                    style: GoogleFonts.gloriaHallelujah(
+                      fontSize: 10,
+                    ),
+                  ),
+                  Container(
+                    constraints: BoxConstraints(
+                      maxHeight: 5.0,
+                    ),
+                    color: Colors.white,
+                    /*decoration: BoxDecoration(
+                      color: Colors.white,
+                    ),*/
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                            ),
+                          ),
+                          flex: statCurrent,
+                        ),
+                        Expanded(
+                          child: /*SizedBox(),*/ Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                            ),
+                          ),
+                          flex: statMax - statCurrent,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
     return stat;
   }
 
+  double getScWidth() {
+    return MediaQuery.of(context).size.width;
+  }
+
   @override
   void initState() {
     super.initState();
-    titleFocus = FocusNode();
   }
 
   @override
   void dispose() {
     super.dispose();
-    titleFocus.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Container stat = createStat(Container());
+    Container health = createStat(
+      "Health",
+      statIconData: Icons.health_and_safety,
+      iconColor: Colors.red,
+      statCurrent: 8,
+      statMax: 10,
+    );
+    Container trophies = createStat(
+      "Trophies",
+      statIconData: MaterialCommunityIcons.trophy,
+      iconColor: Colors.yellow[600],
+      statCurrent: 60,
+      statMax: 100,
+    );
+    Container xp = createStat(
+      "XP",
+      statIconData: MaterialCommunityIcons.star,
+      iconColor: Color(0xFFD4AF37),
+      statCurrent: 700,
+      statMax: 1000,
+    );
     Container gameStatus = Container(
-      child: Padding(
-        padding: EdgeInsets.all(0.0),
-        child: Container(
-          height: 150,
-          decoration: BoxDecoration(
-            color: Colors.blueGrey,
-            border: Border.all(color: Colors.grey /*[800]*/, width: 1.5),
-            borderRadius: BorderRadius.all(
-              Radius.circular(10.0),
-            ), // set rounded corner radius
+      height: 130,
+      color: Color(0xFF174858),
+      constraints: BoxConstraints(
+        maxWidth: getScWidth(),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 15.0,
           ),
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Color.fromRGBO(0, 0, 0, 0.15),
+                width: 1.0,
+              ),
+              borderRadius: BorderRadius.all(
+                Radius.circular(45.0),
+              ),
+            ),
+            child: CircleAvatar(
+              child: Image(
+                image: AssetImage('assets/profile.png'),
+              ),
+              radius: 45.0,
+              backgroundColor: Colors.white,
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Text(
+                  "Level 10",
+                  style: GoogleFonts.gloriaHallelujah(
+                      color: Colors.white, fontSize: 13),
+                ),
+                xp,
                 SizedBox(
-                  width: 20.0,
+                  height: 7.0,
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Color.fromRGBO(0, 0, 0, 0.15),
-                      width: 1.0,
-                    ),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(55.0),
-                    ),
-                  ),
-                  child: CircleAvatar(
-                    child: Image(
-                      image: AssetImage('assets/profile.png'),
-                    ),
-                    radius: 55.0,
-                    backgroundColor: Colors.white,
-                  ),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Row(
                   children: [
-                    stat,
-                    SizedBox(
-                      height: 20.0,
+                    Expanded(
+                      child: health,
                     ),
-                    stat,
+                    SizedBox(
+                      width: 7.0,
+                    ),
+                    Expanded(
+                      child: trophies,
+                    ),
                   ],
                 ),
                 SizedBox(
-                  width: 12.0,
+                  height: 7.0,
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    stat,
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    stat,
-                  ],
-                )
               ],
             ),
           ),
-        ),
-      ),
-    );
-
-    Widget notification = Container(
-      height: 40.0,
-      width: double.maxFinite,
-      decoration: BoxDecoration(
-        color: Colors.yellow,
-      ),
-      child: Center(
-        child: Text(
-          "Notifications",
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            fontSize: 20,
-            fontFamily: 'Gloria',
-            color: Colors.white,
+          SizedBox(
+            width: 20.0,
           ),
-        ),
+        ],
       ),
     );
+    Container getMoodStatBar({
+      int current,
+      String day,
+      bool done,
+    }) {
+      int max = 100;
+      Icon check;
+      if (done == null) {
+        check = Icon(
+          MaterialCommunityIcons.help,
+          size: 14.0,
+        );
+      } else {
+        check = Icon(
+          done ? MaterialCommunityIcons.check : MaterialCommunityIcons.cancel,
+          color: done ? Colors.green : Colors.red,
+          size: 14.0,
+        );
+      }
+      Container statBar = new Container(
+        constraints: BoxConstraints(
+          maxWidth: 4.0,
+          maxHeight: 200.0,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.black,
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              flex: max - current,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: current,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+      Container result = new Container(
+        child: Column(
+          children: [
+            Text(
+              "$current%",
+              style: GoogleFonts.gloriaHallelujah(
+                fontSize: 9,
+              ),
+            ),
+            Expanded(
+              child: statBar,
+            ),
+            SizedBox(
+              height: 3.0,
+            ),
+            check,
+            Text(
+              day,
+              style: GoogleFonts.gloriaHallelujah(
+                fontSize: 9,
+              ),
+            ),
+          ],
+        ),
+      );
+      return result;
+    }
 
-    Widget notificationArea = Container(
-      margin: EdgeInsets.fromLTRB(20.0, 90.0, 20.0, 0.0),
+    Widget streakGraph = Container(
+      margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
       constraints: BoxConstraints(
         minHeight: 40.0,
         maxHeight: 200.0,
         minWidth: MediaQuery.of(context).size.width,
       ),
       decoration: BoxDecoration(
-        color: Colors.blueGrey,
+        color: Color(0xFFB2E5E3),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(10.0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.5),
+            blurRadius: 3.0,
+            spreadRadius: 1.0,
+            offset: Offset(2.0, 2.0),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            height: 45.0,
+            width: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(10.0),
+              ),
+            ),
+            child: Center(
+              child: Text(
+                "Streak graph",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'Gloria',
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          Container(
+            height: 155.0,
+            padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                /**/ getMoodStatBar(
+                  current: 70,
+                  day: "M",
+                ),
+                getMoodStatBar(
+                  current: 64,
+                  day: "T",
+                  done: true,
+                ),
+                getMoodStatBar(
+                  current: 80,
+                  day: "W",
+                  done: false,
+                ),
+                getMoodStatBar(
+                  current: 70,
+                  day: "T",
+                ),
+                getMoodStatBar(
+                  current: 64,
+                  day: "F",
+                ),
+                getMoodStatBar(
+                  current: 80,
+                  day: "S",
+                ),
+                getMoodStatBar(
+                  current: 90,
+                  day: "Today",
+                ),
+              ],
+            ),
+          ),
+          //notification,
+        ],
+      ),
+    );
+
+    Widget notification = Container(
+      margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 0.0),
+      height: 100.0,
+      width: double.maxFinite,
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.all(
+          Radius.circular(10.0),
+        ),
+      ),
+      padding: EdgeInsets.fromLTRB(12.0, 0, 0, 0),
+      child: Column(
+        //mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "New challenge!",
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: 'Gloria',
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Widget notificationArea = Container(
+      margin: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 40.0),
+      constraints: BoxConstraints(
+        minHeight: 100.0,
+        maxHeight: 200.0,
+        minWidth: MediaQuery.of(context).size.width,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        //border: Border.all(color: Colors.grey, width: 1.5),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(10.0),
+        ),
         boxShadow: [
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.5),
@@ -166,10 +434,13 @@ class _HomeState extends State<Home> {
       child: Column(
         children: [
           Container(
-            height: 40.0,
+            height: 45.0,
             width: double.maxFinite,
             decoration: BoxDecoration(
               color: Colors.black,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(10.0),
+              ),
             ),
             child: Center(
               child: Text(
@@ -183,49 +454,50 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-
-          notification,
+          Container(
+            height: 155.0,
+            decoration: BoxDecoration(
+              color: Colors.white,
+            ),
+            child: Scrollbar(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    notification,
+                    notification,
+                    SizedBox(
+                      height: 5.0,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
 
-    /*Material(
-      elevation: 10,
-      child: Container(
-        margin: EdgeInsets.fromLTRB(10.0, 40.0, 10.0, 0.0),
-        constraints: BoxConstraints(
-          maxHeight: 200.0,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white,
-        ),
-      ),
-    );*/
-
     return Scaffold(
-      //backgroundColor: Color(0xFFF3EFE4),
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0.0),
+        preferredSize: Size.fromHeight(60.0),
         child: AppBar(
-          elevation: 3.0,
+          iconTheme: IconThemeData(
+            color: Colors.black,
+          ),
+          leading: null,
+          elevation: 0.0,
           backgroundColor: Colors.white,
           toolbarHeight: 60.0,
-          title: Column(
-            //crossAxisAlignment: CrossAxisAlignment.start,
+          title: Row(
             children: [
-              Row(
-                children: [
-                  SizedBox(
-                    width: 7.0,
-                  ),
-                  Text(
-                    "10 April 2021, 7:45 pm",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
+              Text(
+                "Rewind",
+                textAlign: TextAlign.left,
+                style: GoogleFonts.gloriaHallelujah(
+                  fontSize: 22,
+                  color: Colors.black,
+                ),
               ),
             ],
           ),
@@ -245,90 +517,125 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          gameStatus,
-          notificationArea,
-        ],
+      body: Scrollbar(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              gameStatus,
+              streakGraph,
+              notificationArea,
+            ],
+          ),
+        ),
       ),
-      /*persistentFooterButtons: [
-        IconButton(
-          alignment: Alignment.centerLeft,
-          onPressed: () {},
-          icon: Icon(
-            Icons.arrow_back,
-          ),
+      drawer: Container(
+        padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 20.0),
+        constraints: BoxConstraints(
+          minWidth: MediaQuery.of(context).size.width * 0.75,
         ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
+        decoration: BoxDecoration(
+          color: Color(0xFFB2E5E3),
         ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
-        ),
-      ],*/
-      bottomNavigationBar: Container(
-        alignment: Alignment.topCenter,
-        height: 112.0,
-        decoration: new BoxDecoration(
-          color: Colors.blueGrey,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.elliptical(
-              MediaQuery.of(context).size.width,
-              240.0,
-            ),
-          ),
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: <Widget>[
-            Positioned(
-              child: FloatingActionButton(
-                child: Icon(Icons.query_stats, color: Colors.yellowAccent,),
-                onPressed: () {
-                  print('Productivity');
-                },
-                tooltip: "Productivity",
-                backgroundColor: Colors.black,
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                  width: 1.0,
+                ),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(45.0),
+                ),
               ),
-              right: 0,
-              left: -MediaQuery.of(context).size.width * 0.6875,
-              bottom: 50,
-            ),
-            Positioned(
-              child: FloatingActionButton(
-                child: Icon(Icons.menu_book, color: Colors.yellowAccent,),
-                onPressed: () {
-                  print('Journal');
-                  print('${MediaQuery.of(context).size.width}');
-                },
-                tooltip: "Journal",
-                backgroundColor: Colors.black,
+              child: CircleAvatar(
+                child: Image(
+                  image: AssetImage('assets/profile.png'),
+                ),
+                radius: 45.0,
+                backgroundColor: Colors.white,
               ),
-              right: 0,
-              left: 0,
-              bottom: 80,
             ),
-            Positioned(
-              child: FloatingActionButton(
-                //mini: true,
-                child: Icon(Icons.list_alt, color: Colors.yellowAccent,),
-                onPressed: () {
-                  print('Todo list');
-                },
-                tooltip: "Todo list",
-                backgroundColor: Colors.black,
-              ),
-              right: 0,
-              left: MediaQuery.of(context).size.width * 0.6875,
-              bottom: 50,
-            ), /**/
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        height: 70.0,
+        decoration: new BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(10.0),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue,
+              offset: Offset(0.0, -1.0),
+              blurRadius: 7.0,
+              spreadRadius: 0.0,
+            ),
+          ],
+        ),
+        child: Center(
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              Expanded(
+                child: Container(
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.query_stats,
+                      color: Colors.greenAccent[400],
+                      size: 35,
+                    ),
+                    onPressed: () {
+                      print("Productivity");
+                      Navigator.of(context).pushNamed('/ach');
+                    },
+                    tooltip: "Productivity",
+                  ),
+                ),
+                flex: 2,
+              ),
+              Spacer(),
+              Expanded(
+                child: Container(
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.menu_book,
+                      color: Colors.orange,
+                      size: 35,
+                    ),
+                    onPressed: () {
+                      print("Journal");
+                      print(MediaQuery.of(context).size.width);
+                      Navigator.of(context).pushNamed('/jou');
+                    },
+                    tooltip: "Journal",
+                  ),
+                  //alignment: Alignment.center,
+                ),
+              ),
+              Spacer(),
+              Expanded(
+                child: Container(
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.list_alt,
+                      color: Colors.lightBlueAccent,
+                      size: 35,
+                    ),
+                    onPressed: () {
+                      print("Todo list");
+                      Navigator.of(context).pushNamed('/tdl');
+                    },
+                    tooltip: "Todo list",
+                  ),
+                  //alignment: Alignment.centerRight,
+                ),
+                flex: 2,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -458,13 +765,6 @@ class _JournalState extends State<Journal> {
       ),
     );
 
-    CustomPaint notebookPageLayout = CustomPaint(
-      //foregroundPainter: NotebookPage(),
-      child: contentField,
-    );
-
-    //TextBox w = TextBox.fromLTRBD(left, top, right, bottom, direction)
-
     return Scaffold(
       //backgroundColor: Color(0xFFF3EFE4),
       appBar: PreferredSize(
@@ -585,38 +885,3 @@ class _JournalState extends State<Journal> {
     );
   }
 }
-/*
-    Container titleArea = Container(
-      child: TextField(
-        textInputAction: TextInputAction.next,
-        onChanged: (val) {
-          setState(() {});
-        },
-        cursorColor: Colors.white,
-        textAlignVertical: TextAlignVertical.bottom,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          labelText: "Password",
-          //hintText: "Password",
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.transparent,
-            ),
-            //borderRadius: BorderRadius.circular(5.0),
-          ),
-          /* suffixIcon: ElevatedButton(
-            child: Icon(
-              Icons.check_sharp,
-            ),
-            onPressed: () {
-              titleFocus.unfocus();
-            },
-            style: ButtonStyle(),
-          ),*/
-        ),
-      ),
-    );*/
