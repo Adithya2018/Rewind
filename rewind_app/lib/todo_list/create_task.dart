@@ -1,84 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/todolist/todolist.dart';
+import 'package:rewind_app/todo_list/common.dart';
 
-class EditTask extends StatefulWidget {
-  //final List<Function> taskFunctions;
+class CreateTask extends StatefulWidget {
   final Task task;
-  EditTask({
+  CreateTask({
     this.task,
   });
   @override
-  _EditTaskState createState() => _EditTaskState();
+  _CreateTaskState createState() => _CreateTaskState();
 }
 
-class _EditTaskState extends State<EditTask> {
-  List<String> month = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  List<String> weekDay = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-  //var daySuffix = ["st", "nd", "rd", "th",];
-  String currentDateAndTime() {
-    DateTime now = new DateTime.now();
-    return "${weekDay[now.weekday - 1]}, ${now.day} ${month[now.month - 1]} ${now.year}";
-  }
+class _CreateTaskState extends State<CreateTask> {
+  Task taskCurrent;
+  DateAndTimeFormat dtf = new DateAndTimeFormat();
+  TaskLevel taskLevel = new TaskLevel();
 
-  String formatDate(DateTime dateTime) {
-    String result =
-        "${weekDay[dateTime.weekday - 1]}, ${dateTime.day} ${month[dateTime.month - 1]}";
-    String year =
-        DateTime.now().year == dateTime.year ? "" : " ${dateTime.year}";
-    return "$result$year";
-  }
-
-  String formatTime(TimeOfDay timeOfDay) {
-    String minute = timeOfDay.minute < 10 ? "0" : "";
-    minute += "${timeOfDay.minute}";
-    bool beforeMidday = timeOfDay.hour < 12;
-    int hour = timeOfDay.hour;
-    if (!beforeMidday) {
-      hour -= 12;
-    }
-    hour = hour == 0 ? 12 : hour;
-    return "$hour:$minute ${beforeMidday ? "AM" : "PM"}";
-  }
-
-  DateTime _deadlineDate;
+  DateTime deadlineDate;
   Future<void> _selectDeadline(BuildContext context) async {
+    DateTime now = DateTime.now();
     final DateTime pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(DateTime.now().year),
+      initialDate: now,
+      firstDate: DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ),
       lastDate: DateTime(2050),
     );
-    if (pickedDate != null && pickedDate != _deadlineDate) {
+    if (pickedDate != null && pickedDate != deadlineDate) {
       setState(() {
-        _deadlineDate = pickedDate;
+        deadlineDate = pickedDate;
       });
     }
   }
 
-  TimeOfDay _deadlineTime;
+  TimeOfDay deadlineTime;
+
   Future<Null> _selectTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -89,35 +49,24 @@ class _EditTaskState extends State<EditTask> {
     );
     if (picked != null) {
       setState(() {
-        _deadlineTime = picked;
+        deadlineTime = picked;
       });
     }
   }
 
   FocusNode titleFocusNode;
   FocusNode descriptionFocusNode;
-  TextEditingController _titleCtrl;
-  TextEditingController _descriptionCtrl;
+  TextEditingController titleCtrl;
+  TextEditingController descriptionCtrl;
 
   @override
   void initState() {
     super.initState();
+    taskCurrent = new Task();
     titleFocusNode = new FocusNode();
     descriptionFocusNode = new FocusNode();
-    _titleCtrl = new TextEditingController(
-      text: "${widget.task.label}",
-    );
-    _descriptionCtrl = new TextEditingController(
-      text: "${widget.task.description}",
-    );
-    //_deadlineDate = DateTime.now();
-    taskCurrent = Task.fromTask(widget.task);
-    _deadlineDate = widget.task.deadline;
-    //task = Task.fromTask(widget.task);
-    /**/_deadlineTime = TimeOfDay(
-      hour: _deadlineDate.hour,
-      minute: _deadlineDate.minute,
-    );
+    titleCtrl = new TextEditingController();
+    descriptionCtrl = new TextEditingController();
   }
 
   @override
@@ -126,39 +75,46 @@ class _EditTaskState extends State<EditTask> {
     titleFocusNode.dispose();
     descriptionFocusNode.dispose();
   }
+  
+  void saveChanges() {
+    Navigator.pop(context, taskCurrent);
+  }
 
-  List<IconData> diffLevelIcon = [
-    MaterialCommunityIcons.tea,
-    MaterialCommunityIcons.cake_variant,
-    MaterialCommunityIcons.alarm_light,
-    MaterialCommunityIcons.bomb,
-    MaterialCommunityIcons.skull,
-  ];
+  Future<void> showErrorMessage({String msg}) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Error "),
+              Icon(
+                Icons.warning,
+                color: Colors.red,
+              ),
+            ],
+          ),
+          content: Container(
+            child: Text(
+              msg,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Continue"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-  List<IconData> diffLevelNumeric = [
-    MaterialCommunityIcons.numeric_1_box,
-    MaterialCommunityIcons.numeric_2_box,
-    MaterialCommunityIcons.numeric_3_box,
-    MaterialCommunityIcons.numeric_4_box,
-    MaterialCommunityIcons.numeric_5_box,
-  ];
-
-  List<String> diffLevelText = [
-    "My cup of tea",
-    "A piece of cake",
-    "Are you sure?",
-    "Good luck!",
-    "Good luck++",
-  ];
-  //Task task;
-  Task taskCurrent;
-  String retValue = "";
   @override
   Widget build(BuildContext context) {
-    void saveChanges() {
-      Navigator.pop(context, taskCurrent);
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -176,7 +132,7 @@ class _EditTaskState extends State<EditTask> {
                 width: 7.0,
               ),
               Text(
-                "Edit task",
+                "New task",
                 textAlign: TextAlign.left,
                 style: GoogleFonts.gloriaHallelujah(
                   fontSize: 22,
@@ -208,14 +164,11 @@ class _EditTaskState extends State<EditTask> {
                 margin: EdgeInsets.fromLTRB(12.0, 10.0, 12.0, 20.0),
                 child: TextField(
                   focusNode: titleFocusNode,
-                  controller: _titleCtrl,
+                  controller: titleCtrl,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.next,
                   onChanged: (val) {
-                    print("osnvo");
-                    setState(() {
-                      retValue = val;
-                    });
+                    setState(() {});
                   },
                   cursorColor: Color(0xFFB2E5E3),
                   textAlignVertical: TextAlignVertical.bottom,
@@ -245,9 +198,9 @@ class _EditTaskState extends State<EditTask> {
               ),
               Container(
                 margin: EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 20.0),
-                child: TextFormField(
+                child: TextField(
                   focusNode: descriptionFocusNode,
-                  controller: _descriptionCtrl,
+                  controller: descriptionCtrl,
                   textCapitalization: TextCapitalization.sentences,
                   onChanged: (val) {
                     setState(() {});
@@ -293,7 +246,7 @@ class _EditTaskState extends State<EditTask> {
                     width: 12.0,
                   ),
                   Text(
-                    "Date: ${_deadlineDate == null ? "???" : formatDate(_deadlineDate)}",
+                    "Date: ${deadlineDate == null ? "???" : dtf.formatDate(deadlineDate)}",
                     textAlign: TextAlign.end,
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 14,
@@ -320,7 +273,7 @@ class _EditTaskState extends State<EditTask> {
                     width: 12.0,
                   ),
                   Text(
-                    "Time: ${_deadlineTime == null ? "???" : formatTime(_deadlineTime)}",
+                    "Time: ${deadlineTime == null ? "???" : dtf.formatTime(deadlineTime)}",
                     textAlign: TextAlign.end,
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 14,
@@ -348,7 +301,7 @@ class _EditTaskState extends State<EditTask> {
                     style: GoogleFonts.gloriaHallelujah(),
                   ),
                   Icon(
-                    diffLevelNumeric[taskCurrent.level - 1],
+                    taskLevel.diffLevelNumeric[taskCurrent.level - 1],
                   ),
                 ],
               ),
@@ -356,11 +309,11 @@ class _EditTaskState extends State<EditTask> {
                 height: 10.0,
               ),
               Icon(
-                diffLevelIcon[taskCurrent.level - 1],
+                taskLevel.diffLevelIcon[taskCurrent.level - 1],
                 size: 80.0,
               ),
               Text(
-                diffLevelText[taskCurrent.level - 1],
+                taskLevel.diffLevelText[taskCurrent.level - 1],
                 style: GoogleFonts.gloriaHallelujah(
                   fontSize: 15,
                   color: Colors.black,
@@ -370,10 +323,10 @@ class _EditTaskState extends State<EditTask> {
                 margin: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 15.0),
                 child: Slider(
                   activeColor: Color(0xFFB2E5E3),
-                  inactiveColor: Colors.white,
+                  inactiveColor: Color(0xFFB2E5E3),
                   value: taskCurrent.level.toDouble(),
                   onChanged: (val) {
-                    /**/ titleFocusNode.unfocus();
+                    titleFocusNode.unfocus();
                     descriptionFocusNode.unfocus();
                     setState(() {
                       taskCurrent.level = val.toInt();
@@ -419,61 +372,43 @@ class _EditTaskState extends State<EditTask> {
                   ),
                   child: TextButton(
                     child: Text(
-                      "Save",
+                      "Create",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.gloriaHallelujah(
                         fontSize: 20,
                         color: Colors.black,
                       ),
                     ),
-                    onPressed: () {
-                      print("Save");
-                      print(currentDateAndTime());
+                    onPressed: () async {
+                      print("Create");
                       taskCurrent = Task.fromTask(taskCurrent);
                       print("${taskCurrent.label}");
-                      setState(() {
-                        taskCurrent.label = _titleCtrl.text;
-                        taskCurrent.description = _descriptionCtrl.text;
-                        taskCurrent.level = taskCurrent.level;
-                        //taskCurrent.deadline = _deadlineDate;
-                        //taskCurrent.deadlineTime = _deadlineTime;
-                        if (_deadlineDate != null && _deadlineTime != null) {
-                          taskCurrent.deadline = DateTime(
-                            _deadlineDate.year,
-                            _deadlineDate.month,
-                            _deadlineDate.day,
-                            _deadlineTime.hour,
-                            _deadlineTime.minute,
-                          );
-                        } else {
-                          print("time or date is null");
-                        }
-                      });
+                      if (titleCtrl.text.isEmpty) {
+                        await showErrorMessage(
+                          msg: "Title cannot be empty",
+                        );
+                        return;
+                      } else {
+                        taskCurrent.label = titleCtrl.text;
+                      }
+                      taskCurrent.description = descriptionCtrl.text;
+                      if (deadlineDate != null || deadlineTime != null) {
+                        taskCurrent.deadline = DateTime(
+                          deadlineDate.year,
+                          deadlineDate.month,
+                          deadlineDate.day,
+                          deadlineTime.hour,
+                          deadlineTime.minute,
+                        );
+                        print(taskCurrent.deadline.toString());
+                      } else {
+                        await showErrorMessage(
+                          msg: "Enter a deadline",
+                        );
+                        return;
+                      }
+                      taskCurrent.created = DateTime.now();
                       saveChanges();
-                    },
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: TextButton(
-                    child: Text(
-                      "Cancel",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.gloriaHallelujah(
-                        fontSize: 20,
-                        color: Colors.black,
-                      ),
-                    ),
-                    onPressed: () {
-                      print("Cancel");
-                      print(currentDateAndTime());
                     },
                   ),
                 ),
@@ -485,13 +420,3 @@ class _EditTaskState extends State<EditTask> {
     );
   }
 }
-/*
-print("Save");
-                      //Navigator.of(context).pushNamed('/ach');
-                      task = Task.fromTask(taskCurrent);
-                      print("${task.label}");
-                      setState(() {
-                        task.label = retValue;
-                      });
-                      saveChanges();
- */
