@@ -218,7 +218,7 @@ class _AchievementsState extends State<Achievements> {
               ),
 
               createAchievement(
-                label: "Task Master",
+                label: "Achiever",
                 description: "Level 25",
                 rewardIcon: MaterialCommunityIcons.diamond_stone,
                 progress: 0,
