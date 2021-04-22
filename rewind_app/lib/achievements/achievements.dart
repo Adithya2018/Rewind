@@ -202,11 +202,55 @@ class _AchievementsState extends State<Achievements> {
               ),
 
               createAchievement(
-                label: "Diamond medallion",
+                label: "Diamond Medallion",
                 description: "Complete 200 Level 5 tasks",
                 rewardIcon: MaterialCommunityIcons.diamond_stone,
                 progress: 0,
                 required: 100,
+              ),
+
+              createAchievement(
+                label: "New Kid",
+                description: "Welcome to Rewind!",
+                rewardIcon: MaterialCommunityIcons.baby_face,
+                progress: 0,
+                required: 100,
+              ),
+
+              createAchievement(
+                label: "Task Master",
+                description: "Level 25",
+                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                progress: 0,
+                required: 100,
+              ),
+
+              createAchievement(
+                label: "Grand Task Master",
+                description: "Level 50",
+                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                progress: 0,
+                required: 100,
+              ),
+
+              createAchievement(
+                label: "Enlightened Entity",
+                description: "Level 75",
+                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                progress: 0,
+                required: 100,
+              ),
+
+              createAchievement(
+                label: "Eternal Entity",
+                description: "Level 100",
+                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                progress: 0,
+                required: 100,
+              ),
+
+              SizedBox(
+                height: 10,
               ),
               // createAchievement(
               //   label: "Speed demon",
