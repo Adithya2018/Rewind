@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:rewind_app/home/home.dart';
 import 'package:flutter/services.dart';
 import 'package:rewind_app/home/journal.dart';
-import 'package:rewind_app/todolist/createtask.dart';
-import 'package:rewind_app/todolist/viewtask.dart';
+import 'package:rewind_app/todo_list/create_task.dart';
+import 'package:rewind_app/todo_list/view_task.dart';
 import 'authentication/local.dart';
 import 'home/achievements.dart';
-import 'todolist/todolist.dart';
+import 'todo_list/todo_list.dart';
 
 void main() {
   /*WidgetsFlutterBinding.ensureInitialized();

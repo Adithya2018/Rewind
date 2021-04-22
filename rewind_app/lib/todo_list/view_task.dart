@@ -1,87 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/todolist/todolist.dart';
+import 'package:rewind_app/todo_list/common.dart';
 
-class CreateTask extends StatefulWidget {
+class EditTask extends StatefulWidget {
+  final Task task;
+  EditTask({
+    this.task,
+  });
   @override
-  _CreateTaskState createState() => _CreateTaskState();
+  _EditTaskState createState() => _EditTaskState();
 }
 
-class _CreateTaskState extends State<CreateTask> {
-  Task _task = Task();
-  List<String> month = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  List<String> weekDay = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-  //var daySuffix = ["st", "nd", "rd", "th",];
-  String currentDateAndTime() {
-    DateTime now = new DateTime.now();
-    return "${weekDay[now.weekday - 1]}, ${now.day} ${month[now.month - 1]} ${now.year}";
-  }
-
-  String formatDate(DateTime dateTime) {
-    String result =
-        "${weekDay[dateTime.weekday - 1]}, ${dateTime.day} ${month[dateTime.month - 1]}"; //${weekDay[date.day - 1]} ${month[date.month - 1]}
-    String year =
-    DateTime.now().year == dateTime.year ? "" : " ${dateTime.year}";
-    return "$result$year";
-  }
-
-  String formatTime(TimeOfDay timeOfDay) {
-    String minute = timeOfDay.minute < 10 ? "0" : "";
-    minute += "${timeOfDay.minute}";
-    bool beforeMidday = timeOfDay.hour < 12;
-    int hour = timeOfDay.hour;
-    if (!beforeMidday) {
-      hour -= 12;
-    }
-    hour = hour == 0 ? 12 : hour;
-    return "$hour:$minute ${beforeMidday ? "AM" : "PM"}";
-  }
-
-  DateTime deadlineDate;
+class _EditTaskState extends State<EditTask> {
+  Task _taskCurrent;
+  DateAndTimeFormat dtf = new DateAndTimeFormat();
+  TaskLevel taskLevel = new TaskLevel();
+  DateTime _deadlineDate;
   Future<void> _selectDeadline(BuildContext context) async {
+    DateTime now = DateTime.now();
     final DateTime pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(DateTime.now().year),
+      initialDate: now,
+      firstDate: DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ),
       lastDate: DateTime(2050),
     );
-    if (pickedDate != null && pickedDate != deadlineDate) {
+    if (pickedDate != null && pickedDate != _deadlineDate) {
       setState(() {
-        deadlineDate = pickedDate;
+        _deadlineDate = pickedDate;
       });
     }
   }
 
   TimeOfDay _deadlineTime;
-
-  Future<Null> _selectTime(BuildContext context) async {
+  Future<Null> selectTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(
-        hour: DateTime.now().hour,
-        minute: DateTime.now().minute,
+        hour: _deadlineTime.hour,
+        minute: _deadlineTime.minute,
       ),
     );
     if (picked != null) {
@@ -93,12 +54,26 @@ class _CreateTaskState extends State<CreateTask> {
 
   FocusNode titleFocusNode;
   FocusNode descriptionFocusNode;
+  TextEditingController _titleCtrl;
+  TextEditingController _descriptionCtrl;
 
   @override
   void initState() {
     super.initState();
     titleFocusNode = new FocusNode();
     descriptionFocusNode = new FocusNode();
+    _titleCtrl = new TextEditingController(
+      text: "${widget.task.label}",
+    );
+    _descriptionCtrl = new TextEditingController(
+      text: "${widget.task.description}",
+    );
+    _taskCurrent = Task.fromTask(widget.task);
+    _deadlineDate = widget.task.deadline;
+    _deadlineTime = TimeOfDay(
+      hour: _deadlineDate.hour,
+      minute: _deadlineDate.minute,
+    );
   }
 
   @override
@@ -106,31 +81,46 @@ class _CreateTaskState extends State<CreateTask> {
     super.dispose();
     titleFocusNode.dispose();
     descriptionFocusNode.dispose();
+    _titleCtrl.dispose();
+    _descriptionCtrl.dispose();
   }
 
-  List<IconData> diffLevelIcon = [
-    MaterialCommunityIcons.tea,
-    MaterialCommunityIcons.cake_variant,
-    MaterialCommunityIcons.alarm_light,
-    MaterialCommunityIcons.bomb,
-    MaterialCommunityIcons.skull,
-  ];
+  void saveChanges() {
+    Navigator.pop(context, _taskCurrent);
+  }
 
-  List<IconData> diffLevelNumeric = [
-    MaterialCommunityIcons.numeric_1_box,
-    MaterialCommunityIcons.numeric_2_box,
-    MaterialCommunityIcons.numeric_3_box,
-    MaterialCommunityIcons.numeric_4_box,
-    MaterialCommunityIcons.numeric_5_box,
-  ];
-
-  List<String> diffLevelText = [
-    "My cup of tea",
-    "A piece of cake",
-    "Are you sure?",
-    "Good luck!",
-    "Good luck++",
-  ];
+  Future<void> _showErrorMessage({String msg}) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Invalid "),
+              Icon(
+                Icons.warning,
+                color: Colors.yellow,
+              ),
+            ],
+          ),
+          content: Container(
+            child: Text(
+              msg,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Continue"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +141,7 @@ class _CreateTaskState extends State<CreateTask> {
                 width: 7.0,
               ),
               Text(
-                "New task",
+                "Edit task",
                 textAlign: TextAlign.left,
                 style: GoogleFonts.gloriaHallelujah(
                   fontSize: 22,
@@ -183,11 +173,10 @@ class _CreateTaskState extends State<CreateTask> {
                 margin: EdgeInsets.fromLTRB(12.0, 10.0, 12.0, 20.0),
                 child: TextField(
                   focusNode: titleFocusNode,
+                  controller: _titleCtrl,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.next,
-                  onChanged: (val) {
-                    setState(() {});
-                  },
+                  onChanged: (val) {},
                   cursorColor: Color(0xFFB2E5E3),
                   textAlignVertical: TextAlignVertical.bottom,
                   textAlign: TextAlign.center,
@@ -216,8 +205,9 @@ class _CreateTaskState extends State<CreateTask> {
               ),
               Container(
                 margin: EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 20.0),
-                child: TextField(
+                child: TextFormField(
                   focusNode: descriptionFocusNode,
+                  controller: _descriptionCtrl,
                   textCapitalization: TextCapitalization.sentences,
                   onChanged: (val) {
                     setState(() {});
@@ -263,7 +253,7 @@ class _CreateTaskState extends State<CreateTask> {
                     width: 12.0,
                   ),
                   Text(
-                    "Date: ${deadlineDate == null ? "???" : formatDate(deadlineDate)}",
+                    "Date: ${_deadlineDate == null ? "???" : dtf.formatDate(_deadlineDate)}",
                     textAlign: TextAlign.end,
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 14,
@@ -290,7 +280,7 @@ class _CreateTaskState extends State<CreateTask> {
                     width: 12.0,
                   ),
                   Text(
-                    "Time: ${_deadlineTime == null ? "???" : formatTime(_deadlineTime)}",
+                    "Time: ${_deadlineTime == null ? "???" : dtf.formatTime(_deadlineTime)}",
                     textAlign: TextAlign.end,
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 14,
@@ -300,7 +290,7 @@ class _CreateTaskState extends State<CreateTask> {
                   Spacer(),
                   IconButton(
                     onPressed: () {
-                      _selectTime(context);
+                      selectTime(context);
                     },
                     icon: Icon(
                       MaterialCommunityIcons.clock_outline,
@@ -318,7 +308,7 @@ class _CreateTaskState extends State<CreateTask> {
                     style: GoogleFonts.gloriaHallelujah(),
                   ),
                   Icon(
-                    diffLevelNumeric[_task.level - 1],
+                    taskLevel.diffLevelNumeric[_taskCurrent.level - 1],
                   ),
                 ],
               ),
@@ -326,11 +316,11 @@ class _CreateTaskState extends State<CreateTask> {
                 height: 10.0,
               ),
               Icon(
-                diffLevelIcon[_task.level - 1],
+                taskLevel.diffLevelIcon[_taskCurrent.level - 1],
                 size: 80.0,
               ),
               Text(
-                diffLevelText[_task.level - 1],
+                taskLevel.diffLevelText[_taskCurrent.level - 1],
                 style: GoogleFonts.gloriaHallelujah(
                   fontSize: 15,
                   color: Colors.black,
@@ -341,14 +331,14 @@ class _CreateTaskState extends State<CreateTask> {
                 child: Slider(
                   activeColor: Color(0xFFB2E5E3),
                   inactiveColor: Color(0xFFB2E5E3),
-                  value: _task.level.toDouble(),
+                  value: _taskCurrent.level.toDouble(),
                   onChanged: (val) {
                     titleFocusNode.unfocus();
                     descriptionFocusNode.unfocus();
                     setState(() {
-                      _task.level = val.toInt();
+                      _taskCurrent.level = val.toInt();
                     });
-                    print("${_task.level}");
+                    print("${_taskCurrent.level}");
                   },
                   min: 1,
                   max: 5,
@@ -389,7 +379,56 @@ class _CreateTaskState extends State<CreateTask> {
                   ),
                   child: TextButton(
                     child: Text(
-                      "Create",
+                      "Save",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.gloriaHallelujah(
+                        fontSize: 20,
+                        color: Colors.black,
+                      ),
+                    ),
+                    onPressed: () async {
+                      print("Save");
+                      //print(currentDateAndTime());
+                      //taskCurrent = Task.fromTask(taskCurrent);
+                      print("${_taskCurrent.label}");
+                      if (_titleCtrl.text.isEmpty) {
+                        await _showErrorMessage(
+                          msg: "Title cannot be empty",
+                        );
+                        return;
+                      } else {
+                        _taskCurrent.label = _titleCtrl.text;
+                      }
+                      print("after if else");
+                      _taskCurrent.description = _descriptionCtrl.text;
+                      _taskCurrent.level = _taskCurrent.level;
+                      if (_deadlineDate != null || _deadlineTime != null) {
+                        _taskCurrent.deadline = DateTime(
+                          _deadlineDate.year,
+                          _deadlineDate.month,
+                          _deadlineDate.day,
+                          _deadlineTime.hour,
+                          _deadlineTime.minute,
+                        );
+                      } else {
+                        print("time or date is null");
+                      }
+                      saveChanges();
+                    },
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: TextButton(
+                    child: Text(
+                      "Cancel",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.gloriaHallelujah(
                         fontSize: 20,
@@ -397,8 +436,8 @@ class _CreateTaskState extends State<CreateTask> {
                       ),
                     ),
                     onPressed: () {
-                      print("Create");
-                      print(currentDateAndTime());
+                      print("Cancel");
+                      Navigator.pop(context, null);
                     },
                   ),
                 ),
