@@ -1,10 +1,9 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/todo_list/view_task.dart';
-import 'common.dart';
+import 'edit_task.dart';
+import 'tdl_common.dart';
 import 'create_task.dart';
 
 class TaskStatus extends StatefulWidget {
@@ -28,7 +27,17 @@ class _ToDoListState extends State<ToDoList> {
   List<Task> listOfTasks = [];
   List<Container> listOfTiles = [];
   bool ascendingOrder = true;
-  int sortOption = 0;
+  int sortByOption = 0;
+  List<Function> sortFunction = [
+    (Task a, Task b) => a.created.compareTo(b.created),
+    (Task a, Task b) => a.deadline.compareTo(b.deadline),
+    (Task a, Task b) => a.level.compareTo(b.level),
+  ];
+
+  Function getCurrentSortFunction() {
+    return (Task a, Task b) =>
+        ((ascendingOrder ? 1 : -1) * sortFunction[sortByOption](a, b)) as int;
+  }
 
   Container toDoListTile({
     int index,
@@ -112,15 +121,21 @@ class _ToDoListState extends State<ToDoList> {
                             Radius.circular(30.0),
                           ),
                         ),
-                        child: Checkbox(
-                          value: listOfTasks[index].completionStatus,
-                          onChanged: (value) {
-                            setState(() {
-                              listOfTasks[index].completionStatus =
-                                  !listOfTasks[index].completionStatus;
-                            });
-                            print(listOfTasks[index].label);
-                            print(listOfTasks[index].completionStatus);
+                        child: StatefulBuilder(
+                          builder:
+                              (BuildContext context, StateSetter setState) {
+                            return Checkbox(
+                              value: listOfTasks[index].completionStatus,
+                              onChanged: (value) {
+                                setState(() {
+                                  listOfTasks[index].completionStatus =
+                                      !listOfTasks[index].completionStatus;
+                                });
+                                print("Completion status of:");
+                                print("${listOfTasks[index].label}");
+                                print("${listOfTasks[index].completionStatus}");
+                              },
+                            );
                           },
                         ),
                       ),
@@ -187,6 +202,13 @@ class _ToDoListState extends State<ToDoList> {
                             listOfTasks[index] = new Task.fromTask(temp);
                           });
                         }
+                        listOfTasks.sort(getCurrentSortFunction());
+                        int id = 0;
+                        listOfTasks.forEach((element) {
+                          print(element.label);
+                          element.id = id++;
+                        });
+                        updateTodoList();
                       },
                       child: Text(
                         listOfTasks[index].label,
@@ -245,14 +267,6 @@ class _ToDoListState extends State<ToDoList> {
 
   @override
   Widget build(BuildContext context) {
-    List<Function> sortFunction = [
-      (Task a, Task b) =>
-          (ascendingOrder ? 1 : -1) * a.created.compareTo(b.created),
-      (Task a, Task b) =>
-          (ascendingOrder ? 1 : -1) * a.deadline.compareTo(b.deadline),
-      (Task a, Task b) =>
-          (ascendingOrder ? 1 : -1) * a.level.compareTo(b.level),
-    ];
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -343,7 +357,7 @@ class _ToDoListState extends State<ToDoList> {
                           setState(() {
                             listOfTasks.add(temp);
                           });
-                          listOfTasks.sort(sortFunction[sortOption]);
+                          listOfTasks.sort(getCurrentSortFunction());
                           int id = 0;
                           listOfTasks.forEach((element) {
                             print(element.label);
@@ -364,7 +378,7 @@ class _ToDoListState extends State<ToDoList> {
                       showDialog<void>(
                         context: context,
                         builder: (BuildContext context) {
-                          int temp = sortOption;
+                          int temp = sortByOption;
                           return AlertDialog(
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -434,8 +448,8 @@ class _ToDoListState extends State<ToDoList> {
                             actions: [
                               TextButton(
                                 onPressed: () {
-                                  sortOption = temp;
-                                  listOfTasks.sort(sortFunction[sortOption]);
+                                  sortByOption = temp;
+                                  listOfTasks.sort(getCurrentSortFunction());
                                   int id = 0;
                                   listOfTasks.forEach((element) {
                                     print(element.label);
@@ -469,7 +483,7 @@ class _ToDoListState extends State<ToDoList> {
                       setState(() {
                         ascendingOrder = !ascendingOrder;
                       });
-                      listOfTasks.sort(sortFunction[sortOption]);
+                      listOfTasks.sort(getCurrentSortFunction());
                       int id = 0;
                       listOfTasks.forEach((element) {
                         print(element.label);

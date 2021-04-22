@@ -85,7 +85,9 @@ class Task {
 class DateAndTimePicker {}
 
 class TaskLevel{
-
+  List<Color> diffLevelIconColor = [
+    Color(0xFF0026F9),
+  ];
 
   List<IconData> diffLevelIcon = [
     MaterialCommunityIcons.tea,
