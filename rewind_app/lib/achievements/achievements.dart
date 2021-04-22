@@ -168,34 +168,60 @@ class _AchievementsState extends State<Achievements> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              createAchievement(
-                label: "Diamond medallion",
-                description: "Complete 100 Level 5 tasks",
-                rewardIcon: MaterialCommunityIcons.diamond_stone,
-                progress: 0,
-                required: 100,
-              ),
+
               createAchievement(
                 label: "Task master",
-                description: "Complete 100 Level 3 tasks",
+                description: "Complete 1000 Level 1 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
               ),
+
               createAchievement(
-                label: "Speed demon",
-                description: "Complete 3 Level 3 tasks with 80% time remaining",
-                rewardIcon: MaterialCommunityIcons.emoticon_devil,
+                label: "Task master",
+                description: "Complete 800 Level 2 tasks",
+                rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
-                required: 3,
+                required: 100,
               ),
+
               createAchievement(
-                label: "Hard worker",
-                description: "Complete 10 Level 4 tasks",
-                rewardIcon: MaterialCommunityIcons.donkey,
+                label: "Task master",
+                description: "Complete 600 Level 3 tasks",
+                rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
-                required: 10,
+                required: 100,
               ),
+
+              createAchievement(
+                label: "Task master",
+                description: "Complete 400 Level 4 tasks",
+                rewardIcon: MaterialCommunityIcons.skull,
+                progress: 0,
+                required: 100,
+              ),
+
+              createAchievement(
+                label: "Diamond medallion",
+                description: "Complete 200 Level 5 tasks",
+                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                progress: 0,
+                required: 100,
+              ),
+              // createAchievement(
+              //   label: "Speed demon",
+              //   description: "Complete 3 Level 3 tasks with 80% time remaining",
+              //   rewardIcon: MaterialCommunityIcons.emoticon_devil,
+              //   progress: 0,
+              //   required: 3,
+              // ),
+              // createAchievement(
+              //   label: "Hard worker",
+              //   description: "Complete 10 Level 4 tasks",
+              //   rewardIcon: MaterialCommunityIcons.donkey,
+              //   progress: 0,
+              //   required: 10,
+              // ),
             ],
           ),
         ),

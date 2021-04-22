@@ -18,7 +18,9 @@ class _HomeState extends State<Home> {
     Container stat = new Container(
       //height: 36.0,
       decoration: BoxDecoration(
-        color: Color(0xFFB2E5E3),
+        // color: Color(0xFFB2E5E3),
+        color: Colors.blueGrey[800],
+
         borderRadius: BorderRadius.all(
           Radius.circular(5.0),
         ),
@@ -63,6 +65,7 @@ class _HomeState extends State<Home> {
                     textAlign: TextAlign.left,
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 10,
+                      color: Colors.white,
                     ),
                   ),
                   Container(
@@ -79,7 +82,8 @@ class _HomeState extends State<Home> {
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.red,
+                              // color: Colors.red,
+                              color: Colors.red[600],
                             ),
                           ),
                           flex: statCurrent,
@@ -87,7 +91,8 @@ class _HomeState extends State<Home> {
                         Expanded(
                           child: /*SizedBox(),*/ Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              // color: Colors.white,
+                              color: Colors.blueGrey[100],
                             ),
                           ),
                           flex: statMax - statCurrent,
@@ -124,27 +129,31 @@ class _HomeState extends State<Home> {
     Container health = createStat(
       "Health",
       statIconData: Icons.health_and_safety,
-      iconColor: Colors.red,
+      iconColor: Colors.red[900],
+      // iconColor: Color(0xffbb0a1e),
       statCurrent: 8,
       statMax: 10,
     );
     Container trophies = createStat(
       "Trophies",
       statIconData: MaterialCommunityIcons.trophy,
-      iconColor: Colors.yellow[600],
+      // iconColor: Color(0xFFD4AF37),
+      iconColor: Colors.yellow[800],
       statCurrent: 60,
       statMax: 100,
     );
     Container xp = createStat(
       "XP",
       statIconData: MaterialCommunityIcons.star,
-      iconColor: Color(0xFFD4AF37),
+      // iconColor: Color(0xFFD4AF37),
+      iconColor: Colors.yellow[600],
       statCurrent: 700,
       statMax: 1000,
     );
     Container gameStatus = Container(
       height: 130,
-      color: Color(0xFF174858),
+      // color: Color(0xFF174858),
+      color: Colors.black,
       constraints: BoxConstraints(
         maxWidth: getScWidth(),
       ),
@@ -585,7 +594,8 @@ class _HomeState extends State<Home> {
                   child: IconButton(
                     icon: Icon(
                       Icons.query_stats,
-                      color: Colors.greenAccent[400],
+                      // color: Colors.green,
+                      color: Colors.black,
                       size: 35,
                     ),
                     onPressed: () {
@@ -597,13 +607,15 @@ class _HomeState extends State<Home> {
                 ),
                 flex: 2,
               ),
-              Spacer(),
+              // Spacer(),
               Expanded(
                 child: Container(
                   child: IconButton(
                     icon: Icon(
                       Icons.menu_book,
-                      color: Colors.orange,
+                      // color: Colors.orange[700],
+                      // color: Colors.blueGrey[500],
+                      color: Colors.black,
                       size: 35,
                     ),
                     onPressed: () {
@@ -615,14 +627,16 @@ class _HomeState extends State<Home> {
                   ),
                   //alignment: Alignment.center,
                 ),
+                flex: 4,
               ),
-              Spacer(),
+              // Spacer(),
               Expanded(
                 child: Container(
                   child: IconButton(
                     icon: Icon(
                       Icons.list_alt,
-                      color: Colors.lightBlueAccent,
+                      // color: Colors.blue[800],
+                      color: Colors.black,
                       size: 35,
                     ),
                     onPressed: () {
