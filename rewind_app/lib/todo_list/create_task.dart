@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/todo_list/common.dart';
+import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class CreateTask extends StatefulWidget {
   final Task task;
@@ -18,17 +18,17 @@ class _CreateTaskState extends State<CreateTask> {
   TaskLevel taskLevel = new TaskLevel();
 
   DateTime deadlineDate;
-  Future<void> _selectDeadline(BuildContext context) async {
+  Future<void> _selectDeadlineDate(BuildContext context) async {
     DateTime now = DateTime.now();
     final DateTime pickedDate = await showDatePicker(
       context: context,
-      initialDate: now,
+      initialDate: now, //(deadlineDate==null)?now:deadlineDate,
       firstDate: DateTime(
         now.year,
         now.month,
         now.day,
       ),
-      lastDate: DateTime(2050),
+      lastDate: DateTime(now.year + 50),
     );
     if (pickedDate != null && pickedDate != deadlineDate) {
       setState(() {
@@ -39,7 +39,7 @@ class _CreateTaskState extends State<CreateTask> {
 
   TimeOfDay deadlineTime;
 
-  Future<Null> _selectTime(BuildContext context) async {
+  Future<Null> _selectDeadlineTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(
@@ -75,7 +75,7 @@ class _CreateTaskState extends State<CreateTask> {
     titleFocusNode.dispose();
     descriptionFocusNode.dispose();
   }
-  
+
   void saveChanges() {
     Navigator.pop(context, taskCurrent);
   }
@@ -230,7 +230,7 @@ class _CreateTaskState extends State<CreateTask> {
               ),
               TextButton(
                 onPressed: () {
-                  _selectDeadline(context);
+                  _selectDeadlineDate(context);
                 },
                 child: Text(
                   "Deadline:",
@@ -246,7 +246,16 @@ class _CreateTaskState extends State<CreateTask> {
                     width: 12.0,
                   ),
                   Text(
-                    "Date: ${deadlineDate == null ? "???" : dtf.formatDate(deadlineDate)}",
+                    "Date:",
+                    textAlign: TextAlign.end,
+                    style: GoogleFonts.gloriaHallelujah(
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    "${deadlineDate == null ? "???" : dtf.formatDate(deadlineDate)}",
                     textAlign: TextAlign.end,
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 14,
@@ -256,7 +265,7 @@ class _CreateTaskState extends State<CreateTask> {
                   Spacer(),
                   IconButton(
                     onPressed: () {
-                      _selectDeadline(context);
+                      _selectDeadlineDate(context);
                       titleFocusNode.unfocus();
                       descriptionFocusNode.unfocus();
                     },
@@ -273,7 +282,16 @@ class _CreateTaskState extends State<CreateTask> {
                     width: 12.0,
                   ),
                   Text(
-                    "Time: ${deadlineTime == null ? "???" : dtf.formatTime(deadlineTime)}",
+                    "Time:",
+                    textAlign: TextAlign.end,
+                    style: GoogleFonts.gloriaHallelujah(
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    "${deadlineTime == null ? "???" : dtf.formatTime(deadlineTime)}",
                     textAlign: TextAlign.end,
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 14,
@@ -283,7 +301,7 @@ class _CreateTaskState extends State<CreateTask> {
                   Spacer(),
                   IconButton(
                     onPressed: () {
-                      _selectTime(context);
+                      _selectDeadlineTime(context);
                     },
                     icon: Icon(
                       MaterialCommunityIcons.clock_outline,
@@ -392,7 +410,7 @@ class _CreateTaskState extends State<CreateTask> {
                         taskCurrent.label = titleCtrl.text;
                       }
                       taskCurrent.description = descriptionCtrl.text;
-                      if (deadlineDate != null || deadlineTime != null) {
+                      if (deadlineDate != null && deadlineTime != null) {
                         taskCurrent.deadline = DateTime(
                           deadlineDate.year,
                           deadlineDate.month,

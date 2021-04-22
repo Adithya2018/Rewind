@@ -3,9 +3,9 @@ import 'package:rewind_app/home/home.dart';
 import 'package:flutter/services.dart';
 import 'package:rewind_app/home/journal.dart';
 import 'package:rewind_app/todo_list/create_task.dart';
-import 'package:rewind_app/todo_list/view_task.dart';
+import 'package:rewind_app/todo_list/edit_task.dart';
 import 'authentication/local.dart';
-import 'home/achievements.dart';
+import 'achievements/achievements.dart';
 import 'todo_list/todo_list.dart';
 
 void main() {

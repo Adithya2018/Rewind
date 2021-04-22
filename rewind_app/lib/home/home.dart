@@ -326,9 +326,8 @@ class _HomeState extends State<Home> {
               child: Text(
                 "Streak graph",
                 textAlign: TextAlign.left,
-                style: TextStyle(
+                style: GoogleFonts.gloriaHallelujah(
                   fontSize: 20,
-                  fontFamily: 'Gloria',
                   color: Colors.white,
                 ),
               ),
@@ -399,11 +398,14 @@ class _HomeState extends State<Home> {
           Text(
             "New challenge!",
             textAlign: TextAlign.left,
-            style: TextStyle(
+            style: GoogleFonts.gloriaHallelujah(
+              fontSize: 14,
+              color: Colors.white,
+            ), /*TextStyle(
               fontSize: 14,
               fontFamily: 'Gloria',
               color: Colors.white,
-            ),
+            ),*/
           ),
         ],
       ),
@@ -446,9 +448,8 @@ class _HomeState extends State<Home> {
               child: Text(
                 "Notifications",
                 textAlign: TextAlign.left,
-                style: TextStyle(
+                style: GoogleFonts.gloriaHallelujah(
                   fontSize: 20,
-                  fontFamily: 'Gloria',
                   color: Colors.white,
                 ),
               ),
@@ -684,10 +685,9 @@ class _JournalState extends State<Journal> {
       focusNode: titleFocus,
       textAlign: TextAlign.left,
       cursorColor: Colors.white,
-      style: TextStyle(
-        fontFamily: 'Gloria',
-        //fontStyle: FontStyle.italic,
+      style: GoogleFonts.gloriaHallelujah(
         fontSize: 18,
+        //color: Colors.white,
       ),
       //onEditingComplete: () => changeTitleMode(),
       decoration: InputDecoration(
@@ -752,8 +752,7 @@ class _JournalState extends State<Journal> {
           minLines: null,
           keyboardType: TextInputType.multiline,
           textAlign: TextAlign.justify,
-          style: TextStyle(
-            fontFamily: 'Gloria',
+          style: GoogleFonts.gloriaHallelujah(
             fontSize: 18,
             color: Color(0xFF0938BC),
           ),
