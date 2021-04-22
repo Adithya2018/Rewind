@@ -171,7 +171,7 @@ class _AchievementsState extends State<Achievements> {
 
               createAchievement(
                 label: "Task master",
-                description: "Complete 1000 Level 1 tasks",
+                description: "Complete 100 Level 1 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
@@ -179,7 +179,7 @@ class _AchievementsState extends State<Achievements> {
 
               createAchievement(
                 label: "Task master",
-                description: "Complete 800 Level 2 tasks",
+                description: "Complete 80 Level 2 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
@@ -187,7 +187,7 @@ class _AchievementsState extends State<Achievements> {
 
               createAchievement(
                 label: "Task master",
-                description: "Complete 600 Level 3 tasks",
+                description: "Complete 60 Level 3 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
@@ -195,7 +195,7 @@ class _AchievementsState extends State<Achievements> {
 
               createAchievement(
                 label: "Task master",
-                description: "Complete 400 Level 4 tasks",
+                description: "Complete 40 Level 4 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
@@ -203,7 +203,7 @@ class _AchievementsState extends State<Achievements> {
 
               createAchievement(
                 label: "Diamond Medallion",
-                description: "Complete 200 Level 5 tasks",
+                description: "Complete 20 Level 5 tasks",
                 rewardIcon: MaterialCommunityIcons.diamond_stone,
                 progress: 0,
                 required: 100,
@@ -220,7 +220,7 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Achiever",
                 description: "Level 25",
-                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                rewardIcon: MaterialCommunityIcons.medal,
                 progress: 0,
                 required: 100,
               ),
@@ -228,7 +228,7 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Grand Task Master",
                 description: "Level 50",
-                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                rewardIcon: MaterialCommunityIcons.star_outline,
                 progress: 0,
                 required: 100,
               ),
@@ -236,7 +236,7 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Enlightened Entity",
                 description: "Level 75",
-                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                rewardIcon: MaterialCommunityIcons.star_half,
                 progress: 0,
                 required: 100,
               ),
@@ -244,7 +244,7 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Eternal Entity",
                 description: "Level 100",
-                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                rewardIcon: MaterialCommunityIcons.star,
                 progress: 0,
                 required: 100,
               ),
