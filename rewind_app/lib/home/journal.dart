@@ -350,7 +350,7 @@ class _JournalTempState extends State<JournalTemp> {
             icon: IconButton(
               icon: Icon(
                 Icons.cancel,
-                color: Colors.red,
+                color: Colors.red[800],
               ),
               onPressed: () {
                 print("cancel button");
