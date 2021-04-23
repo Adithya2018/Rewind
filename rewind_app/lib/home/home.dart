@@ -826,7 +826,18 @@ class _JournalState extends State<Journal> {
         ),
       ),
       body: Padding(
-        child: contentField,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: contentField,
+              flex: 1,
+            ),
+            Expanded(
+              child: contentField,
+              flex: 5,
+            ),
+          ],
+        ),
         padding: EdgeInsets.all(0.0),
       ),
       /*persistentFooterButtons: [
