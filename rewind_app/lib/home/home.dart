@@ -152,8 +152,9 @@ class _HomeState extends State<Home> {
     );
     Container gameStatus = Container(
       height: 130,
-      // color: Color(0xFF174858),
+      // color: Color(0xFF29323B),
       color: Colors.black,
+      // color: Colors.blueGrey[900],
       constraints: BoxConstraints(
         maxWidth: getScWidth(),
       ),
@@ -572,15 +573,17 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: Container(
         height: 70.0,
         decoration: new BoxDecoration(
-          color: Colors.white,
+          color: Colors.grey[100],
+          // color: Colors.blueGrey[900],
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(10.0),
+            top: Radius.circular(5.0),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue,
-              offset: Offset(0.0, -1.0),
-              blurRadius: 7.0,
+              color: Colors.blue[200],
+              // color: Colors.grey,
+              offset: Offset(0.0, -0.5),
+              blurRadius: 5.0,
               spreadRadius: 0.0,
             ),
           ],
@@ -594,8 +597,8 @@ class _HomeState extends State<Home> {
                   child: IconButton(
                     icon: Icon(
                       Icons.query_stats,
-                      // color: Colors.green,
-                      color: Colors.black,
+                      color: Colors.green,
+                      // color: Colors.white,
                       size: 35,
                     ),
                     onPressed: () {
@@ -613,9 +616,9 @@ class _HomeState extends State<Home> {
                   child: IconButton(
                     icon: Icon(
                       Icons.menu_book,
-                      // color: Colors.orange[700],
+                      color: Colors.orange[700],
                       // color: Colors.blueGrey[500],
-                      color: Colors.black,
+                      // color: Colors.yellow[800],
                       size: 35,
                     ),
                     onPressed: () {
@@ -635,8 +638,8 @@ class _HomeState extends State<Home> {
                   child: IconButton(
                     icon: Icon(
                       Icons.list_alt,
-                      // color: Colors.blue[800],
-                      color: Colors.black,
+                      color: Colors.blue[800],
+                      // color: Colors.white,
                       size: 35,
                     ),
                     onPressed: () {
@@ -781,10 +784,10 @@ class _JournalState extends State<Journal> {
     return Scaffold(
       //backgroundColor: Color(0xFFF3EFE4),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(65.0),
+        preferredSize: Size.fromHeight(0.0),
         child: AppBar(
           elevation: 3.0,
-          backgroundColor: Colors.cyan[300],
+          backgroundColor: Colors.white,
           toolbarHeight: 60.0,
           title: Column(
             //crossAxisAlignment: CrossAxisAlignment.start,
@@ -823,7 +826,18 @@ class _JournalState extends State<Journal> {
         ),
       ),
       body: Padding(
-        child: contentField,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: contentField,
+              flex: 1,
+            ),
+            Expanded(
+              child: contentField,
+              flex: 5,
+            ),
+          ],
+        ),
         padding: EdgeInsets.all(0.0),
       ),
       /*persistentFooterButtons: [
@@ -847,54 +861,120 @@ class _JournalState extends State<Journal> {
           ),
         ),
       ],*/
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: IconButton(
-              icon: Icon(
-                Icons.check,
-                color: Colors.blue,
-              ),
-              onPressed: () {
-                changeContentMode();
-                print("edit button");
-              },
-            ),
-            label: "Not saved",
-            tooltip: "Read mode",
-            backgroundColor: Colors.black,
+
+      bottomNavigationBar: Container(
+        height: 70.0,
+        decoration: new BoxDecoration(
+          color: Colors.grey[100],
+          // color: Colors.blueGrey[900],
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(5.0),
           ),
-          BottomNavigationBarItem(
-            icon: IconButton(
-              icon: Icon(
-                contentInViewMode ? Icons.visibility : Icons.edit,
-                color: Colors.blue,
-              ),
-              onPressed: () {
-                changeTitleMode();
-                changeContentMode();
-                print("edit button");
-              },
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue[200],
+              // color: Colors.grey,
+              offset: Offset(0.0, -0.5),
+              blurRadius: 5.0,
+              spreadRadius: 0.0,
             ),
-            label: "${contentInViewMode ? "View" : "Edit"} mode",
-            tooltip: "Read mode",
-          ),
-          BottomNavigationBarItem(
-            icon: IconButton(
-              icon: Icon(
-                Icons.cancel,
-                color: Colors.red,
+          ],
+        ),
+        child: Center(
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              Expanded(
+                child: Container(
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.check,
+                      color: Colors.green,
+                      // color: Colors.white,
+                      size: 35,
+                    ),
+                    onPressed: () {
+                      changeContentMode();
+                      print("save button");
+                      Navigator.of(context).pop();
+                    },
+                    tooltip: "Save",
+                  ),
+                ),
+                flex: 2,
               ),
-              onPressed: () {
-                print("cancel button");
-              },
-            ),
-            label: "Cancel",
-            tooltip: "Read mode",
+              Expanded(
+                child: Container(
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.cancel,
+                      color: Colors.red[600],
+                      // color: Colors.white,
+                      size: 35,
+                    ),
+                    onPressed: () {
+                      print("cancel button");
+                      Navigator.of(context).pop();
+                    },
+                    tooltip: "Todo list",
+                  ),
+                  //alignment: Alignment.centerRight,
+                ),
+                flex: 2,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //
+      //   backgroundColor: Colors.white,
+      //   items: <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: IconButton(
+      //         icon: Icon(
+      //           Icons.check,
+      //           color: Colors.blue,
+      //         ),
+      //         onPressed: () {
+      //           changeContentMode();
+      //           print("edit button");
+      //         },
+      //       ),
+      //       label: "Not saved",
+      //       tooltip: "Read mode",
+      //       backgroundColor: Colors.black,
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: IconButton(
+      //         icon: Icon(
+      //           contentInViewMode ? Icons.visibility : Icons.edit,
+      //           color: Colors.blue,
+      //         ),
+      //         onPressed: () {
+      //           changeTitleMode();
+      //           changeContentMode();
+      //           print("edit button");
+      //         },
+      //       ),
+      //       label: "${contentInViewMode ? "View" : "Edit"} mode",
+      //       tooltip: "Read mode",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: IconButton(
+      //         icon: Icon(
+      //           Icons.cancel,
+      //           color: Colors.red,
+      //         ),
+      //         onPressed: () {
+      //           print("cancel button");
+      //         },
+      //       ),
+      //       label: "Cancel",
+      //       tooltip: "Read mode",
+      //     ),
+      //   ],
+      // ),
     );
   }
 }
