@@ -171,7 +171,7 @@ class _AchievementsState extends State<Achievements> {
 
               createAchievement(
                 label: "Task master",
-                description: "Complete 1000 Level 1 tasks",
+                description: "Complete 100 Level 1 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
@@ -179,7 +179,7 @@ class _AchievementsState extends State<Achievements> {
 
               createAchievement(
                 label: "Task master",
-                description: "Complete 800 Level 2 tasks",
+                description: "Complete 80 Level 2 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
@@ -187,7 +187,7 @@ class _AchievementsState extends State<Achievements> {
 
               createAchievement(
                 label: "Task master",
-                description: "Complete 600 Level 3 tasks",
+                description: "Complete 60 Level 3 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
@@ -195,18 +195,62 @@ class _AchievementsState extends State<Achievements> {
 
               createAchievement(
                 label: "Task master",
-                description: "Complete 400 Level 4 tasks",
+                description: "Complete 40 Level 4 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
               ),
 
               createAchievement(
-                label: "Diamond medallion",
-                description: "Complete 200 Level 5 tasks",
+                label: "Diamond Medallion",
+                description: "Complete 20 Level 5 tasks",
                 rewardIcon: MaterialCommunityIcons.diamond_stone,
                 progress: 0,
                 required: 100,
+              ),
+
+              createAchievement(
+                label: "New Kid",
+                description: "Welcome to Rewind!",
+                rewardIcon: MaterialCommunityIcons.baby_face,
+                progress: 0,
+                required: 100,
+              ),
+
+              createAchievement(
+                label: "Achiever",
+                description: "Level 25",
+                rewardIcon: MaterialCommunityIcons.medal,
+                progress: 0,
+                required: 100,
+              ),
+
+              createAchievement(
+                label: "Grand Task Master",
+                description: "Level 50",
+                rewardIcon: MaterialCommunityIcons.star_outline,
+                progress: 0,
+                required: 100,
+              ),
+
+              createAchievement(
+                label: "Enlightened Entity",
+                description: "Level 75",
+                rewardIcon: MaterialCommunityIcons.star_half,
+                progress: 0,
+                required: 100,
+              ),
+
+              createAchievement(
+                label: "Eternal Entity",
+                description: "Level 100",
+                rewardIcon: MaterialCommunityIcons.star,
+                progress: 0,
+                required: 100,
+              ),
+
+              SizedBox(
+                height: 10,
               ),
               // createAchievement(
               //   label: "Speed demon",
