@@ -490,7 +490,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0),
+        preferredSize: Size.fromHeight(0.0),
         child: AppBar(
           iconTheme: IconThemeData(
             color: Colors.black,
