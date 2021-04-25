@@ -927,7 +927,7 @@ class _JournalState extends State<Journal> {
         ),
       ),
       // bottomNavigationBar: BottomNavigationBar(
-      // testing
+      // testing again
       //   backgroundColor: Colors.white,
       //   items: <BottomNavigationBarItem>[
       //     BottomNavigationBarItem(
