@@ -28,15 +28,15 @@ class _ToDoListState extends State<ToDoList> {
   List<Container> listOfTiles = [];
   bool ascendingOrder = true;
   int sortByOption = 0;
-  List<Function> sortFunction = [
+  List<Function> sortByFunction = [
     (Task a, Task b) => a.created.compareTo(b.created),
     (Task a, Task b) => a.deadline.compareTo(b.deadline),
     (Task a, Task b) => a.level.compareTo(b.level),
   ];
 
-  Function getCurrentSortFunction() {
+  Function currentSortByFunction() {
     return (Task a, Task b) =>
-        ((ascendingOrder ? 1 : -1) * sortFunction[sortByOption](a, b)) as int;
+        ((ascendingOrder ? 1 : -1) * sortByFunction[sortByOption](a, b)) as int;
   }
 
   Container toDoListTile({
@@ -140,7 +140,7 @@ class _ToDoListState extends State<ToDoList> {
                         ),
                       ),
                       Text(
-                        "${listOfTasks[index].deadline.day} ${_dtf.month[listOfTasks[index].deadline.month - 1]}",
+                        "${listOfTasks[index].deadline.day} ${dtf.month[listOfTasks[index].deadline.month - 1]}",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.gloriaHallelujah(
                           fontSize: 12,
@@ -148,7 +148,7 @@ class _ToDoListState extends State<ToDoList> {
                         ),
                       ),
                       Text(
-                        "${_dtf.formatTime(
+                        "${dtf.formatTime(
                           TimeOfDay(
                               hour: listOfTasks[index].deadline.hour,
                               minute: listOfTasks[index].deadline.minute),
@@ -164,12 +164,7 @@ class _ToDoListState extends State<ToDoList> {
                               height: 0.0,
                             )
                           : Text(
-                              "${listOfTasks[index].deadline.year /*_dtf.formatTime(
-                                TimeOfDay(
-                                    hour: listOfTasks[index].deadline.hour,
-                                    minute: listOfTasks[index].deadline.minute),
-                              )*/
-                              }",
+                              "${listOfTasks[index].deadline.year}",
                               textAlign: TextAlign.center,
                               style: GoogleFonts.gloriaHallelujah(
                                 fontSize: 12,
@@ -202,7 +197,7 @@ class _ToDoListState extends State<ToDoList> {
                             listOfTasks[index] = new Task.fromTask(temp);
                           });
                         }
-                        listOfTasks.sort(getCurrentSortFunction());
+                        listOfTasks.sort(currentSortByFunction());
                         int id = 0;
                         listOfTasks.forEach((element) {
                           print(element.label);
@@ -263,7 +258,7 @@ class _ToDoListState extends State<ToDoList> {
     });
   }
 
-  DateAndTimeFormat _dtf = new DateAndTimeFormat();
+  DateAndTimeFormat dtf = new DateAndTimeFormat();
 
   @override
   Widget build(BuildContext context) {
@@ -357,7 +352,7 @@ class _ToDoListState extends State<ToDoList> {
                           setState(() {
                             listOfTasks.add(temp);
                           });
-                          listOfTasks.sort(getCurrentSortFunction());
+                          listOfTasks.sort(currentSortByFunction());
                           int id = 0;
                           listOfTasks.forEach((element) {
                             print(element.label);
@@ -449,7 +444,7 @@ class _ToDoListState extends State<ToDoList> {
                               TextButton(
                                 onPressed: () {
                                   sortByOption = temp;
-                                  listOfTasks.sort(getCurrentSortFunction());
+                                  listOfTasks.sort(currentSortByFunction());
                                   int id = 0;
                                   listOfTasks.forEach((element) {
                                     print(element.label);
@@ -483,7 +478,7 @@ class _ToDoListState extends State<ToDoList> {
                       setState(() {
                         ascendingOrder = !ascendingOrder;
                       });
-                      listOfTasks.sort(getCurrentSortFunction());
+                      listOfTasks.sort(currentSortByFunction());
                       int id = 0;
                       listOfTasks.forEach((element) {
                         print(element.label);
