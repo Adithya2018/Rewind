@@ -17,7 +17,7 @@ class _EditTaskState extends State<EditTask> {
   DateAndTimeFormat dtf = new DateAndTimeFormat();
   TaskLevel taskLevel = new TaskLevel();
   DateTime deadlineDate;
-  Future<void> _selectDeadline(BuildContext context) async {
+  Future<void> selectDeadline(BuildContext context) async {
     DateTime now = DateTime.now();
     final DateTime pickedDate = await showDatePicker(
       context: context,
@@ -89,7 +89,9 @@ class _EditTaskState extends State<EditTask> {
     Navigator.pop(context, taskCurrent);
   }
 
-  Future<void> _showErrorMessage({String msg}) async {
+  Future<void> showErrorMessage({
+    String msg,
+  }) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -237,7 +239,7 @@ class _EditTaskState extends State<EditTask> {
               ),
               TextButton(
                 onPressed: () {
-                  _selectDeadline(context);
+                  selectDeadline(context);
                 },
                 child: Text(
                   "Deadline:",
@@ -251,7 +253,8 @@ class _EditTaskState extends State<EditTask> {
                 children: [
                   SizedBox(
                     width: 12.0,
-                  ),Text(
+                  ),
+                  Text(
                     "Date:",
                     textAlign: TextAlign.end,
                     style: GoogleFonts.gloriaHallelujah(
@@ -271,7 +274,7 @@ class _EditTaskState extends State<EditTask> {
                   Spacer(),
                   IconButton(
                     onPressed: () {
-                      _selectDeadline(context);
+                      selectDeadline(context);
                       titleFocusNode.unfocus();
                       descriptionFocusNode.unfocus();
                     },
@@ -407,7 +410,7 @@ class _EditTaskState extends State<EditTask> {
                       print("Save");
                       print("${taskCurrent.label}");
                       if (titleCtrl.text.isEmpty) {
-                        await _showErrorMessage(
+                        await showErrorMessage(
                           msg: "Title cannot be empty",
                         );
                         return;

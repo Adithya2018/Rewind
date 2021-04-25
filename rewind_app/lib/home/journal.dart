@@ -42,8 +42,8 @@ class NotebookPageLayout extends CustomPainter {
       paintDarkgrey,
     );
     canvas.drawLine(
-      Offset(0, lineHeight*2),
-      Offset(size.width, lineHeight*2),
+      Offset(0, lineHeight * 2),
+      Offset(size.width, lineHeight * 2),
       paintDarkgrey,
     );
     TextStyle contentTextStyle = TextStyle(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -8,7 +9,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Container createStat(
+  String username;
+  int playerLevel;
+  int xp;
+  int health;
+  int trophies;
+  Container createStatContainer(
     String label, {
     IconData statIconData,
     Color iconColor,
@@ -20,7 +26,6 @@ class _HomeState extends State<Home> {
       decoration: BoxDecoration(
         // color: Color(0xFFB2E5E3),
         color: Colors.blueGrey[800],
-
         borderRadius: BorderRadius.all(
           Radius.circular(5.0),
         ),
@@ -114,9 +119,31 @@ class _HomeState extends State<Home> {
     return MediaQuery.of(context).size.width;
   }
 
+  DateTime now;
+
   @override
   void initState() {
     super.initState();
+    initializeGameInfo();
+  }
+
+  Future<void> initializeGameInfo() async {
+    final SharedPreferences prefs = await this._prefs;
+    playerLevel= !prefs.containsKey("playerLevel")?1:prefs.getInt("playerLevel");
+    health= !prefs.containsKey("health")?1:prefs.getInt("health");
+    trophies= !prefs.containsKey("trophies")?1:prefs.getInt("trophies");
+    prefs.setInt("playerLevel", playerLevel).then((bool success) {
+      print("playerLevel set? success=$success");
+      return playerLevel;
+    });
+    prefs.setInt("health", health).then((bool success) {
+      print("health set? success=$success");
+      return health;
+    });
+    prefs.setInt("trophies", trophies).then((bool success) {
+      print("trophies set? success=$success");
+      return trophies;
+    });
   }
 
   @override
@@ -124,9 +151,22 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  /*late*/ Future<int> _counter;
+  Future<void> _incrementCounter() async {
+    final SharedPreferences prefs = await this._prefs;
+    final int counter = (prefs.getInt('counter') ?? 0) + 1;
+    prefs.getKeys();
+    setState(() {
+      _counter = prefs.setInt("counter", counter).then((bool success) {
+        return counter;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Container health = createStat(
+    Container health = createStatContainer(
       "Health",
       statIconData: Icons.health_and_safety,
       iconColor: Colors.red[900],
@@ -134,7 +174,7 @@ class _HomeState extends State<Home> {
       statCurrent: 8,
       statMax: 10,
     );
-    Container trophies = createStat(
+    Container trophies = createStatContainer(
       "Trophies",
       statIconData: MaterialCommunityIcons.trophy,
       // iconColor: Color(0xFFD4AF37),
@@ -142,7 +182,7 @@ class _HomeState extends State<Home> {
       statCurrent: 60,
       statMax: 100,
     );
-    Container xp = createStat(
+    Container xp = createStatContainer(
       "XP",
       statIconData: MaterialCommunityIcons.star,
       // iconColor: Color(0xFFD4AF37),
@@ -150,6 +190,7 @@ class _HomeState extends State<Home> {
       statCurrent: 700,
       statMax: 1000,
     );
+    playerLevel = 12;
     Container gameStatus = Container(
       height: 130,
       // color: Color(0xFF29323B),
@@ -191,7 +232,7 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  "Level 10",
+                  "Level $playerLevel",
                   style: GoogleFonts.gloriaHallelujah(
                       color: Colors.white, fontSize: 13),
                 ),
@@ -608,7 +649,7 @@ class _HomeState extends State<Home> {
                     tooltip: "Productivity",
                   ),
                 ),
-                flex: 2,
+                flex: 1,
               ),
               // Spacer(),
               Expanded(
@@ -621,16 +662,36 @@ class _HomeState extends State<Home> {
                       // color: Colors.yellow[800],
                       size: 35,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       print("Journal");
                       print(MediaQuery.of(context).size.width);
                       Navigator.of(context).pushNamed('/jou');
+                      final SharedPreferences prefs = await _prefs;
+                      final int counter = (prefs.getInt('counter') ?? 0) + 1;
+                      //prefs.clear();
+                      /*setState(() {
+                        _counter = prefs.setInt("counter", 0).then((bool success) {
+                          /**/print("$counter");
+                          print("${prefs.getKeys()}");
+                          return counter;
+                        });
+                        _counter = prefs.setInt("x1 level", 0).then((bool success) {
+                          /**/print("$counter");
+                          print("${prefs.getKeys()}");
+                          return counter;
+                        });
+                      });*/
+                      //await prefs.clear();
+                      prefs.getKeys().forEach((key) {
+                        print("$key");
+                      });
+
                     },
                     tooltip: "Journal",
                   ),
                   //alignment: Alignment.center,
                 ),
-                flex: 4,
+                flex: 2,
               ),
               // Spacer(),
               Expanded(
@@ -650,7 +711,7 @@ class _HomeState extends State<Home> {
                   ),
                   //alignment: Alignment.centerRight,
                 ),
-                flex: 2,
+                flex: 1,
               ),
             ],
           ),

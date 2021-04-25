@@ -8,5 +8,4 @@ class Achievement{
   int progress;
   int required;
   int earned;
-
 }
