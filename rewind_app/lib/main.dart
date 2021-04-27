@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'achievements/badges.dart';
 import 'authentication/local.dart';
 import 'achievements/achievements.dart';
+import 'home/test.dart';
 import 'todo_list/todo_list.dart';
 
 void main() {

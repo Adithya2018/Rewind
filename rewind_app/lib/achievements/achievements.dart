@@ -185,6 +185,19 @@ class _AchievementsState extends State<Achievements> {
           child: Column(
             children: [
               createAchievement(
+                label: "Bomb",
+                description: "Locked!",
+                rewardIcon: MaterialCommunityIcons.lock,
+                progress: 0,
+                required: 100,
+                inner1: Colors.grey[600],
+                inner2: Colors.grey[300],
+                outer1: Colors.white,
+                outer2: Colors.black54,
+                outer3: Colors.grey[200],
+                badgeIconColor: Colors.blueGrey,
+              ),
+              createAchievement(
                 label: "Task master",
                 description: "Complete 100 Level 1 tasks",
                 rewardIcon: MaterialCommunityIcons.skull,
@@ -263,6 +276,19 @@ class _AchievementsState extends State<Achievements> {
                 badgeIconColor: Colors.white,
               ),
               createAchievement(
+                label: "Early bird",
+                description: "Level 25",
+                rewardIcon: MaterialCommunityIcons.weather_sunny,
+                progress: 0,
+                required: 100,
+                inner1: Colors.yellow[100],
+                inner2: Colors.lightBlue[100],
+                outer1: Colors.white,
+                outer2: Colors.blue[300],
+                outer3: Colors.greenAccent[200],
+                badgeIconColor: Colors.yellow[700],
+              ),
+              createAchievement(
                 label: "Bomb",
                 description: "Welcome to Rewind!",
                 rewardIcon: MaterialCommunityIcons.bomb,
@@ -335,6 +361,19 @@ class _AchievementsState extends State<Achievements> {
                 outer2: Colors.blue[300],
                 outer3: Colors.blue[600],
                 badgeIconColor: Colors.white,
+              ),
+              createAchievement(
+                label: "Eternal Entity",
+                description: "Level 25",
+                rewardIcon: MaterialCommunityIcons.star,
+                progress: 0,
+                required: 100,
+                inner1: Colors.white,
+                inner2: Colors.white,
+                outer1: Colors.white,
+                outer2: Colors.blue[100],
+                outer3: Colors.purple[400],
+                badgeIconColor: Colors.yellow[700],
               ),
 
               SizedBox(

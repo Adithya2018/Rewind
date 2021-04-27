@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -14,6 +16,9 @@ class _HomeState extends State<Home> {
   int xp;
   int health;
   int trophies;
+
+  double hd = 0;
+  bool showNotificationArea = true;
   Container createStatContainer(
     String label, {
     IconData statIconData,
@@ -129,9 +134,10 @@ class _HomeState extends State<Home> {
 
   Future<void> initializeGameInfo() async {
     final SharedPreferences prefs = await this._prefs;
-    playerLevel= !prefs.containsKey("playerLevel")?1:prefs.getInt("playerLevel");
-    health= !prefs.containsKey("health")?1:prefs.getInt("health");
-    trophies= !prefs.containsKey("trophies")?1:prefs.getInt("trophies");
+    playerLevel =
+        !prefs.containsKey("playerLevel") ? 1 : prefs.getInt("playerLevel");
+    health = !prefs.containsKey("health") ? 1 : prefs.getInt("health");
+    trophies = !prefs.containsKey("trophies") ? 1 : prefs.getInt("trophies");
     prefs.setInt("playerLevel", playerLevel).then((bool success) {
       print("playerLevel set? success=$success");
       return playerLevel;
@@ -164,6 +170,7 @@ class _HomeState extends State<Home> {
     });
   }
 
+  ScrollController _scrollController = new ScrollController();
   @override
   Widget build(BuildContext context) {
     Container health = createStatContainer(
@@ -341,12 +348,37 @@ class _HomeState extends State<Home> {
       return result;
     }
 
+    Widget emptyContainer = Container(
+      //margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
+      constraints: BoxConstraints(
+        minHeight: 40.0,
+        maxHeight: 200.0,
+        //minWidth: MediaQuery.of(context).size.width,
+        maxWidth: MediaQuery.of(context).size.width - 80,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(10.0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.5),
+            blurRadius: 3.0,
+            spreadRadius: 1.0,
+            offset: Offset(2.0, 2.0),
+          ),
+        ],
+      ),
+    );
+
     Widget streakGraph = Container(
       margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
       constraints: BoxConstraints(
         minHeight: 40.0,
         maxHeight: 200.0,
-        minWidth: MediaQuery.of(context).size.width,
+        //minWidth: MediaQuery.of(context).size.width,
+        maxWidth: MediaQuery.of(context).size.width,
       ),
       decoration: BoxDecoration(
         color: Color(0xFFB2E5E3),
@@ -384,46 +416,48 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          Container(
-            height: 155.0,
-            padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                /**/ getMoodStatBar(
-                  current: 70,
-                  day: "M",
-                ),
-                getMoodStatBar(
-                  current: 64,
-                  day: "T",
-                  done: true,
-                ),
-                getMoodStatBar(
-                  current: 80,
-                  day: "W",
-                  done: false,
-                ),
-                getMoodStatBar(
-                  current: 70,
-                  day: "T",
-                ),
-                getMoodStatBar(
-                  current: 64,
-                  day: "F",
-                ),
-                getMoodStatBar(
-                  current: 80,
-                  day: "S",
-                ),
-                getMoodStatBar(
-                  current: 90,
-                  day: "Today",
-                ),
-              ],
+          Expanded(
+            child: Container(
+              height: 155.0,
+              padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  /**/ getMoodStatBar(
+                    current: 70,
+                    day: "M",
+                  ),
+                  getMoodStatBar(
+                    current: 64,
+                    day: "T",
+                    done: true,
+                  ),
+                  getMoodStatBar(
+                    current: 80,
+                    day: "W",
+                    done: false,
+                  ),
+                  getMoodStatBar(
+                    current: 70,
+                    day: "T",
+                  ),
+                  getMoodStatBar(
+                    current: 64,
+                    day: "F",
+                  ),
+                  getMoodStatBar(
+                    current: 80,
+                    day: "S",
+                  ),
+                  getMoodStatBar(
+                    current: 90,
+                    day: "Today",
+                  ),
+                ],
+              ),
             ),
           ),
           //notification,
@@ -452,26 +486,21 @@ class _HomeState extends State<Home> {
             style: GoogleFonts.gloriaHallelujah(
               fontSize: 14,
               color: Colors.white,
-            ), /*TextStyle(
-              fontSize: 14,
-              fontFamily: 'Gloria',
-              color: Colors.white,
-            ),*/
+            ),
           ),
         ],
       ),
     );
 
     Widget notificationArea = Container(
-      margin: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 40.0),
+      margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
+      //margin: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 40.0),
       constraints: BoxConstraints(
         minHeight: 100.0,
         maxHeight: 200.0,
-        minWidth: MediaQuery.of(context).size.width,
+        maxWidth: MediaQuery.of(context).size.width,
       ),
       decoration: BoxDecoration(
-        color: Colors.grey[300],
-        //border: Border.all(color: Colors.grey, width: 1.5),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(10.0),
         ),
@@ -506,21 +535,21 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          Container(
-            height: 155.0,
-            decoration: BoxDecoration(
-              color: Colors.white,
-            ),
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    notification,
-                    notification,
-                    SizedBox(
-                      height: 5.0,
-                    )
-                  ],
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Scrollbar(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      notification,
+                      SizedBox(
+                        height: 5.0,
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -528,7 +557,6 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -569,13 +597,46 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: Scrollbar(
+      body:
+          /**/ Scrollbar(
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             children: [
               gameStatus,
-              streakGraph,
-              notificationArea,
+              /*streakGraph,
+              notificationArea,*/
+              GestureDetector(
+                onVerticalDragEnd: (details) {
+                  /*setState(() {
+                    horizontalDrag %= 180;
+                  });*/
+                },
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    showNotificationArea = ((270 < hd && hd < 360) || (0 < hd && hd < 90));
+                    hd += details.delta.dx;
+                    hd %= 360;
+                  });
+                  print("$hd");
+                },
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, -0.001)
+                    ..rotateY(showNotificationArea ? 0 : pi)
+                    ..rotateY(((hd) / 180) * pi),
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 50.0),
+                    constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height*0.60,
+                      maxWidth: MediaQuery.of(context).size.width,
+                    ),
+                    child:
+                        showNotificationArea ? notificationArea : streakGraph,
+                  ),
+                ),
+              )
             ],
           ),
         ),
@@ -683,9 +744,8 @@ class _HomeState extends State<Home> {
                       });*/
                       //await prefs.clear();
                       prefs.getKeys().forEach((key) {
-                        print("$key");
+                        print("key: $key");
                       });
-
                     },
                     tooltip: "Journal",
                   ),
