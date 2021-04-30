@@ -25,6 +25,27 @@ class DateAndTimeFormat {
     "Saturday",
     "Sunday",
   ];
+
+  List<String> weekDayLetter = [
+    "M",
+    "T",
+    "W",
+    "T",
+    "F",
+    "S",
+    "S",
+  ];
+
+  List<IconData> weekDayIcon = [
+    MaterialCommunityIcons.alpha_m_box,
+    MaterialCommunityIcons.alpha_t_box,
+    MaterialCommunityIcons.alpha_w_box,
+    MaterialCommunityIcons.alpha_t_box,
+    MaterialCommunityIcons.alpha_f_box,
+    MaterialCommunityIcons.alpha_s_box,
+    MaterialCommunityIcons.alpha_s_box,
+  ];
+
   String formatTime(TimeOfDay timeOfDay) {
     String minute = timeOfDay.minute < 10 ? "0" : "";
     minute += "${timeOfDay.minute}";
@@ -82,9 +103,45 @@ class Task {
   }
 }
 
+class RegularTask {
+  int id;
+  String label;
+  String description;
+  DateTime deadline;
+  int level;
+  int priority;
+  bool completionStatus;
+  RegularTask() {
+    id = 0;
+    label = "";
+    description = "";
+    deadline = null;
+    level = 1;
+    priority = 1;
+    completionStatus = false;
+  }
+  RegularTask.fromRegularTask(RegularTask regularTask) {
+    this.id = regularTask.id;
+    this.label = regularTask.label;
+    this.description = regularTask.description;
+    this.deadline = regularTask.deadline;
+    this.level = regularTask.level;
+    this.completionStatus = regularTask.completionStatus;
+  }
+}
+
+class DayAndTime {
+  int day;
+  List<TimeOfDay> time;
+  DayAndTime(int day) {
+    this.day = day;
+    time = [];
+  }
+}
+
 class DateAndTimePicker {}
 
-class TaskLevel{
+class TaskLevel {
   List<Color> diffLevelIconColor = [
     Color(0xFF0026F9),
   ];

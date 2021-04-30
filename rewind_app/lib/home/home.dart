@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -8,12 +11,15 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   String username;
   int playerLevel;
   int xp;
   int health;
   int trophies;
+
+  double hd = 0;
+  bool showNotificationArea = true;
   Container createStatContainer(
     String label, {
     IconData statIconData,
@@ -21,8 +27,7 @@ class _HomeState extends State<Home> {
     int statCurrent,
     int statMax,
   }) {
-    Container stat = new Container(
-      //height: 36.0,
+    Container statContainer = new Container(
       decoration: BoxDecoration(
         // color: Color(0xFFB2E5E3),
         color: Colors.blueGrey[800],
@@ -51,15 +56,6 @@ class _HomeState extends State<Home> {
                 size: 22,
               ),
             ),
-            /*Icon(
-              statIconData,
-              size: 20,
-              color: iconColor,
-            ),*/
-
-            /* Expanded(
-              child: Container(),
-            ),*/
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -78,25 +74,20 @@ class _HomeState extends State<Home> {
                       maxHeight: 5.0,
                     ),
                     color: Colors.white,
-                    /*decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),*/
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                              // color: Colors.red,
                               color: Colors.red[600],
                             ),
                           ),
                           flex: statCurrent,
                         ),
                         Expanded(
-                          child: /*SizedBox(),*/ Container(
+                          child: Container(
                             decoration: BoxDecoration(
-                              // color: Colors.white,
                               color: Colors.blueGrey[100],
                             ),
                           ),
@@ -112,7 +103,25 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-    return stat;
+    Container framedContainer = Container(
+      padding: EdgeInsets.all(1.5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(
+          Radius.circular(5.0),
+        ),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white,
+            Colors.black,
+            Colors.blueGrey[300],
+          ],
+        ),
+      ),
+      child: statContainer,
+    );
+    return framedContainer;
   }
 
   double getScWidth() {
@@ -125,13 +134,18 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     initializeGameInfo();
+    tabController = TabController(
+      vsync: this,
+      length: 2,
+    );
   }
 
   Future<void> initializeGameInfo() async {
     final SharedPreferences prefs = await this._prefs;
-    playerLevel= !prefs.containsKey("playerLevel")?1:prefs.getInt("playerLevel");
-    health= !prefs.containsKey("health")?1:prefs.getInt("health");
-    trophies= !prefs.containsKey("trophies")?1:prefs.getInt("trophies");
+    playerLevel =
+        !prefs.containsKey("playerLevel") ? 1 : prefs.getInt("playerLevel");
+    health = !prefs.containsKey("health") ? 1 : prefs.getInt("health");
+    trophies = !prefs.containsKey("trophies") ? 1 : prefs.getInt("trophies");
     prefs.setInt("playerLevel", playerLevel).then((bool success) {
       print("playerLevel set? success=$success");
       return playerLevel;
@@ -149,6 +163,8 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     super.dispose();
+    scrollController.dispose();
+    tabController.dispose();
   }
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -164,6 +180,8 @@ class _HomeState extends State<Home> {
     });
   }
 
+  ScrollController scrollController = new ScrollController();
+  TabController tabController;
   @override
   Widget build(BuildContext context) {
     Container health = createStatContainer(
@@ -341,12 +359,37 @@ class _HomeState extends State<Home> {
       return result;
     }
 
+    Widget emptyContainer = Container(
+      //margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
+      constraints: BoxConstraints(
+        minHeight: 40.0,
+        maxHeight: 200.0,
+        //minWidth: MediaQuery.of(context).size.width,
+        maxWidth: MediaQuery.of(context).size.width - 80,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(10.0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.5),
+            blurRadius: 3.0,
+            spreadRadius: 1.0,
+            offset: Offset(2.0, 2.0),
+          ),
+        ],
+      ),
+    );
+
     Widget streakGraph = Container(
       margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
       constraints: BoxConstraints(
         minHeight: 40.0,
         maxHeight: 200.0,
-        minWidth: MediaQuery.of(context).size.width,
+        //minWidth: MediaQuery.of(context).size.width,
+        maxWidth: MediaQuery.of(context).size.width,
       ),
       decoration: BoxDecoration(
         color: Color(0xFFB2E5E3),
@@ -384,46 +427,48 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          Container(
-            height: 155.0,
-            padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                /**/ getMoodStatBar(
-                  current: 70,
-                  day: "M",
-                ),
-                getMoodStatBar(
-                  current: 64,
-                  day: "T",
-                  done: true,
-                ),
-                getMoodStatBar(
-                  current: 80,
-                  day: "W",
-                  done: false,
-                ),
-                getMoodStatBar(
-                  current: 70,
-                  day: "T",
-                ),
-                getMoodStatBar(
-                  current: 64,
-                  day: "F",
-                ),
-                getMoodStatBar(
-                  current: 80,
-                  day: "S",
-                ),
-                getMoodStatBar(
-                  current: 90,
-                  day: "Today",
-                ),
-              ],
+          Expanded(
+            child: Container(
+              height: 155.0,
+              padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  /**/ getMoodStatBar(
+                    current: 70,
+                    day: "M",
+                  ),
+                  getMoodStatBar(
+                    current: 64,
+                    day: "T",
+                    done: true,
+                  ),
+                  getMoodStatBar(
+                    current: 80,
+                    day: "W",
+                    done: false,
+                  ),
+                  getMoodStatBar(
+                    current: 70,
+                    day: "T",
+                  ),
+                  getMoodStatBar(
+                    current: 64,
+                    day: "F",
+                  ),
+                  getMoodStatBar(
+                    current: 80,
+                    day: "S",
+                  ),
+                  getMoodStatBar(
+                    current: 90,
+                    day: "Today",
+                  ),
+                ],
+              ),
             ),
           ),
           //notification,
@@ -452,26 +497,21 @@ class _HomeState extends State<Home> {
             style: GoogleFonts.gloriaHallelujah(
               fontSize: 14,
               color: Colors.white,
-            ), /*TextStyle(
-              fontSize: 14,
-              fontFamily: 'Gloria',
-              color: Colors.white,
-            ),*/
+            ),
           ),
         ],
       ),
     );
 
     Widget notificationArea = Container(
-      margin: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 40.0),
+      margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
+      //margin: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 40.0),
       constraints: BoxConstraints(
         minHeight: 100.0,
         maxHeight: 200.0,
-        minWidth: MediaQuery.of(context).size.width,
+        maxWidth: MediaQuery.of(context).size.width,
       ),
       decoration: BoxDecoration(
-        color: Colors.grey[300],
-        //border: Border.all(color: Colors.grey, width: 1.5),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(10.0),
         ),
@@ -506,21 +546,21 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          Container(
-            height: 155.0,
-            decoration: BoxDecoration(
-              color: Colors.white,
-            ),
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    notification,
-                    notification,
-                    SizedBox(
-                      height: 5.0,
-                    )
-                  ],
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Scrollbar(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      notification,
+                      SizedBox(
+                        height: 5.0,
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -528,7 +568,6 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -569,43 +608,111 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: Scrollbar(
+      body:
+          /**/ Scrollbar(
         child: SingleChildScrollView(
+          controller: scrollController,
           child: Column(
             children: [
               gameStatus,
-              streakGraph,
-              notificationArea,
+              /*streakGraph,
+              notificationArea,*/
+              GestureDetector(
+                onVerticalDragEnd: (details) {
+                  /*setState(() {
+                    horizontalDrag %= 180;
+                  });*/
+                },
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    showNotificationArea =
+                        ((270 < hd && hd < 360) || (0 < hd && hd < 90));
+                    hd += details.delta.dx;
+                    hd %= 360;
+                  });
+                  print("$hd");
+                },
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, -0.001)
+                    ..rotateY(showNotificationArea ? 0 : pi)
+                    ..rotateY(pi * hd / 180),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      bottom: 50.0,
+                    ),
+                    constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height * 0.60,
+                      maxWidth: MediaQuery.of(context).size.width,
+                    ),
+                    child:
+                        showNotificationArea ? notificationArea : streakGraph,
+                  ),
+                ),
+              )
             ],
           ),
         ),
       ),
-      drawer: Container(
-        padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 20.0),
-        constraints: BoxConstraints(
-          minWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
-        decoration: BoxDecoration(
-          color: Color(0xFFB2E5E3),
-        ),
-        child: Column(
+      drawer: Drawer(
+        child: ListView(
           children: [
             Container(
+              padding: EdgeInsets.fromLTRB(15.0, 15.0, 0.0, 0.0),
+              constraints: BoxConstraints(
+                maxHeight: 190.0,
+              ),
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: Color.fromRGBO(0, 0, 0, 0.15),
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(45.0),
+                //color: Colors.cyan,
+                gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.blueGrey[100],
+                    Colors.blue[200],
+                  ],
                 ),
               ),
-              child: CircleAvatar(
-                child: Image(
-                  image: AssetImage('assets/profile.png'),
-                ),
-                radius: 45.0,
-                backgroundColor: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    /**/ margin: EdgeInsets.only(
+                      left: 10.0,
+                      /*top: 40.0,*/
+                      bottom: 5.0,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(45.0),
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      child: Image(
+                        image: AssetImage('assets/profile.png'),
+                      ),
+                      radius: 40.0,
+                      backgroundColor: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    "John Doe",
+                    style: GoogleFonts.gloriaHallelujah(
+                      fontSize: 20,
+                    ),
+                  ),
+                  Text(
+                    "johndoe@gmail.com",
+                    style: GoogleFonts.gloriaHallelujah(
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -683,9 +790,8 @@ class _HomeState extends State<Home> {
                       });*/
                       //await prefs.clear();
                       prefs.getKeys().forEach((key) {
-                        print("$key");
+                        print("key: $key");
                       });
-
                     },
                     tooltip: "Journal",
                   ),
@@ -979,7 +1085,6 @@ class _JournalState extends State<Journal> {
                     },
                     tooltip: "Todo list",
                   ),
-                  //alignment: Alignment.centerRight,
                 ),
                 flex: 2,
               ),
@@ -987,55 +1092,6 @@ class _JournalState extends State<Journal> {
           ),
         ),
       ),
-      // bottomNavigationBar: BottomNavigationBar(
-      // testing again
-      //   backgroundColor: Colors.white,
-      //   items: <BottomNavigationBarItem>[
-      //     BottomNavigationBarItem(
-      //       icon: IconButton(
-      //         icon: Icon(
-      //           Icons.check,
-      //           color: Colors.blue,
-      //         ),
-      //         onPressed: () {
-      //           changeContentMode();
-      //           print("edit button");
-      //         },
-      //       ),
-      //       label: "Not saved",
-      //       tooltip: "Read mode",
-      //       backgroundColor: Colors.black,
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: IconButton(
-      //         icon: Icon(
-      //           contentInViewMode ? Icons.visibility : Icons.edit,
-      //           color: Colors.blue,
-      //         ),
-      //         onPressed: () {
-      //           changeTitleMode();
-      //           changeContentMode();
-      //           print("edit button");
-      //         },
-      //       ),
-      //       label: "${contentInViewMode ? "View" : "Edit"} mode",
-      //       tooltip: "Read mode",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: IconButton(
-      //         icon: Icon(
-      //           Icons.cancel,
-      //           color: Colors.red,
-      //         ),
-      //         onPressed: () {
-      //           print("cancel button");
-      //         },
-      //       ),
-      //       label: "Cancel",
-      //       tooltip: "Read mode",
-      //     ),
-      //   ],
-      // ),
     );
   }
 }
