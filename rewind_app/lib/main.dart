@@ -1,39 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:rewind_app/home/home.dart';
 import 'package:flutter/services.dart';
-import 'package:rewind_app/home/journal.dart';
 import 'package:rewind_app/todo_list/create_task.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'achievements/badges.dart';
-import 'authentication/local.dart';
+import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 import 'achievements/achievements.dart';
-import 'home/test.dart';
 import 'todo_list/todo_list.dart';
 
-void main() {
-  /*WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);*/
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  runApp(RewindApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class RewindApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Rewind App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new Home(),
-      routes: <String, WidgetBuilder> {
-        '/ach': (BuildContext context) => new Achievements(),
-        '/jou' : (BuildContext context) => new Journal(),
-        '/tdl' : (BuildContext context) => new ToDoList(),
-        '/add' : (BuildContext context) => new CreateTask(),
-        '/vt' : (BuildContext context) => new EditTask(),
+      home: Home(),
+      routes: <String, WidgetBuilder>{
+        '/ach': (BuildContext context) => Achievements(),
+        '/jou': (BuildContext context) => Journal(),
+        '/tdl': (BuildContext context) => TodoListWrapper(
+              child: TodoList(),
+            ),
+        '/add': (BuildContext context) => CreateTask(),
+        '/vt': (BuildContext context) => EditTask(),
       },
     );
   }
@@ -123,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }*/
-class TestApp extends StatelessWidget {
+/*class TestApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -195,3 +194,4 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
     );
   }
 }
+*/

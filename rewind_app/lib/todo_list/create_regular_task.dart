@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
+import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
+//import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 
 class CreateRegularTask extends StatefulWidget {
   @override
@@ -561,6 +563,11 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                     ),
                     onPressed: () async {
                       print("Create");
+                      TodoListCommon common = context.findAncestorWidgetOfExactType<TodoListCommon>();
+                      common.stateWidget.addToList();
+                      /*final provider = TodoListCommon.of(context);
+                      provider.addToList();*/
+                      Navigator.of(context).pop();
                     },
                   ),
                 ),

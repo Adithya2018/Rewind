@@ -1,43 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/todo_list/create_regular_task.dart';
+import 'package:rewind_app/todo_list/routine_list.dart';
+import 'create_regular_task.dart';
 import 'edit_task.dart';
 import 'tdl_common.dart';
 import 'create_task.dart';
+import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 
-class TaskStatus extends StatefulWidget {
+class TodoList extends StatefulWidget {
   @override
-  _TaskStatusState createState() => _TaskStatusState();
+  _TodoListState createState() => _TodoListState();
 }
 
-class _TaskStatusState extends State<TaskStatus> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class ToDoList extends StatefulWidget {
-  @override
-  _ToDoListState createState() => _ToDoListState();
-}
-
-class _ToDoListState extends State<ToDoList>
+class _TodoListState extends State<TodoList>
     with SingleTickerProviderStateMixin {
-  List<Task> listOfTasks = [];
-  List<Container> listOfTiles = [];
+  List<Task> goals = [];
+  List<Container> listOfGoalsTiles = [];
   bool ascendingOrder = true;
-  int sortByOption = 0;
-  List<Function> sortByFunction = [
+  int sortByGoalsOption = 0;
+  List<Function> sortGoalsByFunction = [
     (Task a, Task b) => a.created.compareTo(b.created),
     (Task a, Task b) => a.deadline.compareTo(b.deadline),
     (Task a, Task b) => a.level.compareTo(b.level),
   ];
 
   Function currentSortByFunction() {
-    return (Task a, Task b) =>
-        ((ascendingOrder ? 1 : -1) * sortByFunction[sortByOption](a, b)) as int;
+    return (Task a, Task b) => (ascendingOrder ? 1 : -1) *
+        sortGoalsByFunction[sortByGoalsOption](a, b) as int;
   }
 
   bool addItemMode = true;
@@ -88,8 +78,8 @@ class _ToDoListState extends State<ToDoList>
         ),
       ),
     );*/
-    final created = listOfTasks[index].created;
-    final deadline = listOfTasks[index].deadline;
+    final created = goals[index].created;
+    final deadline = goals[index].deadline;
     String createdTime = "${dtf.formatTime(
       TimeOfDay(
         hour: created.hour,
@@ -108,10 +98,11 @@ class _ToDoListState extends State<ToDoList>
     String deadlineDate = "${deadline.day} ${dtf.month[deadline.month - 1]}";
     deadlineDate +=
         (deadline.year == DateTime.now().year) ? "" : ", ${deadline.year}";
+
     print(
-        "${DateTime.now().millisecondsSinceEpoch - created.millisecondsSinceEpoch}");
+        "${DateTime.now().difference(created).inMilliseconds}");
     print(
-        "${deadline.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch}");
+        "${deadline.difference(DateTime.now()).inMilliseconds}");
     Container listItem = Container(
       padding: EdgeInsets.fromLTRB(15.0, 10.0, 25.0, 5.0),
       decoration: BoxDecoration(
@@ -127,79 +118,37 @@ class _ToDoListState extends State<ToDoList>
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 2,
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: 60.0,
-                          maxHeight: 60.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                            color: Color.fromRGBO(0, 0, 0, 0.15),
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(30.0),
-                          ),
-                        ),
-                        child: StatefulBuilder(
-                          builder:
-                              (BuildContext context, StateSetter setState) {
-                            return Checkbox(
-                              value: listOfTasks[index].completionStatus,
-                              onChanged: (value) {
-                                setState(() {
-                                  listOfTasks[index].completionStatus =
-                                      !listOfTasks[index].completionStatus;
-                                });
-                                print("Completion status of:");
-                                print("${listOfTasks[index].label}");
-                                print("${listOfTasks[index].completionStatus}");
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                      /*Text(
-                        "${listOfTasks[index].deadline.day} ${dtf.month[listOfTasks[index].deadline.month - 1]}",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.gloriaHallelujah(
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(
-                        "${dtf.formatTime(
-                          TimeOfDay(
-                              hour: listOfTasks[index].deadline.hour,
-                              minute: listOfTasks[index].deadline.minute),
-                        )}",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.gloriaHallelujah(
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                      ),*/
-                      listOfTasks[index].deadline.year == DateTime.now().year
-                          ? SizedBox(
-                              height: 0.0,
-                            )
-                          : Text(
-                              "${listOfTasks[index].deadline.year}",
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.gloriaHallelujah(
-                                fontSize: 12,
-                                color: Colors.black,
-                              ),
-                            ),
-                    ],
+              Container(
+                margin: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                constraints: BoxConstraints(
+                  maxWidth: 60.0,
+                  maxHeight: 60.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Color.fromRGBO(0, 0, 0, 0.15),
+                    width: 1.0,
                   ),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30.0),
+                  ),
+                ),
+                child: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    return Checkbox(
+                      value: goals[index].completionStatus,
+                      onChanged: (value) {
+                        setState(() {
+                          goals[index].completionStatus =
+                              !goals[index].completionStatus;
+                        });
+                        print("Completion status of:");
+                        print("${goals[index].label}");
+                        print("${goals[index].completionStatus}");
+                      },
+                    );
+                  },
                 ),
               ),
               Expanded(
@@ -214,18 +163,18 @@ class _ToDoListState extends State<ToDoList>
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditTask(
-                              task: listOfTasks[index],
+                              task: goals[index],
                             ),
                           ),
                         );
                         if (temp != null) {
                           setState(() {
-                            listOfTasks[index] = new Task.fromTask(temp);
+                            goals[index] = new Task.fromTask(temp);
                           });
                         }
-                        listOfTasks.sort(currentSortByFunction());
+                        goals.sort(currentSortByFunction());
                         int id = 0;
-                        listOfTasks.forEach((element) {
+                        goals.forEach((element) {
                           print(element.label);
                           element.id = id++;
                         });
@@ -233,7 +182,7 @@ class _ToDoListState extends State<ToDoList>
                       },
                       onLongPress: () {},
                       child: Text(
-                        listOfTasks[index].label,
+                        goals[index].label,
                         textAlign: TextAlign.justify,
                         style: GoogleFonts.gloriaHallelujah(
                           fontSize: 15,
@@ -262,7 +211,7 @@ class _ToDoListState extends State<ToDoList>
                       width: 10.0,
                     ),
                     Text(
-                      "${listOfTasks[index].level}",
+                      "${goals[index].level}",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.gloriaHallelujah(
                         fontSize: 35,
@@ -287,9 +236,13 @@ class _ToDoListState extends State<ToDoList>
       ),
       child: Row(
         children: [
+          SizedBox(
+            width: 5.0,
+          ),
           Icon(
             MaterialCommunityIcons.clock_start,
             color: Colors.white,
+            size: 20,
           ),
           SizedBox(
             width: 5.0,
@@ -309,8 +262,7 @@ class _ToDoListState extends State<ToDoList>
                         color: Colors.red[600],
                       ),
                     ),
-                    flex: DateTime.now().millisecondsSinceEpoch -
-                        created.millisecondsSinceEpoch,
+                    flex: DateTime.now().difference(created).inMilliseconds,
                   ),
                   Expanded(
                     child: Container(
@@ -319,8 +271,7 @@ class _ToDoListState extends State<ToDoList>
                         color: Colors.blueGrey[100],
                       ),
                     ),
-                    flex: deadline.millisecondsSinceEpoch -
-                        DateTime.now().millisecondsSinceEpoch,
+                    flex: deadline.difference(DateTime.now()).inMilliseconds,
                   ),
                 ],
               ),
@@ -332,9 +283,10 @@ class _ToDoListState extends State<ToDoList>
           Icon(
             MaterialCommunityIcons.clock_end,
             color: Colors.white,
+            size: 20,
           ),
           SizedBox(
-            width: 2.5,
+            width: 7.5,
           ),
         ],
       ),
@@ -408,7 +360,11 @@ class _ToDoListState extends State<ToDoList>
         ],
       ),
       child: Column(
-        children: [progressBar, listItem, dateContainer],
+        children: [
+          progressBar,
+          listItem,
+          dateContainer,
+        ],
       ),
     );
     return framedContainer;
@@ -416,9 +372,9 @@ class _ToDoListState extends State<ToDoList>
 
   void updateTodoList() {
     setState(() {
-      listOfTiles = List.generate(
-        listOfTasks.length,
-        (index) => toDoListTile(index: listOfTasks[index].id),
+      listOfGoalsTiles = List.generate(
+        goals.length,
+        (index) => toDoListTile(index: goals[index].id),
       );
     });
   }
@@ -443,6 +399,7 @@ class _ToDoListState extends State<ToDoList>
 
   @override
   Widget build(BuildContext context) {
+    //final numbers = TodoListDataWidget.of(context).state.numbers;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -537,20 +494,19 @@ class _ToDoListState extends State<ToDoList>
       body: TabBarView(
         controller: tabController,
         children: [
-          Container(),
+          RegularTasksList(),
           Scrollbar(
             child: ListView(
               shrinkWrap: true,
-              children: listOfTiles,
+              children: listOfGoalsTiles,
             ),
-          )
+          ),
         ],
       ),
       bottomNavigationBar: Container(
         height: 70.0,
         decoration: new BoxDecoration(
           color: addItemMode ? Colors.grey[100] : Colors.red[300],
-          // color: Colors.blueGrey[900],
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(5.0),
           ),
@@ -570,7 +526,7 @@ class _ToDoListState extends State<ToDoList>
             children: [
               Expanded(
                 child: Container(
-                  child: MaterialButton(
+                  child: IconButton(
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () {
@@ -579,7 +535,7 @@ class _ToDoListState extends State<ToDoList>
                         showActiveTasks = !showActiveTasks;
                       });
                     },
-                    child: Icon(
+                    icon: Icon(
                       showActiveTasks
                           ? MaterialCommunityIcons.run
                           : MaterialCommunityIcons.archive,
@@ -590,10 +546,7 @@ class _ToDoListState extends State<ToDoList>
                     ),
                   ),
                 ),
-                flex: 1,
               ),
-
-              // Spacer(),
               Expanded(
                 child: Container(
                   child: MaterialButton(
@@ -606,7 +559,11 @@ class _ToDoListState extends State<ToDoList>
                         case 0:
                           {
                             print("Add regular task");
-                            Task temp = await Navigator.push(
+                            /*final provider = TodoListCommon.of(context);
+                            provider.addToList();*/
+                            print(
+                                "${TodoListCommon.of(context).state.numbers}");
+                            RegularTask temp = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => CreateRegularTask(),
@@ -633,13 +590,13 @@ class _ToDoListState extends State<ToDoList>
                               print(temp.created.toString());
                               print("new task created");
                               print("temp.label is ${temp.label}");
-                              temp.id = listOfTasks.length;
+                              temp.id = goals.length;
                               setState(() {
-                                listOfTasks.add(temp);
+                                goals.add(temp);
                               });
-                              listOfTasks.sort(currentSortByFunction());
+                              goals.sort(currentSortByFunction());
                               int id = 0;
-                              listOfTasks.forEach((element) {
+                              goals.forEach((element) {
                                 print(element.label);
                                 element.id = id++;
                               });
@@ -663,11 +620,10 @@ class _ToDoListState extends State<ToDoList>
                     ),
                   ),
                 ),
-                flex: 1,
               ),
               Expanded(
                 child: Container(
-                  child: MaterialButton(
+                  child: IconButton(
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () {
@@ -683,7 +639,7 @@ class _ToDoListState extends State<ToDoList>
                             showDialog<void>(
                               context: context,
                               builder: (BuildContext context) {
-                                int temp = sortByOption;
+                                int temp = sortByGoalsOption;
                                 return AlertDialog(
                                   title: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -754,11 +710,10 @@ class _ToDoListState extends State<ToDoList>
                                   actions: [
                                     TextButton(
                                       onPressed: () {
-                                        sortByOption = temp;
-                                        listOfTasks
-                                            .sort(currentSortByFunction());
+                                        sortByGoalsOption = temp;
+                                        goals.sort(currentSortByFunction());
                                         int id = 0;
-                                        listOfTasks.forEach((element) {
+                                        goals.forEach((element) {
                                           print(element.label);
                                           element.id = id++;
                                         });
@@ -780,14 +735,14 @@ class _ToDoListState extends State<ToDoList>
                           break;
                       }
                     },
-                    child: Icon(
+                    icon: Icon(
                       MaterialCommunityIcons.sort,
                       color: Colors.black,
                       size: 30,
                     ),
+                    tooltip: "Sort by",
                   ),
                 ),
-                flex: 1,
               ),
               Expanded(
                 child: Container(
@@ -804,9 +759,9 @@ class _ToDoListState extends State<ToDoList>
                       setState(() {
                         ascendingOrder = !ascendingOrder;
                       });
-                      listOfTasks.sort(currentSortByFunction());
+                      goals.sort(currentSortByFunction());
                       int id = 0;
-                      listOfTasks.forEach((element) {
+                      goals.forEach((element) {
                         print(element.label);
                         element.id = id++;
                       });
@@ -816,7 +771,6 @@ class _ToDoListState extends State<ToDoList>
                         "Order: ${ascendingOrder ? "ascending" : "descending"}",
                   ),
                 ),
-                flex: 1,
               ),
             ],
           ),

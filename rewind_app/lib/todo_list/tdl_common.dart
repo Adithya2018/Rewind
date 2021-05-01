@@ -109,7 +109,6 @@ class RegularTask {
   String description;
   DateTime deadline;
   int level;
-  int priority;
   bool completionStatus;
   RegularTask() {
     id = 0;
@@ -117,7 +116,6 @@ class RegularTask {
     description = "";
     deadline = null;
     level = 1;
-    priority = 1;
     completionStatus = false;
   }
   RegularTask.fromRegularTask(RegularTask regularTask) {
