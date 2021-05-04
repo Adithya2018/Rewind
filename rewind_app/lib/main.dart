@@ -25,7 +25,7 @@ class RewindApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: JournalTest(),
+      home: Home(),
       routes: <String, WidgetBuilder>{
         '/ach': (BuildContext context) => Achievements(),
         '/jou': (BuildContext context) => Journal(),
@@ -35,6 +35,7 @@ class RewindApp extends StatelessWidget {
         '/add': (BuildContext context) => CreateTask(),
         '/vt': (BuildContext context) => EditTask(),
       },
+      debugShowCheckedModeBanner: false,
     );
   }
 }
