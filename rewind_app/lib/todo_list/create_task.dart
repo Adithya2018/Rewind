@@ -4,25 +4,21 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class CreateTask extends StatefulWidget {
-  final Task task;
-  CreateTask({
-    this.task,
-  });
   @override
   _CreateTaskState createState() => _CreateTaskState();
 }
 
 class _CreateTaskState extends State<CreateTask> {
   Task taskCurrent;
-  DateAndTimeFormat dtf = new DateAndTimeFormat();
-  TaskLevel taskLevel = new TaskLevel();
+  DateAndTimeFormat dtf = DateAndTimeFormat();
+  TaskLevel taskLevel = TaskLevel();
 
   DateTime deadlineDate;
   Future<void> _selectDeadlineDate(BuildContext context) async {
     DateTime now = DateTime.now();
     final DateTime pickedDate = await showDatePicker(
       context: context,
-      initialDate: now, //(deadlineDate==null)?now:deadlineDate,
+      initialDate: now,
       firstDate: DateTime(
         now.year,
         now.month,
@@ -42,10 +38,7 @@ class _CreateTaskState extends State<CreateTask> {
   Future<Null> _selectDeadlineTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(
-        hour: DateTime.now().hour,
-        minute: DateTime.now().minute,
-      ),
+      initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
       setState(() {
@@ -74,6 +67,8 @@ class _CreateTaskState extends State<CreateTask> {
     super.dispose();
     titleFocusNode.dispose();
     descriptionFocusNode.dispose();
+    titleCtrl.dispose();
+    descriptionCtrl.dispose();
   }
 
   void saveChanges() {
@@ -88,7 +83,6 @@ class _CreateTaskState extends State<CreateTask> {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text("Error "),
               Icon(

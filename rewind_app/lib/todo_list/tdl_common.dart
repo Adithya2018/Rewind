@@ -73,7 +73,7 @@ class DateAndTimeFormat {
 }
 
 class Task {
-  int id;
+  int orderIndex;
   String label;
   String description;
   DateTime deadline;
@@ -82,7 +82,7 @@ class Task {
   bool completionStatus;
   DateTime completed;
   Task() {
-    id = 0;
+    orderIndex = 0;
     label = "";
     description = "";
     deadline = null;
@@ -92,7 +92,7 @@ class Task {
     completed = null;
   }
   Task.fromTask(Task task) {
-    this.id = task.id;
+    this.orderIndex = task.orderIndex;
     this.label = task.label;
     this.description = task.description;
     this.deadline = task.deadline;
@@ -104,25 +104,28 @@ class Task {
 }
 
 class RegularTask {
-  int id;
+  int orderIndex;
   String label;
   String description;
-  DateTime deadline;
+  List<DayAndTime> weeklyRepeat;
   int level;
   bool completionStatus;
   RegularTask() {
-    id = 0;
+    orderIndex = 0;
     label = "";
     description = "";
-    deadline = null;
+    weeklyRepeat = List<DayAndTime>.generate(
+      7,
+      (index) => DayAndTime(index + 1),
+    );
     level = 1;
     completionStatus = false;
   }
   RegularTask.fromRegularTask(RegularTask regularTask) {
-    this.id = regularTask.id;
+    this.orderIndex = regularTask.orderIndex;
     this.label = regularTask.label;
     this.description = regularTask.description;
-    this.deadline = regularTask.deadline;
+    this.weeklyRepeat = regularTask.weeklyRepeat;
     this.level = regularTask.level;
     this.completionStatus = regularTask.completionStatus;
   }
@@ -136,8 +139,6 @@ class DayAndTime {
     time = [];
   }
 }
-
-class DateAndTimePicker {}
 
 class TaskLevel {
   List<Color> diffLevelIconColor = [
@@ -158,6 +159,14 @@ class TaskLevel {
     MaterialCommunityIcons.numeric_3_box,
     MaterialCommunityIcons.numeric_4_box,
     MaterialCommunityIcons.numeric_5_box,
+  ];
+
+  List<Color> diffLevelNumericColor = [
+    Colors.blueAccent,
+    Colors.greenAccent,
+    Colors.yellowAccent,
+    Colors.orangeAccent,
+    Colors.redAccent,
   ];
 
   List<String> diffLevelText = [

@@ -399,3 +399,46 @@ class _JournalTempState extends State<JournalTemp> {
         ),
       ),
     );*/
+
+class JournalTest extends StatefulWidget {
+  const JournalTest({Key key}) : super(key: key);
+
+  @override
+  _JournalTestState createState() => _JournalTestState();
+}
+
+class _JournalTestState extends State<JournalTest> {
+  _onTapDown(TapDownDetails details) {
+    var x = details.globalPosition.dx;
+    var y = details.globalPosition.dy;
+    print(details.localPosition);
+    print("tap down " + x.toString() + ", " + y.toString());
+  }
+
+  _onTapUp(TapUpDetails details) {
+    var x = details.globalPosition.dx;
+    var y = details.globalPosition.dy;
+    print(details.localPosition);
+    print("tap up " + x.toString() + ", " + y.toString());
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: AppBar(),
+      ),
+      body: Scrollbar(
+        child: GestureDetector(
+          onTapUp: _onTapUp,
+          onTapDown: _onTapDown,
+          child: ListView(
+            children: [
+
+            ],
+          ),
+        )
+      ),
+    );
+  }
+}

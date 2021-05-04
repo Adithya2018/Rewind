@@ -5,14 +5,15 @@ import 'package:rewind_app/todo_list/create_task.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
 import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 import 'achievements/achievements.dart';
+import 'journal/journal.dart';
 import 'todo_list/todo_list.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  /*WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]);
+  ]);*/
   runApp(RewindApp());
 }
 
@@ -24,7 +25,7 @@ class RewindApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Home(),
+      home: JournalTest(),
       routes: <String, WidgetBuilder>{
         '/ach': (BuildContext context) => Achievements(),
         '/jou': (BuildContext context) => Journal(),

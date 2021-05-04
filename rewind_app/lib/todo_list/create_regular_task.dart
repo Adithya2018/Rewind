@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
-import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
-//import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 
 class CreateRegularTask extends StatefulWidget {
   @override
@@ -13,12 +10,12 @@ class CreateRegularTask extends StatefulWidget {
 class _CreateRegularTaskState extends State<CreateRegularTask>
     with TickerProviderStateMixin {
   RegularTask taskCurrent;
-  DateAndTimeFormat dtf = new DateAndTimeFormat();
-  TaskLevel taskLevel = new TaskLevel();
+  DateAndTimeFormat dtf = DateAndTimeFormat();
+  TaskLevel taskLevel = TaskLevel();
 
   DateTime deadlineDate;
   Future<void> _selectDeadlineDate(BuildContext context) async {
-    DateTime now = new DateTime.now();
+    DateTime now = DateTime.now();
     final DateTime pickedDate = await showDatePicker(
       context: context,
       initialDate: now, //(deadlineDate==null)?now:deadlineDate,
@@ -179,10 +176,8 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
     titleCtrl.dispose();
     descriptionCtrl.dispose();
     tabController.dispose();
-  }
-
-  void saveChanges() {
-    Navigator.pop(context, taskCurrent);
+    timeSelectedAnimationCtrl.dispose();
+    timeListScrollCtrl.dispose();
   }
 
   Future<void> showErrorMessage({String msg}) async {
@@ -563,11 +558,20 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                     ),
                     onPressed: () async {
                       print("Create");
-                      TodoListCommon common = context.findAncestorWidgetOfExactType<TodoListCommon>();
-                      common.stateWidget.addToList();
-                      /*final provider = TodoListCommon.of(context);
-                      provider.addToList();*/
-                      Navigator.of(context).pop();
+                      RegularTask temp = RegularTask();
+                      if (titleCtrl.text.isEmpty) {
+                        await showErrorMessage(
+                          msg: "Title cannot be empty",
+                        );
+                        return;
+                      } else {
+                        taskCurrent.label = titleCtrl.text;
+                      }
+                      temp.description = descriptionCtrl.text;
+                      temp.completionStatus = false;
+                      temp.level = taskCurrent.level;
+                      temp.weeklyRepeat = dayAndTime;
+                      Navigator.pop(context, temp);
                     },
                   ),
                 ),
