@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rewind_app/home/home.dart';
 import 'package:flutter/services.dart';
+import 'package:rewind_app/journal/text_editor.dart';
 import 'package:rewind_app/todo_list/create_task.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
 import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
@@ -25,10 +26,17 @@ class RewindApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+
+      // theme: ThemeData(
+      //   brightness: Brightness.dark,
+      //   scaffoldBackgroundColor: Colors.black,
+      //   primarySwatch: Colors.teal,
+      //   fontFamily: 'Georgia',
+      // ),
       home: Home(),
       routes: <String, WidgetBuilder>{
         '/ach': (BuildContext context) => Achievements(),
-        '/jou': (BuildContext context) => Journal(),
+        '/jou': (BuildContext context) => TextEditor(),
         '/tdl': (BuildContext context) => TodoListWrapper(
               child: TodoList(),
             ),
