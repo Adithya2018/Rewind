@@ -1,32 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/todo_list/create_regular_task.dart';
+import 'package:rewind_app/todo_list/routine_list.dart';
+import 'create_regular_task.dart';
 import 'edit_task.dart';
 import 'tdl_common.dart';
 import 'create_task.dart';
+import 'todo_list_state/todo_list_state.dart';
 
-class TaskStatus extends StatefulWidget {
+class TodoList extends StatefulWidget {
   @override
-  _TaskStatusState createState() => _TaskStatusState();
+  _TodoListState createState() => _TodoListState();
 }
 
-class _TaskStatusState extends State<TaskStatus> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class ToDoList extends StatefulWidget {
-  @override
-  _ToDoListState createState() => _ToDoListState();
-}
-
-class _ToDoListState extends State<ToDoList>
+class _TodoListState extends State<TodoList>
     with SingleTickerProviderStateMixin {
-  List<Task> listOfTasks = [];
-  List<Container> listOfTiles = [];
+  List<Container> listTiles = [];
+  List<bool> selected = [];
   bool ascendingOrder = true;
   int sortByOption = 0;
   List<Function> sortByFunction = [
@@ -34,16 +24,35 @@ class _ToDoListState extends State<ToDoList>
     (Task a, Task b) => a.deadline.compareTo(b.deadline),
     (Task a, Task b) => a.level.compareTo(b.level),
   ];
+  TaskLevel taskLevel = TaskLevel();
 
   Function currentSortByFunction() {
     return (Task a, Task b) =>
-        ((ascendingOrder ? 1 : -1) * sortByFunction[sortByOption](a, b)) as int;
+        (ascendingOrder ? 1 : -1) * sortByFunction[sortByOption](a, b) as int;
   }
 
-  bool addItemMode = true;
-  bool showActiveTasks = true;
+  bool showActive = true;
 
-  Container toDoListTile({
+  bool isSameDate(DateTime d1, DateTime d2) =>
+      d2.day == d1.day && d2.month == d1.month && d2.year == d1.year;
+
+  String dateToString(DateTime date) {
+    DateTime now = DateTime.now();
+    String result = "${date.day} ${dtf.month[date.month - 1]}";
+    bool dateToday = isSameDate(now, date);
+    result = dateToday ? "Today" : result;
+    bool dateTomorrow = isSameDate(
+        now.add(Duration(
+          days: 1,
+        )),
+        date);
+    result = dateTomorrow ? "Tomorrow" : result;
+    print("${now.year}");
+    result += (date.year == now.year) ? "" : ", ${date.year}";
+    return result;
+  }
+
+  Container goalsListTile({
     int index,
   }) {
     /*Container taskDescription = Container(
@@ -88,32 +97,26 @@ class _ToDoListState extends State<ToDoList>
         ),
       ),
     );*/
-    final created = listOfTasks[index].created;
-    final deadline = listOfTasks[index].deadline;
-    String createdTime = "${dtf.formatTime(
+    final provider = TodoListCommon.of(context);
+    final created = provider.gldState.tasks[index].created;
+    final deadline = provider.gldState.tasks[index].deadline;
+    String createdTime = dtf.formatTime(
       TimeOfDay(
         hour: created.hour,
         minute: created.minute,
       ),
-    )}";
-    String deadlineTime = "${dtf.formatTime(
+    );
+    print("${dtf.formatDate(created)}");
+    String deadlineTime = dtf.formatTime(
       TimeOfDay(
         hour: deadline.hour,
         minute: deadline.minute,
       ),
-    )}";
-    String createdDate = "${created.day} ${dtf.month[created.month - 1]}";
-    createdDate +=
-        (created.year == DateTime.now().year) ? "" : ", ${created.year}";
-    String deadlineDate = "${deadline.day} ${dtf.month[deadline.month - 1]}";
-    deadlineDate +=
-        (deadline.year == DateTime.now().year) ? "" : ", ${deadline.year}";
-    print(
-        "${DateTime.now().millisecondsSinceEpoch - created.millisecondsSinceEpoch}");
-    print(
-        "${deadline.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch}");
-    Container listItem = Container(
-      padding: EdgeInsets.fromLTRB(15.0, 10.0, 25.0, 5.0),
+    );
+    String createdDate = dateToString(created);
+    String deadlineDate = dateToString(deadline);
+    Container mainContainer = Container(
+      padding: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
       decoration: BoxDecoration(
         color: Color(0xFFE6E7E7),
         borderRadius: BorderRadius.vertical(
@@ -127,79 +130,38 @@ class _ToDoListState extends State<ToDoList>
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 2,
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: 60.0,
-                          maxHeight: 60.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                            color: Color.fromRGBO(0, 0, 0, 0.15),
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(30.0),
-                          ),
-                        ),
-                        child: StatefulBuilder(
-                          builder:
-                              (BuildContext context, StateSetter setState) {
-                            return Checkbox(
-                              value: listOfTasks[index].completionStatus,
-                              onChanged: (value) {
-                                setState(() {
-                                  listOfTasks[index].completionStatus =
-                                      !listOfTasks[index].completionStatus;
-                                });
-                                print("Completion status of:");
-                                print("${listOfTasks[index].label}");
-                                print("${listOfTasks[index].completionStatus}");
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                      /*Text(
-                        "${listOfTasks[index].deadline.day} ${dtf.month[listOfTasks[index].deadline.month - 1]}",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.gloriaHallelujah(
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(
-                        "${dtf.formatTime(
-                          TimeOfDay(
-                              hour: listOfTasks[index].deadline.hour,
-                              minute: listOfTasks[index].deadline.minute),
-                        )}",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.gloriaHallelujah(
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                      ),*/
-                      listOfTasks[index].deadline.year == DateTime.now().year
-                          ? SizedBox(
-                              height: 0.0,
-                            )
-                          : Text(
-                              "${listOfTasks[index].deadline.year}",
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.gloriaHallelujah(
-                                fontSize: 12,
-                                color: Colors.black,
-                              ),
-                            ),
-                    ],
+              Container(
+                margin: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                constraints: BoxConstraints(
+                  maxWidth: 60.0,
+                  maxHeight: 60.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Color.fromRGBO(0, 0, 0, 0.15),
+                    width: 1.0,
                   ),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30.0),
+                  ),
+                ),
+                child: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    return Checkbox(
+                      value: TodoListCommon.of(context)
+                          .gldState
+                          .tasks[index]
+                          .completionStatus,
+                      onChanged: (value) {
+                        setState(() {
+                          final provider = TodoListCommon.of(context);
+                          provider.gldState.tasks[index].completionStatus =
+                              !provider.gldState.tasks[index].completionStatus;
+                        });
+                      },
+                    );
+                  },
                 ),
               ),
               Expanded(
@@ -210,30 +172,27 @@ class _ToDoListState extends State<ToDoList>
                   children: [
                     TextButton(
                       onPressed: () async {
+                        final provider = TodoListCommon.of(context);
                         Task temp = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditTask(
-                              task: listOfTasks[index],
+                              task: provider.gldState.tasks[index],
                             ),
                           ),
                         );
                         if (temp != null) {
                           setState(() {
-                            listOfTasks[index] = new Task.fromTask(temp);
+                            provider.gldState.tasks[index] =
+                                new Task.fromTask(temp);
                           });
                         }
-                        listOfTasks.sort(currentSortByFunction());
-                        int id = 0;
-                        listOfTasks.forEach((element) {
-                          print(element.label);
-                          element.id = id++;
-                        });
-                        updateTodoList();
+                        provider.sortTasks(currentSortByFunction());
+                        updateGoals();
                       },
                       onLongPress: () {},
                       child: Text(
-                        listOfTasks[index].label,
+                        TodoListCommon.of(context).gldState.tasks[index].label,
                         textAlign: TextAlign.justify,
                         style: GoogleFonts.gloriaHallelujah(
                           fontSize: 15,
@@ -244,34 +203,44 @@ class _ToDoListState extends State<ToDoList>
                   ],
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+              Container(
+                padding: EdgeInsets.fromLTRB(7.5, 0.0, 7.5, 5.0),
+                margin: EdgeInsets.fromLTRB(5.0, 0.0, 10.0, 0.0),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(5.0),
+                    bottom: Radius.circular(5.0),
+                  ),
+                ),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "Lv",
-                      textAlign: TextAlign.center,
+                      "Level",
+                      textAlign: TextAlign.left,
                       style: GoogleFonts.gloriaHallelujah(
                         fontSize: 12,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
-                    SizedBox(
-                      width: 10.0,
-                    ),
-                    Text(
-                      "${listOfTasks[index].level}",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.gloriaHallelujah(
-                        fontSize: 35,
-                        color: Colors.green,
-                      ),
+                    Icon(
+                      taskLevel.diffLevelNumeric[TodoListCommon.of(context)
+                              .gldState
+                              .tasks[index]
+                              .level -
+                          1],
+                      size: 40,
+                      color: taskLevel.diffLevelNumericColor[
+                          TodoListCommon.of(context)
+                                  .gldState
+                                  .tasks[index]
+                                  .level -
+                              1],
                     ),
                   ],
                 ),
-              ),
+              )
             ],
           ),
         ],
@@ -287,9 +256,13 @@ class _ToDoListState extends State<ToDoList>
       ),
       child: Row(
         children: [
+          SizedBox(
+            width: 5.0,
+          ),
           Icon(
             MaterialCommunityIcons.clock_start,
             color: Colors.white,
+            size: 20,
           ),
           SizedBox(
             width: 5.0,
@@ -299,7 +272,17 @@ class _ToDoListState extends State<ToDoList>
               constraints: BoxConstraints(
                 maxHeight: 5.0,
               ),
-              color: Colors.white,
+              //color: Colors.white,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Colors.white,
+                    Colors.redAccent,
+                  ],
+                ),
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -309,18 +292,15 @@ class _ToDoListState extends State<ToDoList>
                         color: Colors.red[600],
                       ),
                     ),
-                    flex: DateTime.now().millisecondsSinceEpoch -
-                        created.millisecondsSinceEpoch,
+                    flex: DateTime.now().difference(created).inMilliseconds,
                   ),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        // color: Colors.white,
-                        color: Colors.blueGrey[100],
+                        color: Colors.transparent,
                       ),
                     ),
-                    flex: deadline.millisecondsSinceEpoch -
-                        DateTime.now().millisecondsSinceEpoch,
+                    flex: deadline.difference(DateTime.now()).inMilliseconds,
                   ),
                 ],
               ),
@@ -330,11 +310,12 @@ class _ToDoListState extends State<ToDoList>
             width: 5.0,
           ),
           Icon(
-            MaterialCommunityIcons.clock_end,
+            MaterialCommunityIcons.flag_checkered,
             color: Colors.white,
+            size: 20,
           ),
           SizedBox(
-            width: 2.5,
+            width: 7.5,
           ),
         ],
       ),
@@ -362,10 +343,6 @@ class _ToDoListState extends State<ToDoList>
             textAlign: TextAlign.center,
           ),
           Spacer(),
-          Icon(
-            MaterialCommunityIcons.arrow_right,
-          ),
-          Spacer(),
           Text(
             "$deadlineTime,\n$deadlineDate",
             style: GoogleFonts.gloriaHallelujah(
@@ -384,20 +361,10 @@ class _ToDoListState extends State<ToDoList>
       margin: EdgeInsets.fromLTRB(10.0, 12.0, 10.0, 0.0),
       padding: EdgeInsets.all(2.0),
       decoration: BoxDecoration(
-        //color: Colors.red,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(10.0),
           bottom: Radius.circular(10.0),
         ),
-        /*gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.blueGrey[300],
-            Colors.black,
-            Colors.blueGrey[300],
-          ],
-        ),*/
         boxShadow: [
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.2),
@@ -408,17 +375,23 @@ class _ToDoListState extends State<ToDoList>
         ],
       ),
       child: Column(
-        children: [progressBar, listItem, dateContainer],
+        children: [
+          progressBar,
+          mainContainer,
+          dateContainer,
+        ],
       ),
     );
     return framedContainer;
   }
 
-  void updateTodoList() {
+  void updateGoals() {
+    final provider = TodoListCommon.of(context);
     setState(() {
-      listOfTiles = List.generate(
-        listOfTasks.length,
-        (index) => toDoListTile(index: listOfTasks[index].id),
+      listTiles = List.generate(
+        provider.gldState.tasks.length,
+        (index) =>
+            goalsListTile(index: provider.gldState.tasks[index].orderIndex),
       );
     });
   }
@@ -439,8 +412,8 @@ class _ToDoListState extends State<ToDoList>
   }
 
   DateAndTimeFormat dtf = new DateAndTimeFormat();
-  TabController tabController;
 
+  TabController tabController;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -537,27 +510,25 @@ class _ToDoListState extends State<ToDoList>
       body: TabBarView(
         controller: tabController,
         children: [
-          Container(),
+          RegularTasksList(),
           Scrollbar(
             child: ListView(
               shrinkWrap: true,
-              children: listOfTiles,
+              children: listTiles,
             ),
-          )
+          ),
         ],
       ),
       bottomNavigationBar: Container(
         height: 70.0,
         decoration: new BoxDecoration(
-          color: addItemMode ? Colors.grey[100] : Colors.red[300],
-          // color: Colors.blueGrey[900],
+          color: Colors.grey[100],
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(5.0),
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.blue[200],
-              // color: Colors.grey,
               offset: Offset(0.0, -0.5),
               blurRadius: 5.0,
               spreadRadius: 0.0,
@@ -570,48 +541,49 @@ class _ToDoListState extends State<ToDoList>
             children: [
               Expanded(
                 child: Container(
-                  child: MaterialButton(
+                  child: IconButton(
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () {
-                      print("Add task");
                       setState(() {
-                        showActiveTasks = !showActiveTasks;
+                        showActive = !showActive;
                       });
+                      print("${showActive ? "active" : "regular"} tasks");
                     },
-                    child: Icon(
-                      showActiveTasks
+                    icon: Icon(
+                      showActive
                           ? MaterialCommunityIcons.run
                           : MaterialCommunityIcons.archive,
-                      color: showActiveTasks
+                      color: showActive
                           ? Colors.greenAccent[400]
                           : Colors.brown[400],
                       size: 30,
                     ),
                   ),
                 ),
-                flex: 1,
               ),
-
-              // Spacer(),
               Expanded(
                 child: Container(
                   child: MaterialButton(
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () async {
-                      print("${addItemMode ? "Add task" : "Delete task"}");
-                      print("$addItemMode");
+                      print("Add task");
                       switch (tabController.index) {
                         case 0:
                           {
                             print("Add regular task");
-                            Task temp = await Navigator.push(
+                            RegularTask temp = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => CreateRegularTask(),
                               ),
                             );
+                            if (temp != null) {
+                              TodoListCommon.of(context).addRegularTask(temp);
+                            } else {
+                              print("No regular task created");
+                            }
                           }
                           break;
                         case 1:
@@ -620,57 +592,37 @@ class _ToDoListState extends State<ToDoList>
                             Task temp = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => CreateTask(
-                                  task: new Task(),
-                                ),
+                                builder: (context) => CreateTask(),
                               ),
                             );
                             if (temp != null) {
-                              print(temp.label);
-                              print(temp.description);
-                              print(temp.deadline.month);
-                              print(temp.deadline.toString());
-                              print(temp.created.toString());
-                              print("new task created");
-                              print("temp.label is ${temp.label}");
-                              temp.id = listOfTasks.length;
-                              setState(() {
-                                listOfTasks.add(temp);
-                              });
-                              listOfTasks.sort(currentSortByFunction());
-                              int id = 0;
-                              listOfTasks.forEach((element) {
-                                print(element.label);
-                                element.id = id++;
-                              });
-                              updateTodoList();
+                              TodoListCommon.of(context).addTask(
+                                temp,
+                                currentSortByFunction(),
+                              );
+                              updateGoals();
+                            } else {
+                              print("No goals created");
                             }
                           }
                           break;
                       }
                     },
-                    onLongPress: () {
-                      setState(() {
-                        addItemMode = !addItemMode;
-                      });
-                    },
+                    onLongPress: () {},
                     child: Icon(
-                      addItemMode
-                          ? MaterialCommunityIcons.plus_circle
-                          : MaterialCommunityIcons.delete,
-                      color: addItemMode ? Colors.lightBlueAccent : Colors.red,
+                      MaterialCommunityIcons.plus_circle,
+                      color: Colors.lightBlueAccent,
                       size: 55,
                     ),
                   ),
                 ),
-                flex: 1,
               ),
               Expanded(
                 child: Container(
-                  child: MaterialButton(
+                  child: IconButton(
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
-                    onPressed: () {
+                    onPressed: () async {
                       switch (tabController.index) {
                         case 0:
                           {
@@ -680,7 +632,7 @@ class _ToDoListState extends State<ToDoList>
                         case 1:
                           {
                             print("sort goals");
-                            showDialog<void>(
+                            await showDialog<int>(
                               context: context,
                               builder: (BuildContext context) {
                                 int temp = sortByOption;
@@ -755,14 +707,6 @@ class _ToDoListState extends State<ToDoList>
                                     TextButton(
                                       onPressed: () {
                                         sortByOption = temp;
-                                        listOfTasks
-                                            .sort(currentSortByFunction());
-                                        int id = 0;
-                                        listOfTasks.forEach((element) {
-                                          print(element.label);
-                                          element.id = id++;
-                                        });
-                                        updateTodoList();
                                         Navigator.of(context).pop();
                                       },
                                       child: Text("Apply"),
@@ -776,18 +720,22 @@ class _ToDoListState extends State<ToDoList>
                                 );
                               },
                             );
+                            final provider = TodoListCommon.of(context);
+                            provider.sortTasks(currentSortByFunction());
+                            updateGoals();
+                            print("sorted");
                           }
                           break;
                       }
                     },
-                    child: Icon(
+                    icon: Icon(
                       MaterialCommunityIcons.sort,
                       color: Colors.black,
                       size: 30,
                     ),
+                    tooltip: "Sort by",
                   ),
                 ),
-                flex: 1,
               ),
               Expanded(
                 child: Container(
@@ -800,23 +748,31 @@ class _ToDoListState extends State<ToDoList>
                       size: 35,
                     ),
                     onPressed: () {
-                      print("sort in ascending or descending");
-                      setState(() {
-                        ascendingOrder = !ascendingOrder;
-                      });
-                      listOfTasks.sort(currentSortByFunction());
-                      int id = 0;
-                      listOfTasks.forEach((element) {
-                        print(element.label);
-                        element.id = id++;
-                      });
-                      updateTodoList();
+                      switch (tabController.index) {
+                        case 0:
+                          {
+                            final provider = TodoListCommon.of(context);
+                            provider.addToList();
+                            provider.reverseList();
+                          }
+                          break;
+                        case 1:
+                          {
+                            print("sort in ascending or descending");
+                            setState(() {
+                              ascendingOrder = !ascendingOrder;
+                            });
+                            final provider = TodoListCommon.of(context);
+                            provider.sortTasks(currentSortByFunction());
+                            updateGoals();
+                          }
+                          break;
+                      }
                     },
                     tooltip:
                         "Order: ${ascendingOrder ? "ascending" : "descending"}",
                   ),
                 ),
-                flex: 1,
               ),
             ],
           ),
