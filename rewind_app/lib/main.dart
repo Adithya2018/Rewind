@@ -36,7 +36,7 @@ class RewindApp extends StatelessWidget {
       home: Home(),
       routes: <String, WidgetBuilder>{
         '/ach': (BuildContext context) => Achievements(),
-        '/jou': (BuildContext context) => TextEditor(),
+        '/jou': (BuildContext context) => Journal(),
         '/tdl': (BuildContext context) => TodoListWrapper(
               child: TodoList(),
             ),
