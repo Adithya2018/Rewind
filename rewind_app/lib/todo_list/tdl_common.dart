@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:rewind_app/database/database_provider.dart';
+import 'package:rewind_app/tables/table_goals.dart';
+import 'package:rewind_app/tables/table_routine.dart';
 
 class DateAndTimeFormat {
   List<String> month = [
@@ -16,6 +19,7 @@ class DateAndTimeFormat {
     "Nov",
     "Dec",
   ];
+
   List<String> weekDay = [
     "Monday",
     "Tuesday",
@@ -24,6 +28,16 @@ class DateAndTimeFormat {
     "Friday",
     "Saturday",
     "Sunday",
+  ];
+
+  List<String> weekDayAbbr = [
+    "Mon",
+    "Tues",
+    "Wed",
+    "Thurs",
+    "Fri",
+    "Sat",
+    "Sun",
   ];
 
   List<String> weekDayLetter = [
@@ -58,9 +72,10 @@ class DateAndTimeFormat {
     return "$hour:$minute ${beforeMidday ? "AM" : "PM"}";
   }
 
-  String formatDate(DateTime dateTime) {
+  String formatDate(DateTime dateTime, {bool abbr = false}) {
+    List<String> list = abbr ? weekDayAbbr : weekDay;
     String result =
-        "${weekDay[dateTime.weekday - 1]}, ${dateTime.day} ${month[dateTime.month - 1]}";
+        "${list[dateTime.weekday - 1]}, ${dateTime.day} ${month[dateTime.month - 1]}";
     String year =
         DateTime.now().year == dateTime.year ? "" : " ${dateTime.year}";
     return "$result$year";
@@ -72,70 +87,11 @@ class DateAndTimeFormat {
   }*/
 }
 
-class Task {
-  int orderIndex;
-  String label;
-  String description;
-  DateTime deadline;
-  int level;
-  DateTime created;
-  bool completionStatus;
-  DateTime completed;
-  Task() {
-    orderIndex = 0;
-    label = "";
-    description = "";
-    deadline = null;
-    created = null;
-    level = 1;
-    completionStatus = false;
-    completed = null;
-  }
-  Task.fromTask(Task task) {
-    this.orderIndex = task.orderIndex;
-    this.label = task.label;
-    this.description = task.description;
-    this.deadline = task.deadline;
-    this.level = task.level;
-    this.created = task.created;
-    this.completionStatus = task.completionStatus;
-    this.completed = task.completed;
-  }
-}
-
-class RegularTask {
-  int orderIndex;
-  String label;
-  String description;
-  List<DayAndTime> weeklyRepeat;
-  int level;
-  bool completionStatus;
-  RegularTask() {
-    orderIndex = 0;
-    label = "";
-    description = "";
-    weeklyRepeat = List<DayAndTime>.generate(
-      7,
-      (index) => DayAndTime(index + 1),
-    );
-    level = 1;
-    completionStatus = false;
-  }
-  RegularTask.fromRegularTask(RegularTask regularTask) {
-    this.orderIndex = regularTask.orderIndex;
-    this.label = regularTask.label;
-    this.description = regularTask.description;
-    this.weeklyRepeat = regularTask.weeklyRepeat;
-    this.level = regularTask.level;
-    this.completionStatus = regularTask.completionStatus;
-  }
-}
-
 class DayAndTime {
-  int day;
+  int weekDay;
   List<TimeOfDay> time;
   DayAndTime(int day) {
-    this.day = day;
+    this.weekDay = day;
     time = [];
   }
 }
@@ -177,3 +133,22 @@ class TaskLevel {
     "Good luck++",
   ];
 }
+/*Row(
+            children: List.generate(
+              numberIcons.length,
+              (i) => Icon(
+                numberIcons[i],
+              ),
+            ),
+          ),*/
+/*List<IconData> numberIcons = [
+      MaterialCommunityIcons.numeric_1_box,
+      MaterialCommunityIcons.numeric_2_box,
+      MaterialCommunityIcons.numeric_3_box,
+      MaterialCommunityIcons.numeric_4_box,
+      MaterialCommunityIcons.numeric_5_box,
+      MaterialCommunityIcons.numeric_6_box,
+      MaterialCommunityIcons.numeric_7_box,
+      MaterialCommunityIcons.numeric_8_box,
+      MaterialCommunityIcons.numeric_9_box,
+    ];*/

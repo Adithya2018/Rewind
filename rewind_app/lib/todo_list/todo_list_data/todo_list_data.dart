@@ -1,18 +1,25 @@
 import 'package:collection/collection.dart';
+import 'package:rewind_app/database/database_provider.dart';
+import 'package:rewind_app/models/regular_tasks.dart';
+import 'package:rewind_app/models/task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class GoalListData {
-  final List<int> numbers;
-  final List<RegularTask> regularTasks;
-  final List<Task> tasks;
-  final deepEq;
+  List<Task> tasks;
+  DeepCollectionEquality deepEq;
 
-  const GoalListData({
-    this.numbers = const [0, 1, 2],
-    this.regularTasks = const [],
-    this.tasks = const [],
-    this.deepEq = const DeepCollectionEquality(),
-  });
+  GoalListData({
+    tasks,
+    deepEq,
+  }) {
+    this.tasks = tasks;
+    this.deepEq = DeepCollectionEquality();
+  }
+
+  /*GoalListData.initializeFromDB() {
+    DatabaseProvider.db.getTasks().then((value) => this.tasks = value);
+    this.deepEq = DeepCollectionEquality();
+  }*/
 
   GoalListData copy({
     List<int> numbers,
@@ -20,8 +27,6 @@ class GoalListData {
     List<Task> tasks,
   }) =>
       GoalListData(
-        numbers: numbers ?? this.numbers,
-        regularTasks: regularTasks ?? this.regularTasks,
         tasks: tasks ?? this.tasks,
       );
 
@@ -30,9 +35,7 @@ class GoalListData {
       identical(this, other) ||
       other is GoalListData &&
           runtimeType == other.runtimeType &&
-          deepEq.equals(numbers, other.numbers) &&
-          deepEq.equals(tasks, other.tasks) &&
-          deepEq.equals(regularTasks, other.regularTasks);
+          deepEq.equals(tasks, other.tasks);
 
   @override
   int get hashCode => super.hashCode;

@@ -74,7 +74,7 @@ class NotebookPageLayout extends CustomPainter {
       fontFamily: 'Gloria',
     );
     final textSpan = TextSpan(
-      mouseCursor: MouseCursor.defer,
+      //mouseCursor: MouseCursor.defer,
       text: 'Hello, world.',
       style: textStyle,
     );

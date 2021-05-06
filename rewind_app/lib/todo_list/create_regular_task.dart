@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rewind_app/models/regular_tasks.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class CreateRegularTask extends StatefulWidget {
@@ -13,12 +16,12 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
   DateAndTimeFormat dtf = DateAndTimeFormat();
   TaskLevel taskLevel = TaskLevel();
 
-  DateTime deadlineDate;
-  Future<void> _selectDeadlineDate(BuildContext context) async {
+  DateTime startDate;
+  Future<DateTime> _selectDate(BuildContext context) async {
     DateTime now = DateTime.now();
     final DateTime pickedDate = await showDatePicker(
       context: context,
-      initialDate: now, //(deadlineDate==null)?now:deadlineDate,
+      initialDate: now,
       firstDate: DateTime(
         now.year,
         now.month,
@@ -26,17 +29,12 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
       ),
       lastDate: DateTime(now.year + 50),
     );
-    if (pickedDate != null && pickedDate != deadlineDate) {
-      print(deadlineDate);
-      setState(() {
-        deadlineDate = pickedDate;
-      });
-    }
+    return pickedDate;
   }
 
-  TimeOfDay deadlineTime;
+  TimeOfDay selectedTime;
 
-  Future<Null> _selectDeadlineTime(BuildContext context) async {
+  Future<Null> _selectTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(
@@ -45,9 +43,8 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
       ),
     );
     if (picked != null) {
-      print("pickedTime: $picked");
       setState(() {
-        deadlineTime = picked;
+        selectedTime = picked;
       });
     }
   }
@@ -68,13 +65,17 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
     taskCurrent = new RegularTask();
     titleFocusNode = new FocusNode();
     descriptionFocusNode = new FocusNode();
-    titleCtrl = new TextEditingController();
-    descriptionCtrl = new TextEditingController();
+    titleCtrl = TextEditingController(
+      text: "",
+    );
+    descriptionCtrl = TextEditingController(
+      text: "",
+    );
     tabController = new TabController(
       vsync: this,
       length: 2,
     );
-    dayAndTime = new List.generate(7, (index) {
+    weeklyRepeat = new List.generate(7, (index) {
       return DayAndTime(index + 1);
     });
     timeSelectedAnimationCtrl = AnimationController(
@@ -97,19 +98,23 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
     timeListScrollCtrl = ScrollController(
       initialScrollOffset: 0.0,
     );
+    rptEveryCtrl = TextEditingController(
+      text: "",
+    );
+    nRptCtrl = TextEditingController(
+      text: "",
+    );
   }
 
   List<Widget> createTimeList() {
     int i = -1;
-    i = dayAndTime[selectedWeekDay - 1].time.indexWhere((element) {
-      return element == deadlineTime;
+    i = weeklyRepeat[selectedWeekDay - 1].time.indexWhere((element) {
+      return element == selectedTime;
     });
     List<Widget> list = List.generate(
-      dayAndTime[selectedWeekDay - 1].time.length,
+      weeklyRepeat[selectedWeekDay - 1].time.length,
       (index) {
-        int l = dayAndTime[selectedWeekDay - 1].time.length;
-        TimeOfDay t = dayAndTime[selectedWeekDay - 1].time[index];
-        print("index = ${index == i} $index ${l - 1}");
+        TimeOfDay t = weeklyRepeat[selectedWeekDay - 1].time[index];
         Container result = Container(
           constraints: BoxConstraints(
             maxHeight: 50.0,
@@ -117,7 +122,7 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
           decoration: BoxDecoration(
             color: (index == i && timeSelectedAnimationCtrl.isAnimating)
                 ? timeSelectedAnimation.value
-                : Colors.white, //Colors.white,
+                : Colors.white,
             border: Border(
               bottom: BorderSide(
                 color: Colors.blueGrey,
@@ -151,7 +156,7 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                 onPressed: () {
                   setState(() {
                     timeSelectedAnimationCtrl.reset();
-                    dayAndTime[selectedWeekDay - 1].time.removeAt(index);
+                    weeklyRepeat[selectedWeekDay - 1].time.removeAt(index);
                   });
                 },
                 icon: Icon(
@@ -178,6 +183,8 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
     tabController.dispose();
     timeSelectedAnimationCtrl.dispose();
     timeListScrollCtrl.dispose();
+    rptEveryCtrl.dispose();
+    nRptCtrl.dispose();
   }
 
   Future<void> showErrorMessage({String msg}) async {
@@ -214,7 +221,9 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
   }
 
   int selectedWeekDay = 1;
-  List<DayAndTime> dayAndTime = [];
+  List<DayAndTime> weeklyRepeat = [];
+  TextEditingController rptEveryCtrl;
+  TextEditingController nRptCtrl;
 
   @override
   Widget build(BuildContext context) {
@@ -270,9 +279,7 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                   controller: titleCtrl,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.next,
-                  onChanged: (val) {
-                    setState(() {});
-                  },
+                  onChanged: (val) {},
                   cursorColor: Color(0xFFB2E5E3),
                   textAlignVertical: TextAlignVertical.bottom,
                   textAlign: TextAlign.center,
@@ -305,9 +312,7 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                   focusNode: descriptionFocusNode,
                   controller: descriptionCtrl,
                   textCapitalization: TextCapitalization.sentences,
-                  onChanged: (val) {
-                    setState(() {});
-                  },
+                  onChanged: (val) {},
                   minLines: 4,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
@@ -334,7 +339,7 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
               TabBar(
                 controller: tabController,
                 tabs: [
-                  new Tab(
+                  Tab(
                     child: Text(
                       "Week",
                       style: GoogleFonts.gloriaHallelujah(
@@ -343,9 +348,9 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                       ),
                     ),
                   ),
-                  new Tab(
+                  Tab(
                     child: Text(
-                      "Month",
+                      "Custom",
                       style: GoogleFonts.gloriaHallelujah(
                         fontSize: 17,
                         color: Colors.black,
@@ -358,8 +363,8 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                 height: 15.0,
               ),
               Container(
-                height: 280.0,
-                color: Colors.blueGrey,
+                height: 290.0,
+                color: Colors.amber[200],
                 child: TabBarView(
                   controller: tabController,
                   children: [
@@ -372,6 +377,14 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                             (index) => Column(
                               children: [
                                 IconButton(
+                                  icon: Icon(
+                                    dtf.weekDayIcon[index],
+                                    color: (selectedWeekDay == (index + 1))
+                                        ? Colors.blue
+                                        : Colors.white,
+                                  ),
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
                                   onPressed: () {
                                     if (selectedWeekDay != index + 1) {
                                       timeSelectedAnimationCtrl.reset();
@@ -379,22 +392,14 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                                         selectedWeekDay = index + 1;
                                       });
                                     }
-                                    print(
-                                        "${dtf.weekDay[selectedWeekDay - 1]}");
                                   },
-                                  icon: Icon(
-                                    dtf.weekDayIcon[index],
-                                    color: (selectedWeekDay == (index + 1))
-                                        ? Colors.blue
-                                        : Colors.white,
-                                  ),
                                 ),
                               ],
                             ),
                           ),
                         ),
                         Text(
-                          "${dtf.weekDay[selectedWeekDay - 1]} (${dayAndTime[selectedWeekDay - 1].time.length})",
+                          "${dtf.weekDay[selectedWeekDay - 1]} (${weeklyRepeat[selectedWeekDay - 1].time.length})",
                           style: GoogleFonts.gloriaHallelujah(
                             fontSize: 16,
                           ),
@@ -415,41 +420,36 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                             ),
                           ),
                         ),
+                        Spacer(),
                         IconButton(
-                          iconSize: 33,
+                          iconSize: 35,
                           onPressed: () async {
                             timeSelectedAnimationCtrl.reset();
-                            deadlineTime = null;
-                            await _selectDeadlineTime(context);
-                            if (deadlineTime != null) {
-                              print("selected time = $deadlineTime");
+                            selectedTime = null;
+                            await _selectTime(context);
+                            if (selectedTime != null) {
                               setState(() {
-                                int i = dayAndTime[selectedWeekDay - 1]
+                                int i = weeklyRepeat[selectedWeekDay - 1]
                                     .time
                                     .indexWhere((element) {
-                                  return element == deadlineTime;
+                                  return element == selectedTime;
                                 });
                                 if (i == -1) {
-                                  dayAndTime[selectedWeekDay - 1].time
-                                    ..add(deadlineTime)
+                                  weeklyRepeat[selectedWeekDay - 1].time
+                                    ..add(selectedTime)
                                     ..sort((TimeOfDay a, TimeOfDay b) =>
                                         (a.hour != b.hour)
                                             ? (a.hour > b.hour ? 1 : -1)
                                             : (a.minute > b.minute ? 1 : -1));
                                 }
                               });
-                              int i = dayAndTime[selectedWeekDay - 1]
+                              int i = weeklyRepeat[selectedWeekDay - 1]
                                   .time
                                   .indexWhere((element) {
-                                return element == deadlineTime;
+                                return element == selectedTime;
                               });
-                              //deadlineTime = null;
                               timeListScrollCtrl.jumpTo(51.5 * (i - 1));
-                              timeSelectedAnimationCtrl
-                                  .forward(); //.whenComplete(() => deadlineTime = null);
-                              print("animation finished");
-                            } else {
-                              print("no time selected");
+                              timeSelectedAnimationCtrl.forward();
                             }
                           },
                           icon: Icon(
@@ -457,11 +457,134 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                             color: Colors.white,
                           ),
                         ),
+                        Spacer(),
                       ],
                     ),
                     Container(
-                      height: 100.0,
-                      child: Text("data"),
+                      padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 20.0),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Start date: ${startDate == null ? "???" : dtf.formatDate(startDate)}",
+                                    style: GoogleFonts.gloriaHallelujah(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  flex: 4,
+                                ),
+                                Expanded(
+                                  child: IconButton(
+                                    icon: Icon(MaterialCommunityIcons.calendar),
+                                    onPressed: () async {
+                                      DateTime date =
+                                          await _selectDate(context);
+                                      if (date != null) {
+                                        setState(() {
+                                          startDate = date;
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  flex: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: rptEveryCtrl,
+                                    textInputAction: TextInputAction.next,
+                                    textAlign: TextAlign.center,
+                                    keyboardType:
+                                        TextInputType.numberWithOptions(),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(
+                                          rptEveryCtrl.text.isEmpty
+                                              ? r'[1-9]'
+                                              : r'[0-9]',
+                                        ),
+                                      ),
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {});
+                                    },
+                                    style: GoogleFonts.gloriaHallelujah(
+                                      fontSize: 15,
+                                    ),
+                                    decoration: InputDecoration(
+                                      labelText: "Repeat every",
+                                    ),
+                                  ),
+                                  flex: 4,
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    "Days",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.gloriaHallelujah(
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  flex: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: nRptCtrl,
+                                    textAlign: TextAlign.center,
+                                    keyboardType:
+                                        TextInputType.numberWithOptions(),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(
+                                          nRptCtrl.text.isEmpty
+                                              ? r'[1-9]'
+                                              : r'[0-9]',
+                                        ),
+                                      ),
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {});
+                                    },
+                                    style: GoogleFonts.gloriaHallelujah(
+                                      fontSize: 15,
+                                    ),
+                                    decoration: InputDecoration(
+                                      labelText: "No. of repeats",
+                                      hintText: "(regular by default)",
+                                    ),
+                                  ),
+                                  flex: 4,
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    "Times",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.gloriaHallelujah(
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  flex: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -565,12 +688,44 @@ class _CreateRegularTaskState extends State<CreateRegularTask>
                         );
                         return;
                       } else {
-                        taskCurrent.label = titleCtrl.text;
+                        temp.label = titleCtrl.text;
+                        //print("");
+                        taskCurrent;
                       }
                       temp.description = descriptionCtrl.text;
-                      temp.completionStatus = false;
                       temp.level = taskCurrent.level;
-                      temp.weeklyRepeat = dayAndTime;
+                      switch (tabController.index) {
+                        case 0:
+                          {
+                            temp.weekly = true;
+                            temp.weeklyRepeat = weeklyRepeat;
+                          }
+                          break;
+                        case 1:
+                          {
+                            temp.weekly = false;
+                            if (startDate == null) {
+                              await showErrorMessage(
+                                msg: "Enter a start date",
+                              );
+                              return;
+                            }
+                            int rptEvery = 1;
+                            if (rptEveryCtrl.text.isNotEmpty) {
+                              rptEvery = int.parse(rptEveryCtrl.text);
+                            }
+                            int nRpt = -1;
+                            if (nRptCtrl.text.isNotEmpty) {
+                              nRpt = int.parse(nRptCtrl.text);
+                            }
+                            temp.customRepeat = {
+                              "startDate": startDate,
+                              "rptEvery": rptEvery,
+                              "nRpt": nRpt,
+                            };
+                          }
+                          break;
+                      }
                       Navigator.pop(context, temp);
                     },
                   ),

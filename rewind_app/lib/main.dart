@@ -1,24 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:rewind_app/home/home.dart';
 import 'package:flutter/services.dart';
 import 'package:rewind_app/journal/text_editor.dart';
 import 'package:rewind_app/todo_list/create_task.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
+import 'package:rewind_app/todo_list/todo_list_db_wrapper.dart';
 import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 import 'achievements/achievements.dart';
 import 'journal/journal.dart';
+import 'models/regular_tasks.dart';
+import 'models/task.dart';
 import 'todo_list/todo_list.dart';
+import 'package:path_provider/path_provider.dart' as ppr;
 
 void main() async {
-  /*WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
+  WidgetsFlutterBinding.ensureInitialized();
+  /*await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);*/
+  final appDocDirectory = await ppr.getApplicationDocumentsDirectory();
+  Hive.init(appDocDirectory.path);
+  Hive.registerAdapter(TaskAdapter());
+  Hive.registerAdapter(RegularTaskAdapter());
+  print("starting app");
   runApp(RewindApp());
 }
 
-class RewindApp extends StatelessWidget {
+class RewindApp extends StatefulWidget {
+  const RewindApp({Key key}) : super(key: key);
+
+  @override
+  _RewindAppState createState() => _RewindAppState();
+}
+
+class _RewindAppState extends State<RewindApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,25 +45,26 @@ class RewindApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-
-      // theme: ThemeData(
-      //   brightness: Brightness.dark,
-      //   scaffoldBackgroundColor: Colors.black,
-      //   primarySwatch: Colors.teal,
-      //   fontFamily: 'Georgia',
-      // ),
       home: Home(),
       routes: <String, WidgetBuilder>{
         '/ach': (BuildContext context) => Achievements(),
         '/jou': (BuildContext context) => Journal(),
         '/tdl': (BuildContext context) => TodoListWrapper(
-              child: TodoList(),
+              child: TodoListDBWrapper(),
             ),
         '/add': (BuildContext context) => CreateTask(),
         '/vt': (BuildContext context) => EditTask(),
       },
       debugShowCheckedModeBanner: false,
     );
+  }
+
+  @override
+  void dispose() {
+    Hive.close();
+    Hive.deleteBoxFromDisk('todo');
+    print("deleting box 'todo' (from main)");
+    super.dispose();
   }
 }
 

@@ -187,7 +187,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     Container health = createStatContainer(
       "Health",
-      statIconData: Icons.health_and_safety,
+      statIconData: Icons.healing,//Icons.health_and_safety,
       iconColor: Colors.red[900],
       // iconColor: Color(0xffbb0a1e),
       statCurrent: 8,
@@ -745,7 +745,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 child: Container(
                   child: IconButton(
                     icon: Icon(
-                      Icons.query_stats,
+                      Icons.stacked_bar_chart,//Icons.query_stats,
                       color: Colors.green,
                       // color: Colors.white,
                       size: 35,

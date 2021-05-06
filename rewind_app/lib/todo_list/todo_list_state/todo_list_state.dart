@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rewind_app/models/regular_tasks.dart';
+import 'package:rewind_app/models/task.dart';
 import 'package:rewind_app/todo_list/todo_list_data/routine_list_data.dart';
 import 'package:rewind_app/todo_list/todo_list_data/todo_list_data.dart';
 
@@ -15,8 +17,9 @@ class TodoListWrapper extends StatefulWidget {
 }
 
 class _TodoListWrapperState extends State<TodoListWrapper> {
-  GoalListData gldState = GoalListData();
-  RoutineListData rldState = RoutineListData();
+  GoalListData gldState = GoalListData(tasks: List<Task>.from([]));
+  RoutineListData rldState =
+      RoutineListData(regularTasks: List<RegularTask>.from([]));
 
   @override
   Widget build(BuildContext context) => TodoListCommon(
@@ -38,13 +41,13 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
 
   void sortRegularTasks(Function f) {
     List<RegularTask> regularTasks =
-        List<RegularTask>.from(gldState.regularTasks);
+        List<RegularTask>.from(rldState.regularTasks);
     regularTasks.sort(f);
     int id = 0;
     regularTasks.forEach((element) {
       element.orderIndex = id++;
     });
-    setState(() => gldState = gldState.copy(regularTasks: regularTasks));
+    setState(() => rldState = rldState.copy(regularTasks: regularTasks));
   }
 
   void addTask(Task task, Function f) {
@@ -55,6 +58,12 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
       element.orderIndex = id++;
     });
     setState(() => gldState = gldState.copy(tasks: newList));
+  }
+
+  void switchRegularTaskCompletionStatus(int index) {
+    List<RegularTask> newList = rldState.regularTasks;
+    newList[index].completionStatus = !newList[index].completionStatus;
+    setState(() => rldState = rldState.copy(regularTasks: newList));
   }
 
   void addRegularTask(RegularTask regularTask) {
@@ -69,7 +78,7 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
 
   void updateGoals() {}
 
-  void addToList() {
+  /*void addToList() {
     List<int> newList = gldState.numbers + [gldState.numbers.length];
     final numbers = newList;
     final newState = gldState.copy(numbers: numbers);
@@ -80,6 +89,11 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
     List<int> newList = gldState.numbers;
     final numbers = newList.reversed.toList();
     final newState = gldState.copy(numbers: numbers);
+    setState(() => gldState = newState);
+  }*/
+
+  setTaskList(List<Task> tasks) {
+    final newState = gldState.copy(tasks: tasks);
     setState(() => gldState = newState);
   }
 }
