@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rewind_app/models/regular_tasks.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 
@@ -31,72 +32,23 @@ class _RegularTasksListState extends State<RegularTasksList>
     bool dateToday = isSameDate(now, date);
     result = dateToday ? "Today" : result;
     bool dateTomorrow = isSameDate(
-        now.add(Duration(
-          days: 1,
-        )),
-        date);
+      now.add(
+        Duration(days: 1),
+      ),
+      date,
+    );
     result = dateTomorrow ? "Tomorrow" : result;
     print("${now.year}");
     result += (date.year == now.year) ? "" : ", ${date.year}";
     return result;
   }
 
-  Container routineListTile({
+  Container listTile({
     int index,
   }) {
-    /*Container taskDescription = Container(
-      width: double.maxFinite,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: Colors.grey,
-          width: 1.0,
-        ),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(0.0),
-          //bottom: Radius.zero,
-        ),
-      ),
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          child: Container(
-            alignment: Alignment.topCenter,
-            decoration: BoxDecoration(
-              color: Color(0xFFF3EFE4),
-            ),
-            child: Scrollbar(
-              child: TextField(
-                textCapitalization: TextCapitalization.sentences,
-                maxLines: 15,
-                minLines: 3,
-                keyboardType: TextInputType.multiline,
-                textAlign: TextAlign.justify,
-                style: TextStyle(
-                  fontFamily: 'Gloria',
-                  fontSize: 14,
-                  color: Color(0xFF0938BC),
-                ),
-                decoration: InputDecoration(
-                  hintText: "Write something",
-                  contentPadding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );*/
-    /*final provider = TodoListCommon.of(context);
-    //final created = provider.state.regularTasks[index].created;
-    final deadline = provider.state.regularTasks[index].deadline;
-    String deadlineTime = dtf.formatTime(
-      TimeOfDay(
-        hour: deadline.hour,
-        minute: deadline.minute,
-      ),
-    );
-    String deadlineDate = dateToString(deadline);*/
-    final list = TodoListCommon.of(context).rldState.regularTasks;
+    final provider = TodoListCommon.of(context);
+    final list = provider.rldState.regularTasks;
+
     Container mainContainer = Container(
       padding: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
       decoration: BoxDecoration(
@@ -133,10 +85,8 @@ class _RegularTasksListState extends State<RegularTasksList>
                     return Checkbox(
                       value: list[index].completionStatus,
                       onChanged: (value) {
-                        setState(() {
-                          list[index].completionStatus =
-                              list[index].completionStatus;
-                        });
+                        provider.switchRegularTaskCompletionStatus(index);
+                        setState(() {});
                       },
                     );
                   },
@@ -198,89 +148,177 @@ class _RegularTasksListState extends State<RegularTasksList>
         ],
       ),
     );
-    /*Container progressBar = Container(
-      height: 37.0,
-      decoration: BoxDecoration(
-        color: Colors.blueGrey[800],
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(9.0),
-        ),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 5.0,
-          ),
-          Icon(
-            MaterialCommunityIcons.clock_start,
-            color: Colors.white,
-            size: 20,
-          ),
-          SizedBox(
-            width: 5.0,
-          ),
-          Expanded(
-            child: Container(
-              constraints: BoxConstraints(
-                maxHeight: 5.0,
-              ),
-              //color: Colors.white,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [
-                    Colors.white,
-                    Colors.redAccent,
-                  ],
-                ),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                      ),
-                    ),
-                    flex: deadline.difference(DateTime.now()).inMilliseconds,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 5.0,
-          ),
-          Icon(
-            MaterialCommunityIcons.flag_checkered,
-            color: Colors.white,
-            size: 20,
-          ),
-          SizedBox(
-            width: 7.5,
-          ),
-        ],
-      ),
-    );*/
 
-    Container dateContainer = Container(
+    Container weeklyRepeat = Container(
+      padding: EdgeInsets.symmetric(vertical: 12.5),
       decoration: BoxDecoration(
         color: Colors.white,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(
+          7,
+          (i) => Icon(
+            dtf.weekDayIcon[i],
+            color: (list[index].weeklyRepeat[i].time.isNotEmpty)
+                ? Colors.blue
+                : Colors.grey[300],
+          ),
+        ),
+      ),
+    );
+    int rptEvery = list[index].customRepeat['rptEvery'];
+    int nRpt = list[index].customRepeat['nRpt'];
+    Container customRepeat = Container(
+      color: Colors.white,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  MaterialCommunityIcons.repeat,
+                ),
+                Text(
+                  " $rptEvery day${rptEvery == 1 ? "" : "s"}",
+                  style: GoogleFonts.gloriaHallelujah(
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  MaterialCommunityIcons.bell_ring,
+                ),
+                Text(
+                  " ${nRpt == -1 ? "Regular" : "$nRpt times"}",
+                  style: GoogleFonts.gloriaHallelujah(
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+    List<IconData> numberIcons = [
+      MaterialCommunityIcons.numeric_1_box,
+      MaterialCommunityIcons.numeric_2_box,
+      MaterialCommunityIcons.numeric_3_box,
+      MaterialCommunityIcons.numeric_4_box,
+      MaterialCommunityIcons.numeric_5_box,
+      MaterialCommunityIcons.numeric_6_box,
+      MaterialCommunityIcons.numeric_7_box,
+      MaterialCommunityIcons.numeric_8_box,
+      MaterialCommunityIcons.numeric_9_box,
+    ];
+
+    List<Icon> hourList = [];
+    /*if(list[index].weekly){
+      if (nextRpt!=null&&nextRpt.hour < 10) {
+        hourList.add(
+          Icon(
+            numberIcons[0],
+          ),
+        );
+        hourList.add(
+          Icon(
+            numberIcons[nextRpt.hour],
+          ),
+        );
+      }else{
+        hourList.add(
+          Icon(
+            numberIcons[nextRpt.hour~/10],
+          ),
+        );
+        hourList.add(
+          Icon(
+            numberIcons[nextRpt.hour%10],
+          ),
+        );
+      }
+    }*/
+    DateTime now = DateTime.now();
+    DateTime nextRpt;
+    if (list[index].weekly) {
+      bool thisWeekDay = false;
+      bool nextWeekDay = false;
+      list[index].weeklyRepeat.forEach((e1) {
+        e1.time.forEach((element) {
+          DateTime test = DateTime(
+            now.year,
+            now.month,
+            now.day,
+            element.hour,
+            element.minute,
+          );
+          if (test.difference(now).inMilliseconds < 0 && !nextWeekDay) {
+            nextRpt = test.add(Duration(days: e1.weekDay - test.weekday + 7));
+            nextWeekDay = true;
+          }
+          //print(test.difference(now).inHours);
+          test = test.add(Duration(days: e1.weekDay - test.weekday));
+          if (test.difference(now).inMilliseconds > 0 && !thisWeekDay) {
+            thisWeekDay = true;
+            nextRpt = test;
+          }
+        });
+      });
+    } else {
+      nextRpt = list[index].customRepeat['startDate'];
+    }
+    if (nextRpt == null) {
+      print("nextRpt is not set");
+    } else {
+      print("nextRpt is set $nextRpt");
+    }
+    String dateAndTime = "";
+    if (nextRpt == null) {
+      String nextRptTime;
+      nextRptTime = list[index].weekly ? "<not available>" : "";
+      dateAndTime += nextRptTime;
+    } else {
+      String nextRptTime;
+      nextRptTime = list[index].weekly
+          ? "${dtf.formatTime(
+              TimeOfDay(
+                hour: nextRpt.hour,
+                minute: nextRpt.minute,
+              ),
+            )} "
+          : "";
+      dateAndTime += nextRptTime;
+      dateAndTime += dtf.formatDate(
+        nextRpt,
+        abbr: true,
+      );
+    }
+
+    Container dateAndTimeContainer = Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
         borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(10.0),
+          top: Radius.circular(10.0),
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            width: 10.0,
-          ),
-          SizedBox(
-            width: 10.0,
+          Text(
+            "$dateAndTime",
+            style: GoogleFonts.gloriaHallelujah(
+              fontSize: 15,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
@@ -305,9 +343,9 @@ class _RegularTasksListState extends State<RegularTasksList>
       ),
       child: Column(
         children: [
-          //progressBar,
+          dateAndTimeContainer,
+          list[index].weekly ? weeklyRepeat : customRepeat,
           mainContainer,
-          dateContainer,
         ],
       ),
     );
@@ -322,14 +360,12 @@ class _RegularTasksListState extends State<RegularTasksList>
 
   @override
   bool get wantKeepAlive => true;
-  
-  
 
   void updateListTiles() {
     final provider = TodoListCommon.of(context);
     listTiles = List.generate(
       provider.rldState.regularTasks.length,
-          (index) => routineListTile(
+      (index) => listTile(
         index: index,
       ),
     );
@@ -337,20 +373,22 @@ class _RegularTasksListState extends State<RegularTasksList>
 
   @override
   Widget build(BuildContext context) {
-    //from https://stackoverflow.com/questions/53674092/preserve-widget-state-in-pageview-while-enabling-navigation/53702330#53702330
     super.build(context);
-
+    updateListTiles();
     final provider = TodoListCommon.of(context);
     final list = provider.rldState.regularTasks;
-    updateListTiles();
     return Scrollbar(
       child: ListView(
         shrinkWrap: true,
         children: [
+          Text("${list.length}"),
           Column(
             children: listTiles,
           ),
-          Text("numbers = ${provider.gldState.numbers.length}"),
+          SizedBox(
+            height: 20.0,
+          ),
+          /*Text("numbers = ${provider.gldState.numbers.length}"),
           Text("list length = ${list.length}"),
           IconButton(
             onPressed: () {
@@ -362,7 +400,7 @@ class _RegularTasksListState extends State<RegularTasksList>
             icon: Icon(
               FontAwesome5Solid.dragon,
             ),
-          ),
+          ),*/
         ],
       ),
     );

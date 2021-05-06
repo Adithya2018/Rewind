@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rewind_app/database/database_provider.dart';
+import 'package:rewind_app/models/regular_tasks.dart';
+import 'package:rewind_app/models/task.dart';
 import 'package:rewind_app/todo_list/routine_list.dart';
 import 'create_regular_task.dart';
 import 'edit_task.dart';
@@ -390,10 +393,15 @@ class _TodoListState extends State<TodoList>
     setState(() {
       listTiles = List.generate(
         provider.gldState.tasks.length,
-        (index) =>
-            goalsListTile(index: provider.gldState.tasks[index].orderIndex),
+        (index) => goalsListTile(
+          index: provider.gldState.tasks[index].orderIndex,
+        ),
       );
     });
+  }
+
+  get listFromDB {
+    return true;
   }
 
   @override
@@ -581,6 +589,7 @@ class _TodoListState extends State<TodoList>
                             );
                             if (temp != null) {
                               TodoListCommon.of(context).addRegularTask(temp);
+                              print("Regular task created");
                             } else {
                               print("No regular task created");
                             }
@@ -751,9 +760,9 @@ class _TodoListState extends State<TodoList>
                       switch (tabController.index) {
                         case 0:
                           {
-                            final provider = TodoListCommon.of(context);
+                            /*final provider = TodoListCommon.of(context);
                             provider.addToList();
-                            provider.reverseList();
+                            provider.reverseList();*/
                           }
                           break;
                         case 1:
@@ -769,8 +778,7 @@ class _TodoListState extends State<TodoList>
                           break;
                       }
                     },
-                    tooltip:
-                        "Order: ${ascendingOrder ? "ascending" : "descending"}",
+                    tooltip: "Order: ${ascendingOrder ? "asc" : "desc"}ending",
                   ),
                 ),
               ),
