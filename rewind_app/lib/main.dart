@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:rewind_app/home/home.dart';
 import 'package:flutter/services.dart';
+import 'package:rewind_app/journal/text_editor.dart';
 import 'package:rewind_app/todo_list/create_task.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
 import 'package:rewind_app/todo_list/todo_list_db_wrapper.dart';
@@ -54,6 +55,7 @@ class _RewindAppState extends State<RewindApp> {
         '/add': (BuildContext context) => CreateTask(),
         '/vt': (BuildContext context) => EditTask(),
       },
+      debugShowCheckedModeBanner: false,
     );
   }
 
