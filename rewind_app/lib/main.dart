@@ -48,6 +48,7 @@ class _RewindAppState extends State<RewindApp> {
         '/tdl': (BuildContext context) => TodoListDBWrapper(),
         '/vt': (BuildContext context) => EditTask(),
       },
+      debugShowCheckedModeBanner: false,
     );
   }
 

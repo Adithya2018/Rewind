@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rewind_app/models/day_and_time.dart';
+import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class JournalTemp extends StatefulWidget {
   @override
@@ -67,6 +69,12 @@ class _JournalTempState extends State<JournalTemp> {
           border: InputBorder.none,
         ),
       ),
+    );
+
+    DateAndTimeFormat dtf = DateAndTimeFormat();
+
+    Container dateTime = Container(
+      child: Text("${dtf.formatDate(DateTime.now())}"),
     );
 
     Container contentArea = Container(
