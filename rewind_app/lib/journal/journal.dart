@@ -1,108 +1,8 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-class NotebookPageLayout extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final pageColor = Paint()..color = Color(0xFFF3EFE4);
-    var pageSpace = RRect.fromLTRBR(
-      0,
-      0,
-      size.width,
-      size.height,
-      Radius.circular(5.0),
-    );
-    RRect.fromLTRBR(
-      0,
-      0,
-      size.width,
-      size.height,
-      Radius.circular(8.0),
-    );
-    canvas.drawRRect(pageSpace, pageColor);
-
-    //Step 2
-    final paintWhite = Paint()..color = Colors.white;
-    var rrectWhite = RRect.fromLTRBR(
-      5,
-      0,
-      size.width,
-      size.height,
-      Radius.circular(8.0),
-    );
-    canvas.drawRRect(rrectWhite, paintWhite);
-
-    final paintDarkgrey = Paint()
-      ..color = Colors.blueGrey
-      ..strokeWidth = 1.0;
-    double lineHeight = 35.0;
-    canvas.drawLine(
-      Offset(0, lineHeight),
-      Offset(size.width, lineHeight),
-      paintDarkgrey,
-    );
-    canvas.drawLine(
-      Offset(0, lineHeight * 2),
-      Offset(size.width, lineHeight * 2),
-      paintDarkgrey,
-    );
-    TextStyle contentTextStyle = TextStyle(
-      fontFamily: 'Kristi',
-      fontSize: 23,
-      color: Color(0xFF0938BC),
-    );
-    final ParagraphBuilder paragraphBuilder = ParagraphBuilder(
-      ParagraphStyle(
-        fontSize: contentTextStyle.fontSize,
-        fontFamily: contentTextStyle.fontFamily,
-        fontStyle: contentTextStyle.fontStyle,
-        fontWeight: contentTextStyle.fontWeight,
-        textAlign: TextAlign.justify,
-      ),
-    )
-      ..pushStyle(contentTextStyle.getTextStyle())
-      ..addText(
-          "Write somethingWrite somethingWrite somethingWrite somethingWrite somethingWrite somethingWrite something");
-    final Paragraph paragraph = paragraphBuilder.build()
-      ..layout(
-        ParagraphConstraints(width: size.width - 12.0 - 12.0),
-      );
-    canvas.drawParagraph(paragraph, const Offset(12.0, 12.0));
-    final textStyle = TextStyle(
-      color: Colors.black,
-      fontSize: 23,
-      fontFamily: 'Gloria',
-    );
-    final textSpan = TextSpan(
-      //mouseCursor: MouseCursor.defer,
-      text: 'Hello, world.',
-      style: textStyle,
-    );
-    final textPainter = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: size.width,
-    );
-    final offset1 = Offset(50, 100);
-    final offset2 = Offset(50, 123);
-
-    textPainter.paint(canvas, offset1);
-    textPainter.paint(canvas, offset2);
-  }
-
-  @override
-  bool shouldRepaint(NotebookPageLayout oldDelegate) {
-    return true;
-  }
-
-  @override
-  bool shouldRebuildSemantics(NotebookPageLayout oldDelegate) {
-    return true;
-  }
-}
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class JournalTemp extends StatefulWidget {
   @override
@@ -141,65 +41,38 @@ class _JournalTempState extends State<JournalTemp> {
 
   @override
   Widget build(BuildContext context) {
-    TextField titleField = TextField(
-      enabled: titleInViewMode,
-      focusNode: titleFocus,
-      textAlign: TextAlign.left,
-      cursorColor: Colors.white,
-      style: TextStyle(
-        fontFamily: 'Gloria',
-        //fontStyle: FontStyle.italic,
-        fontSize: 18,
-      ),
-      //onEditingComplete: () => changeTitleMode(),
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(5.0, 0.0, 20.0, 0.0),
-        //labelText: "Title",
-        hintText: "Title",
-        //hintText: "Title",
-        disabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        /**/ border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.transparent,
-          ),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        /*suffixIcon: ElevatedButton(
-          child: Icon(
-            Icons.check_sharp,
-          ),
-          onPressed: () {
-            titleFocus.unfocus();
-          },
-          style: ButtonStyle(),
-        ),*/
-      ),
-    );
-
-    /**/ Container pageTitleArea = Container(
-      alignment: Alignment.centerLeft,
-      child: titleField,
-      constraints: BoxConstraints(
-        maxHeight: 40.0,
-      ),
-      //width: double.maxFinite,
-    );
-
-    Container contentField = Container(
+    Container titleArea = Container(
       alignment: Alignment.topCenter,
       decoration: BoxDecoration(
-        color: Color(0xFFF3EFE4),
-        border: Border.all(
-          color: Colors.grey,
-          width: 1.0,
+        color: Colors.white,
+        border: Border.symmetric(),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(5.0),
+          //bottom: Radius.zero,
         ),
+      ),
+      child: TextField(
+        enabled: titleInViewMode,
+        focusNode: titleFocus,
+        textAlign: TextAlign.center,
+        textInputAction: TextInputAction.next,
+        cursorColor: Colors.blueGrey,
+        style: TextStyle(
+          fontFamily: 'Gloria',
+          fontSize: 18,
+        ),
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(5.0, 0.0, 20.0, 0.0),
+          hintText: "Title",
+          border: InputBorder.none,
+        ),
+      ),
+    );
+
+    Container contentArea = Container(
+      alignment: Alignment.topCenter,
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(5.0),
           //bottom: Radius.zero,
@@ -207,12 +80,12 @@ class _JournalTempState extends State<JournalTemp> {
       ),
       child: Scrollbar(
         child: TextField(
-          enabled: contentInViewMode,
           expands: true,
           maxLines: null,
           minLines: null,
           keyboardType: TextInputType.multiline,
           textAlign: TextAlign.justify,
+          cursorColor: Colors.blueGrey,
           style: TextStyle(
             fontFamily: 'Gloria',
             fontSize: 18,
@@ -221,77 +94,54 @@ class _JournalTempState extends State<JournalTemp> {
           decoration: InputDecoration(
             hintText: "Write something",
             contentPadding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
+            border: InputBorder.none,
           ),
         ),
       ),
-    );
-
-    CustomPaint notebookPageLayout = CustomPaint(
-      foregroundPainter: NotebookPageLayout(),
-      child: contentField,
-    );
-
-    Container contentFieldTemp = Container(
-      alignment: Alignment.topCenter,
-      decoration: BoxDecoration(
-        color: Color(0xFFF3EFE4),
-        border: Border.all(
-          color: Colors.grey,
-          width: 1.0,
-        ),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(5.0),
-          //bottom: Radius.zero,
-        ),
-      ),
-      child: notebookPageLayout,
     );
 
     return Scaffold(
       //backgroundColor: Color(0xFFF3EFE4),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(65.0),
+        preferredSize: Size.fromHeight(60.0),
         child: AppBar(
-          elevation: 3.0,
-          backgroundColor: Colors.cyan[300],
+          iconTheme: IconThemeData(
+            color: Colors.black,
+          ),
+          elevation: 0.0,
+          backgroundColor: Colors.white,
           toolbarHeight: 60.0,
-          title: Column(
-            //crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              pageTitleArea,
-              Row(
-                children: [
-                  SizedBox(
-                    width: 7.0,
-                  ),
-                  Text(
-                    "10 April 2021, 7:45 pm",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+          title: Text(
+            "Journal",
+            textAlign: TextAlign.left,
+            style: GoogleFonts.gloriaHallelujah(
+              fontSize: 22,
+              color: Colors.black,
+            ),
           ),
           actions: <Widget>[
             IconButton(
               icon: Icon(
                 Icons.more_vert_sharp,
-                color: Colors.white,
+                color: Colors.black,
                 size: 30.0,
               ),
               tooltip: 'Refresh',
               onPressed: () {
-                Navigator.of(context).popUntil((route) => false);
-                Navigator.of(context).pushNamed('/');
+                print("more options");
               },
             ),
           ],
         ),
       ),
-      body: contentFieldTemp,
+      body: Column(
+        children: <Widget>[
+          titleArea,
+          Expanded(
+            child: contentArea,
+          ),
+        ],
+      ),
       /*persistentFooterButtons: [
         IconButton(
           alignment: Alignment.centerLeft,
@@ -313,131 +163,76 @@ class _JournalTempState extends State<JournalTemp> {
           ),
         ),
       ],*/
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: IconButton(
-              icon: Icon(
-                Icons.check,
-                color: Colors.blue,
-              ),
-              onPressed: () {
-                changeContentMode();
-                print("edit button");
-              },
-            ),
-            label: "Not saved",
-            tooltip: "Read mode",
-            backgroundColor: Colors.black,
+      bottomNavigationBar: Container(
+        height: 70.0,
+        decoration: new BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(10.0),
           ),
-          BottomNavigationBarItem(
-            icon: IconButton(
-              icon: Icon(
-                contentInViewMode ? Icons.visibility : Icons.edit,
-                color: Colors.blue,
-              ),
-              onPressed: () {
-                changeTitleMode();
-                changeContentMode();
-                print("edit button");
-              },
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue,
+              offset: Offset(0.0, -1.0),
+              blurRadius: 7.0,
+              spreadRadius: 0.0,
             ),
-            label: "${contentInViewMode ? "View" : "Edit"} mode",
-            tooltip: "Read mode",
-          ),
-          BottomNavigationBarItem(
-            icon: IconButton(
-              icon: Icon(
-                Icons.cancel,
-                color: Colors.red[800],
-              ),
-              onPressed: () {
-                print("cancel button");
-              },
-            ),
-            label: "Cancel",
-            tooltip: "Read mode",
-          ),
-        ],
-      ),
-    );
-  }
-}
-/*
-    Container titleArea = Container(
-      child: TextField(
-        textInputAction: TextInputAction.next,
-        onChanged: (val) {
-          setState(() {});
-        },
-        cursorColor: Colors.white,
-        textAlignVertical: TextAlignVertical.bottom,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          labelText: "Password",
-          //hintText: "Password",
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.transparent,
-            ),
-            //borderRadius: BorderRadius.circular(5.0),
-          ),
-          /* suffixIcon: ElevatedButton(
-            child: Icon(
-              Icons.check_sharp,
-            ),
-            onPressed: () {
-              titleFocus.unfocus();
-            },
-            style: ButtonStyle(),
-          ),*/
+          ],
         ),
-      ),
-    );*/
-
-class JournalTest extends StatefulWidget {
-  const JournalTest({Key key}) : super(key: key);
-
-  @override
-  _JournalTestState createState() => _JournalTestState();
-}
-
-class _JournalTestState extends State<JournalTest> {
-  _onTapDown(TapDownDetails details) {
-    var x = details.globalPosition.dx;
-    var y = details.globalPosition.dy;
-    print(details.localPosition);
-    print("tap down " + x.toString() + ", " + y.toString());
-  }
-
-  _onTapUp(TapUpDetails details) {
-    var x = details.globalPosition.dx;
-    var y = details.globalPosition.dy;
-    print(details.localPosition);
-    print("tap up " + x.toString() + ", " + y.toString());
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0),
-        child: AppBar(),
-      ),
-      body: Scrollbar(
-        child: GestureDetector(
-          onTapUp: _onTapUp,
-          onTapDown: _onTapDown,
-          child: ListView(
+        child: Center(
+          child: Flex(
+            direction: Axis.horizontal,
             children: [
-
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: TextButton(
+                    child: Text(
+                      "Save",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.gloriaHallelujah(
+                        fontSize: 20,
+                        color: Colors.black,
+                      ),
+                    ),
+                    onPressed: () async {
+                      print("Save");
+                    },
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: TextButton(
+                    child: Text(
+                      "Cancel",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.gloriaHallelujah(
+                        fontSize: 20,
+                        color: Colors.black,
+                      ),
+                    ),
+                    onPressed: () {
+                      print("Cancel");
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
-        )
+        ),
       ),
     );
   }

@@ -8,6 +8,5 @@ class TableRoutine{
   static const String COLUMN_CUSTOM_REPEAT = "customRepeat";
   static const String COLUMN_LEVEL = "level";
   static const String COLUMN_COMPLETION_STATUS = "completionStatus";
-
   const TableRoutine();
 }

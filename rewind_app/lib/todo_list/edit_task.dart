@@ -5,9 +5,11 @@ import 'package:rewind_app/models/task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class EditTask extends StatefulWidget {
-  final Task task;
+  final Task taskCurrent;
+  final bool editMode;
   EditTask({
-    this.task,
+    this.taskCurrent,
+    this.editMode,
   });
   @override
   _EditTaskState createState() => _EditTaskState();
@@ -17,7 +19,7 @@ class _EditTaskState extends State<EditTask> {
   Task taskCurrent;
   DateAndTimeFormat dtf = new DateAndTimeFormat();
   TaskLevel taskLevel = new TaskLevel();
-  DateTime deadlineDate;
+  //DateTime deadlineDate;
   Future<void> selectDeadline(BuildContext context) async {
     DateTime now = DateTime.now();
     final DateTime pickedDate = await showDatePicker(
@@ -30,21 +32,20 @@ class _EditTaskState extends State<EditTask> {
       ),
       lastDate: DateTime(2050),
     );
-    if (pickedDate != null && pickedDate != deadlineDate) {
+    if (pickedDate != null && pickedDate != taskCurrent.deadline) {
       setState(() {
-        deadlineDate = pickedDate;
+        taskCurrent.deadline = pickedDate;
       });
     }
   }
 
   TimeOfDay deadlineTime;
   Future<Null> selectTime(BuildContext context) async {
+    TimeOfDay initialTime = TimeOfDay.now();
+    initialTime = deadlineTime == null ? TimeOfDay.now() : deadlineTime;
     final TimeOfDay picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(
-        hour: deadlineTime.hour,
-        minute: deadlineTime.minute,
-      ),
+      initialTime: initialTime,
     );
     if (picked != null) {
       setState(() {
@@ -64,17 +65,19 @@ class _EditTaskState extends State<EditTask> {
     titleFocusNode = new FocusNode();
     descriptionFocusNode = new FocusNode();
     titleCtrl = new TextEditingController(
-      text: "${widget.task.label}",
+      text: "${widget.taskCurrent.label}",
     );
     descriptionCtrl = new TextEditingController(
-      text: "${widget.task.description}",
+      text: "${widget.taskCurrent.description}",
     );
-    taskCurrent = Task.fromTask(widget.task);
-    deadlineDate = widget.task.deadline;
-    deadlineTime = TimeOfDay(
-      hour: deadlineDate.hour,
-      minute: deadlineDate.minute,
-    );
+    taskCurrent = Task.fromTask(widget.taskCurrent);
+    if (widget.taskCurrent.deadline != null) {
+      taskCurrent.deadline = widget.taskCurrent.deadline;
+      deadlineTime = TimeOfDay(
+        hour: taskCurrent.deadline.hour,
+        minute: taskCurrent.deadline.minute,
+      );
+    }
   }
 
   @override
@@ -86,32 +89,35 @@ class _EditTaskState extends State<EditTask> {
     descriptionCtrl.dispose();
   }
 
-  void saveChanges() {
-    Navigator.pop(context, taskCurrent);
-  }
-
-  Future<void> showErrorMessage({
-    String msg,
-  }) async {
+  Future<void> showErrorMessage({String title, String msg}) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: Row(
+          title: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Invalid "),
               Icon(
-                Icons.warning,
-                color: Colors.yellow,
+                MaterialCommunityIcons.alert,
+                color: Colors.red,
+                size: 35.0,
+              ),
+              Text(
+                title ?? "Try again",
+                style: GoogleFonts.gloriaHallelujah(
+                  fontSize: 20,
+                ),
               ),
             ],
           ),
           content: Container(
             child: Text(
               msg,
+              style: GoogleFonts.gloriaHallelujah(
+                fontSize: 16,
+              ),
             ),
           ),
           actions: <Widget>[
@@ -144,7 +150,7 @@ class _EditTaskState extends State<EditTask> {
                 width: 7.0,
               ),
               Text(
-                "Edit task",
+                "${widget.editMode ? "Edit" : "New"} task",
                 textAlign: TextAlign.left,
                 style: GoogleFonts.gloriaHallelujah(
                   fontSize: 22,
@@ -265,7 +271,7 @@ class _EditTaskState extends State<EditTask> {
                   ),
                   Spacer(),
                   Text(
-                    "${deadlineDate == null ? "???" : dtf.formatDate(deadlineDate)}",
+                    "${taskCurrent.deadline == null ? "???" : dtf.formatDate(taskCurrent.deadline)}",
                     textAlign: TextAlign.end,
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 14,
@@ -409,29 +415,33 @@ class _EditTaskState extends State<EditTask> {
                     ),
                     onPressed: () async {
                       print("Save");
-                      print("${taskCurrent.label}");
                       if (titleCtrl.text.isEmpty) {
                         await showErrorMessage(
                           msg: "Title cannot be empty",
                         );
                         return;
-                      } else {
-                        taskCurrent.label = titleCtrl.text;
                       }
-                      taskCurrent.description = descriptionCtrl.text;
-                      //taskCurrent.level = taskCurrent.level;
-                      if (deadlineDate != null && deadlineTime != null) {
+                      print("is deadlineTime null? ${deadlineTime == null}");
+                      if (taskCurrent.deadline != null &&
+                          deadlineTime != null) {
                         taskCurrent.deadline = DateTime(
-                          deadlineDate.year,
-                          deadlineDate.month,
-                          deadlineDate.day,
+                          taskCurrent.deadline.year,
+                          taskCurrent.deadline.month,
+                          taskCurrent.deadline.day,
                           deadlineTime.hour,
                           deadlineTime.minute,
                         );
                       } else {
-                        print("time or date is null");
+                        await showErrorMessage(
+                          msg: "Select a deadline",
+                        );
+                        return;
                       }
-                      saveChanges();
+                      taskCurrent.label = titleCtrl.text;
+                      taskCurrent.description = descriptionCtrl.text;
+                      taskCurrent.created = taskCurrent.createdDateTime;
+                      print("Created: ${taskCurrent.created}");
+                      Navigator.pop(context, taskCurrent);
                     },
                   ),
                 ),

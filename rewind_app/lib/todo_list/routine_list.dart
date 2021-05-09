@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/models/regular_tasks.dart';
+import 'package:rewind_app/models/regular_task.dart';
+import 'package:rewind_app/todo_list/edit_regular_task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
-import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
+import './todo_list_state/todo_list_state.dart';
 
-class RegularTasksList extends StatefulWidget {
+class RoutineList extends StatefulWidget {
   @override
-  _RegularTasksListState createState() => _RegularTasksListState();
+  _RoutineListState createState() => _RoutineListState();
 }
 
-class _RegularTasksListState extends State<RegularTasksList>
-    with AutomaticKeepAliveClientMixin<RegularTasksList> {
+class _RoutineListState extends State<RoutineList>
+    with AutomaticKeepAliveClientMixin<RoutineList> {
   List<Container> listTiles = [];
   bool ascendingOrder = true;
   int sortByOption = 0;
+  Function currentSortByFunction() {
+    return (RegularTask a, RegularTask b) =>
+    (ascendingOrder ? 1 : -1) * sortByFunction[sortByOption](a, b) as int;
+  }
   List<Function> sortByFunction = [
     //(RegularTask a, RegularTask b) => a.deadline.compareTo(b.deadline),
     (RegularTask a, RegularTask b) => a.level.compareTo(b.level),
@@ -48,7 +53,6 @@ class _RegularTasksListState extends State<RegularTasksList>
   }) {
     final provider = TodoListCommon.of(context);
     final list = provider.rldState.regularTasks;
-
     Container mainContainer = Container(
       padding: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
       decoration: BoxDecoration(
@@ -99,7 +103,24 @@ class _RegularTasksListState extends State<RegularTasksList>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextButton(
-                      onPressed: () async {},
+                      onPressed: () async {
+                        RegularTask temp = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditRegularTask(
+                              taskCurrent: provider.rldState.regularTasks[index],
+                              editMode: true,
+                            ),
+                          ),
+                        );
+                        if (temp != null) {
+                          setState(() {
+                            provider.rldState.regularTasks[index] =
+                            RegularTask.fromRegularTask(temp);
+                          });
+                        }
+                        //provider.sortRegularTasks(currentSortByFunction());
+                      },
                       onLongPress: () {},
                       child: Text(
                         list[index].label,
@@ -160,7 +181,7 @@ class _RegularTasksListState extends State<RegularTasksList>
           7,
           (i) => Icon(
             dtf.weekDayIcon[i],
-            color: (list[index].weeklyRepeat[i].time.isNotEmpty)
+            color: (list[index].weeklyRepeat[i].isNotEmpty)
                 ? Colors.blue
                 : Colors.grey[300],
           ),
@@ -170,6 +191,10 @@ class _RegularTasksListState extends State<RegularTasksList>
     int rptEvery = list[index].customRepeat['rptEvery'];
     int nRpt = list[index].customRepeat['nRpt'];
     Container customRepeat = Container(
+      padding: EdgeInsets.only(
+        top: 10.0,
+        bottom: 10.0,
+      ),
       color: Colors.white,
       child: Row(
         children: [
@@ -208,7 +233,7 @@ class _RegularTasksListState extends State<RegularTasksList>
         ],
       ),
     );
-    List<IconData> numberIcons = [
+    /*List<IconData> numberIcons = [
       MaterialCommunityIcons.numeric_1_box,
       MaterialCommunityIcons.numeric_2_box,
       MaterialCommunityIcons.numeric_3_box,
@@ -220,7 +245,7 @@ class _RegularTasksListState extends State<RegularTasksList>
       MaterialCommunityIcons.numeric_9_box,
     ];
 
-    List<Icon> hourList = [];
+    List<Icon> hourList = [];*/
     /*if(list[index].weekly){
       if (nextRpt!=null&&nextRpt.hour < 10) {
         hourList.add(
@@ -248,29 +273,33 @@ class _RegularTasksListState extends State<RegularTasksList>
     }*/
     DateTime now = DateTime.now();
     DateTime nextRpt;
-    if (list[index].weekly) {
+    DateTime test = DateTime(2021);
+    print(test);
+    print(now);
+    /**/if (list[index].weekly) {
       bool thisWeekDay = false;
       bool nextWeekDay = false;
+      int weekDay = 1;
       list[index].weeklyRepeat.forEach((e1) {
-        e1.time.forEach((element) {
+        e1.forEach((element) {
           DateTime test = DateTime(
             now.year,
             now.month,
             now.day,
-            element.hour,
-            element.minute,
+            element.startTime['hh'],
+            element.startTime['mm'],
           );
           if (test.difference(now).inMilliseconds < 0 && !nextWeekDay) {
-            nextRpt = test.add(Duration(days: e1.weekDay - test.weekday + 7));
+            nextRpt = test.add(Duration(days: weekDay - test.weekday + 7));
             nextWeekDay = true;
           }
-          //print(test.difference(now).inHours);
-          test = test.add(Duration(days: e1.weekDay - test.weekday));
+          test = test.add(Duration(days: weekDay - test.weekday));
           if (test.difference(now).inMilliseconds > 0 && !thisWeekDay) {
             thisWeekDay = true;
             nextRpt = test;
           }
         });
+        ++weekDay;
       });
     } else {
       nextRpt = list[index].customRepeat['startDate'];
@@ -362,9 +391,9 @@ class _RegularTasksListState extends State<RegularTasksList>
   bool get wantKeepAlive => true;
 
   void updateListTiles() {
-    final provider = TodoListCommon.of(context);
+    final list = TodoListCommon.of(context).rldState.regularTasks;
     listTiles = List.generate(
-      provider.rldState.regularTasks.length,
+      list.length,
       (index) => listTile(
         index: index,
       ),
@@ -375,13 +404,10 @@ class _RegularTasksListState extends State<RegularTasksList>
   Widget build(BuildContext context) {
     super.build(context);
     updateListTiles();
-    final provider = TodoListCommon.of(context);
-    final list = provider.rldState.regularTasks;
     return Scrollbar(
       child: ListView(
         shrinkWrap: true,
         children: [
-          Text("${list.length}"),
           Column(
             children: listTiles,
           ),

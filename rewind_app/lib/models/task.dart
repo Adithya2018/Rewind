@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 part 'task.g.dart';
 
 @HiveType(typeId: 0)
-class Task {
+class Task extends HiveObject {
   @HiveField(0)
   DateTime created;
 
@@ -31,12 +31,10 @@ class Task {
     orderIndex = 0;
     label = "";
     description = "";
-    deadline = null;
-    created = null;
     level = 1;
     completionStatus = false;
-    completed = null;
   }
+
   Task.fromTask(Task task) {
     this.orderIndex = task.orderIndex;
     this.label = task.label;
@@ -48,20 +46,22 @@ class Task {
     this.completed = task.completed;
   }
 
-  Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{
-      /*DatabaseProvider.COLUMN_LABEL: label,
-      DatabaseProvider.COLUMN_DESCRIPTION: description,*/
-    };
-    /*if(orderIndex!=null){
-      map[DatabaseProvider.COLUMN_ID] = orderIndex;
-    }*/
-    return map;
-  }
+  DateTime get createdDateTime => created == null ? DateTime.now() : created;
 
-  Task.fromMap(Map<String, dynamic> map){
-    /*orderIndex = map[DatabaseProvider.COLUMN_ID];
-    label = map[DatabaseProvider.COLUMN_LABEL];
-    description = map[DatabaseProvider.COLUMN_DESCRIPTION];*/
+  @override
+  String toString() {
+    List<String> result = [];
+    result.add("created: ${created.toString()}");
+    result.add("title: $label");
+    result.add("description: ${description.isEmpty?"no description":description}");
+    result.add("deadline: ${deadline.toString()}");
+    result.add("level: $level");
+    result.add("completionStatus: ${completionStatus?"":"not"} completed");
+    result.add("completed: ${completed.toString()}");
+    String s = "";
+    result.forEach((element) {
+      s += "$element\n";
+    });
+    return s;
   }
 }

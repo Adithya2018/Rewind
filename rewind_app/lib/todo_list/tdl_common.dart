@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:rewind_app/database/database_provider.dart';
-import 'package:rewind_app/tables/table_goals.dart';
-import 'package:rewind_app/tables/table_routine.dart';
 
 class DateAndTimeFormat {
   List<String> month = [
@@ -80,6 +77,19 @@ class DateAndTimeFormat {
         DateTime.now().year == dateTime.year ? "" : " ${dateTime.year}";
     return "$result$year";
   }
+
+  static DateTime dateTimeShortened(DateTime dateTime){
+    dateTime = DateTime(
+      dateTime.year,
+      dateTime.month,
+      dateTime.day,
+      dateTime.hour,
+      dateTime.minute,
+      dateTime.second,
+      dateTime.millisecond,
+    );
+    return dateTime;
+  }
   //var daySuffix = ["st", "nd", "rd", "th",];
   /*String currentDateAndTime() {
     DateTime now = new DateTime.now();
@@ -87,14 +97,6 @@ class DateAndTimeFormat {
   }*/
 }
 
-class DayAndTime {
-  int weekDay;
-  List<TimeOfDay> time;
-  DayAndTime(int day) {
-    this.weekDay = day;
-    time = [];
-  }
-}
 
 class TaskLevel {
   List<Color> diffLevelIconColor = [

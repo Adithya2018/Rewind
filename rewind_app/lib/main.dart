@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:rewind_app/home/home.dart';
-import 'package:flutter/services.dart';
-import 'package:rewind_app/todo_list/create_task.dart';
+import 'package:rewind_app/models/interval.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
 import 'package:rewind_app/todo_list/todo_list_db_wrapper.dart';
-import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 import 'achievements/achievements.dart';
 import 'journal/journal.dart';
-import 'models/regular_tasks.dart';
+import 'models/regular_task.dart';
 import 'models/task.dart';
-import 'todo_list/todo_list.dart';
 import 'package:path_provider/path_provider.dart' as ppr;
 
 void main() async {
@@ -25,6 +20,7 @@ void main() async {
   Hive.init(appDocDirectory.path);
   Hive.registerAdapter(TaskAdapter());
   Hive.registerAdapter(RegularTaskAdapter());
+  Hive.registerAdapter(TimeIntervalAdapter());
   print("starting app");
   runApp(RewindApp());
 }
@@ -37,6 +33,7 @@ class RewindApp extends StatefulWidget {
 }
 
 class _RewindAppState extends State<RewindApp> {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -47,11 +44,8 @@ class _RewindAppState extends State<RewindApp> {
       home: Home(),
       routes: <String, WidgetBuilder>{
         '/ach': (BuildContext context) => Achievements(),
-        '/jou': (BuildContext context) => Journal(),
-        '/tdl': (BuildContext context) => TodoListWrapper(
-              child: TodoListDBWrapper(),
-            ),
-        '/add': (BuildContext context) => CreateTask(),
+        '/jou': (BuildContext context) => JournalTemp(),
+        '/tdl': (BuildContext context) => TodoListDBWrapper(),
         '/vt': (BuildContext context) => EditTask(),
       },
     );
@@ -60,8 +54,6 @@ class _RewindAppState extends State<RewindApp> {
   @override
   void dispose() {
     Hive.close();
-    Hive.deleteBoxFromDisk('todo');
-    print("deleting box 'todo' (from main)");
     super.dispose();
   }
 }
