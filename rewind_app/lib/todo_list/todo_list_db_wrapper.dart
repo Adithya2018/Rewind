@@ -3,6 +3,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:rewind_app/todo_list/todo_list.dart';
+import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 
 class TodoListDBWrapper extends StatefulWidget {
   const TodoListDBWrapper({Key key}) : super(key: key);
@@ -12,51 +13,76 @@ class TodoListDBWrapper extends StatefulWidget {
 }
 
 class _TodoListDBWrapperState extends State<TodoListDBWrapper> {
+  List<Box> boxList = []; //might be required to use sometime
+  Future<void> openBoxes() async {
+    await Hive.openBox('goals');
+    await Hive.openBox('routine');
+  }
+
+  final notifier = ValueNotifier(
+    DateTime.now().second,
+  );
+
   @override
   void initState() {
-    print("initializing todo DB");
     super.initState();
+    notifier.addListener(() {
+      print("${notifier.value}");
+    });
   }
+
   @override
   void dispose() {
-    print("closing and deleting");
+    Hive.deleteFromDisk();
     Hive.close();
-    Hive.deleteBoxFromDisk('todo');
     super.dispose();
   }
+
+  Scaffold messageScaffold(String message, IconData iconData) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              iconData,
+              color: Colors.yellow,
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            Text(
+              message,
+              style: GoogleFonts.gloriaHallelujah(
+                fontSize: 20,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Hive.openBox('todo'),
+      future: openBoxes(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
-            return Text("DB error");
+            return messageScaffold(
+              "Cannot load",
+              MaterialCommunityIcons.robot,
+            );
           } else
-            return TodoList();
+            return TodoListWrapper(
+              child: TodoList(),
+            );
         }
-        return Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  FontAwesome5Solid.hourglass_half,
-                  color: Colors.yellow,
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Text(
-                  "Loading...",
-                  style: GoogleFonts.gloriaHallelujah(
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        return messageScaffold(
+          "Loading...",
+          FontAwesome5Solid.hourglass_half,
         );
       },
     );

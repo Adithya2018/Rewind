@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:rewind_app/models/regular_tasks.dart';
+import 'package:hive/hive.dart';
+import 'package:rewind_app/models/regular_task.dart';
 import 'package:rewind_app/models/task.dart';
 import 'package:rewind_app/todo_list/todo_list_data/routine_list_data.dart';
-import 'package:rewind_app/todo_list/todo_list_data/todo_list_data.dart';
-
-import '../tdl_common.dart';
+import 'package:rewind_app/todo_list/todo_list_data/goal_list_data.dart';
 
 class TodoListWrapper extends StatefulWidget {
   final Widget child;
@@ -17,21 +16,78 @@ class TodoListWrapper extends StatefulWidget {
 }
 
 class _TodoListWrapperState extends State<TodoListWrapper> {
-  GoalListData gldState = GoalListData(tasks: List<Task>.from([]));
-  RoutineListData rldState =
-      RoutineListData(regularTasks: List<RegularTask>.from([]));
+  GoalListData gldState;
+  RoutineListData rldState;
+  static const GOAL_BOX_NAME = 'goals';
+  static const ROUTINE_BOX_NAME = 'routine';
+
+  String dateTimeToKey(DateTime date) {
+    String result = "";
+    result += date.year.toString();
+    result += date.month.toString();
+    result += date.day.toString();
+    result += date.hour.toString();
+    result += date.second.toString();
+    result += date.millisecond.toString();
+    return result;
+  }
 
   @override
-  Widget build(BuildContext context) => TodoListCommon(
-        child: widget.child,
-        gldState: gldState,
-        rldState: rldState,
-        stateWidget: this,
-      );
+  void initState() {
+    super.initState();
+    /*for (int i = 0; i < 5; ++i) {
+      DateTime now = DateTime.now();
+      print(now.toString().length);
+    }*/
+    /*GoalListData({
+    List<Task> tasks,
+    Set<int> selected,
+    int sortByOption,
+    bool ascendingOrder,
+  })*/
+    print("todo list state initState()");
+    gldState = GoalListData(
+      tasks: List<Task>.from(Hive.box(GOAL_BOX_NAME).values),
+      sortByOption: 0,
+      ascendingOrder: true,
+    );
+    /*print("goals=${gldState.tasks.length}");
+    gldState.tasks.forEach((element) {
+      print("goal: ${element.toString()}");
+    });*/
+    rldState = RoutineListData(
+      regularTasks: List<RegularTask>.from(Hive.box(ROUTINE_BOX_NAME).values),
+      ascendingOrder: true,
+    );
+    /*print("regular tasks=${rldState.regularTasks.length}");
+    rldState.regularTasks.forEach((element) {
+      print("regular task: ${element.toString()}");
+    });*/
+  }
 
-  void sortTasks(Function f) {
+  @override
+  void dispose() {
+    //Created: 2021-05-07 05:04:04.204453
+    gldState.tasks.forEach((task) {
+      saveToBox(task.created, task, GOAL_BOX_NAME);
+    });
+    rldState.regularTasks.forEach((task) {
+      saveToBox(task.created, task, ROUTINE_BOX_NAME);
+    });
+    super.dispose();
+  }
+
+  void saveToBox(DateTime created, Object value, String boxName) {
+    String key = dateTimeToKey(created);
+    Hive.box(boxName).put(
+      key,
+      value,
+    );
+  }
+
+  void sortTasks() {
     List<Task> tasks = List<Task>.from(gldState.tasks);
-    tasks.sort(f);
+    tasks.sort(gldState.currentSortByFunction);
     int id = 0;
     tasks.forEach((element) {
       element.orderIndex = id++;
@@ -50,9 +106,9 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
     setState(() => rldState = rldState.copy(regularTasks: regularTasks));
   }
 
-  void addTask(Task task, Function f) {
-    List<Task> newList = gldState.tasks + [task];
-    newList.sort(f);
+  void addTask(Task task) {
+    List<Task> newList = [task] + gldState.tasks;
+    //newList.sort(gldState.currentSortByFunction);
     int id = 0;
     newList.forEach((element) {
       element.orderIndex = id++;
@@ -66,6 +122,11 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
     setState(() => rldState = rldState.copy(regularTasks: newList));
   }
 
+  void removeRegularTask(RegularTask regularTask) {
+    List<RegularTask> newList = rldState.regularTasks;
+    setState(() => rldState = rldState.copy(regularTasks: newList));
+  }
+
   void addRegularTask(RegularTask regularTask) {
     List<RegularTask> newList = rldState.regularTasks + [regularTask];
     newList.sort((RegularTask a, RegularTask b) => a.level.compareTo(b.level));
@@ -76,25 +137,21 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
     setState(() => rldState = rldState.copy(regularTasks: newList));
   }
 
-  void updateGoals() {}
+  @override
+  Widget build(BuildContext context) => TodoListCommon(
+        child: widget.child,
+        gldState: gldState,
+        rldState: rldState,
+        stateWidget: this,
+      );
 
-  /*void addToList() {
-    List<int> newList = gldState.numbers + [gldState.numbers.length];
-    final numbers = newList;
-    final newState = gldState.copy(numbers: numbers);
-    setState(() => gldState = newState);
+  void sortTasksBy(int temp) {
+    gldState.sortByOption = temp;
+    sortTasks();
   }
 
-  void reverseList() {
-    List<int> newList = gldState.numbers;
-    final numbers = newList.reversed.toList();
-    final newState = gldState.copy(numbers: numbers);
-    setState(() => gldState = newState);
-  }*/
-
-  setTaskList(List<Task> tasks) {
-    final newState = gldState.copy(tasks: tasks);
-    setState(() => gldState = newState);
+  void switchTaskListOrder() {
+    gldState.ascendingOrder = !gldState.ascendingOrder;
   }
 }
 

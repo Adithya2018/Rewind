@@ -1,10 +1,8 @@
 import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:rewind_app/todo_list/todo_list.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
@@ -175,7 +173,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     final int counter = (prefs.getInt('counter') ?? 0) + 1;
     prefs.getKeys();
     setState(() {
-      _counter = prefs.setInt("counter", counter).then((bool success) {
+      this._counter = prefs.setInt("counter", counter).then((bool success) {
         return counter;
       });
     });
@@ -187,7 +185,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     Container health = createStatContainer(
       "Health",
-      statIconData: Icons.healing,//Icons.health_and_safety,
+      statIconData: Icons.healing, //Icons.health_and_safety,
       iconColor: Colors.red[900],
       // iconColor: Color(0xffbb0a1e),
       statCurrent: 8,
@@ -745,7 +743,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 child: Container(
                   child: IconButton(
                     icon: Icon(
-                      Icons.stacked_bar_chart,//Icons.query_stats,
+                      Icons.stacked_bar_chart, //Icons.query_stats,
                       color: Colors.green,
                       // color: Colors.white,
                       size: 35,
@@ -772,24 +770,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                     onPressed: () async {
                       print("Journal");
+                      print("is box open? ${Hive.isBoxOpen('goals')}");
                       print(MediaQuery.of(context).size.width);
                       Navigator.of(context).pushNamed('/jou');
                       final SharedPreferences prefs = await _prefs;
-                      final int counter = (prefs.getInt('counter') ?? 0) + 1;
-                      //prefs.clear();
-                      /*setState(() {
-                        _counter = prefs.setInt("counter", 0).then((bool success) {
-                          /**/print("$counter");
-                          print("${prefs.getKeys()}");
-                          return counter;
-                        });
-                        _counter = prefs.setInt("x1 level", 0).then((bool success) {
-                          /**/print("$counter");
-                          print("${prefs.getKeys()}");
-                          return counter;
-                        });
-                      });*/
-                      //await prefs.clear();
                       prefs.getKeys().forEach((key) {
                         print("key: $key");
                       });
@@ -871,14 +855,10 @@ class _JournalState extends State<Journal> {
       cursorColor: Colors.white,
       style: GoogleFonts.gloriaHallelujah(
         fontSize: 18,
-        //color: Colors.white,
       ),
-      //onEditingComplete: () => changeTitleMode(),
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(5.0, 0.0, 20.0, 0.0),
-        //labelText: "Title",
         hintText: "Title",
-        //hintText: "Title",
         disabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.transparent),
           borderRadius: BorderRadius.circular(5.0),
@@ -887,21 +867,12 @@ class _JournalState extends State<Journal> {
           borderSide: BorderSide(color: Colors.transparent),
           borderRadius: BorderRadius.circular(5.0),
         ),
-        /**/ border: OutlineInputBorder(
+        border: OutlineInputBorder(
           borderSide: BorderSide(
             color: Colors.transparent,
           ),
           borderRadius: BorderRadius.circular(5.0),
         ),
-        /*suffixIcon: ElevatedButton(
-          child: Icon(
-            Icons.check_sharp,
-          ),
-          onPressed: () {
-            titleFocus.unfocus();
-          },
-          style: ButtonStyle(),
-        ),*/
       ),
     );
 

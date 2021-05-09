@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'regular_tasks.dart';
+part of 'regular_task.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
@@ -22,7 +22,9 @@ class RegularTaskAdapter extends TypeAdapter<RegularTask> {
       ..label = fields[2] as String
       ..description = fields[3] as String
       ..weekly = fields[4] as bool
-      ..weeklyRepeat = (fields[5] as List)?.cast<DayAndTime>()
+      ..weeklyRepeat = (fields[5] as List)
+          ?.map((dynamic e) => (e as List)?.cast<TimeInterval>())
+          ?.toList()
       ..customRepeat = (fields[6] as Map)?.cast<dynamic, dynamic>()
       ..level = fields[7] as int
       ..completionStatus = fields[8] as bool;
