@@ -10,8 +10,8 @@ class Achievements extends StatefulWidget {
 }
 
 class _AchievementsState extends State<Achievements> {
-  List<Achievement> listOfAchievement = [];
-  List<Container> listOfTiles = [];
+  //List<Achievement> listOfAchievement = [];
+  //List<Container> listOfTiles = [];
   AchievementBadge badge = new AchievementBadge();
   Container createAchievement({
     String label,
@@ -149,20 +149,13 @@ class _AchievementsState extends State<Achievements> {
           elevation: 0.0,
           backgroundColor: Colors.white,
           toolbarHeight: 60.0,
-          title: Row(
-            children: [
-              SizedBox(
-                width: 7.0,
-              ),
-              Text(
-                "Achievements",
-                textAlign: TextAlign.left,
-                style: GoogleFonts.gloriaHallelujah(
-                  fontSize: 22,
-                  color: Colors.black,
-                ),
-              ),
-            ],
+          title: Text(
+            "Achievements",
+            textAlign: TextAlign.left,
+            style: GoogleFonts.gloriaHallelujah(
+              fontSize: 22,
+              color: Colors.black,
+            ),
           ),
           actions: <Widget>[
             IconButton(
@@ -173,8 +166,7 @@ class _AchievementsState extends State<Achievements> {
               ),
               tooltip: 'Refresh',
               onPressed: () {
-                Navigator.of(context).popUntil((route) => false);
-                Navigator.of(context).pushNamed('/');
+                print("options");
               },
             ),
           ],

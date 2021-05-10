@@ -1,9 +1,11 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:hive/hive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rewind_app/app_data/app_data_state.dart';
+import 'package:rewind_app/journal/edit_journal_page.dart';
+import 'package:rewind_app/journal/journal_state.dart';
+import 'package:rewind_app/models/journal_page.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -11,14 +13,117 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  String username;
   int playerLevel;
   int xp;
   int health;
   int trophies;
 
-  double hd = 0;
-  bool showNotificationArea = true;
+  String dateTimeToKey(DateTime date) {
+    String result = "";
+    result += date.year.toString();
+    result += date.month.toString();
+    result += date.day.toString();
+    result += date.hour.toString();
+    result += date.second.toString();
+    result += date.millisecond.toString();
+    return result;
+  }
+
+  void saveToBox(DateTime created, Object value, String boxName) {
+    String key = dateTimeToKey(created);
+    Hive.box(boxName).put(
+      key,
+      value,
+    );
+  }
+
+  List<Widget> getRoutineList() {
+    List<Widget> list = List<Widget>.generate(5, (index) {
+      return Container(
+        margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 0.0),
+        height: 100.0,
+        width: double.maxFinite,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.all(
+            Radius.circular(10.0),
+          ),
+        ),
+        padding: EdgeInsets.fromLTRB(12.0, 0, 0, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "New challenge!",
+              textAlign: TextAlign.left,
+              style: GoogleFonts.gloriaHallelujah(
+                fontSize: 14,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+    return list;
+  }
+
+  Column getCurrentJournalEntry() {
+    String boxNameSuffix = AppDataCommon.of(context).appData.userdata.uid;
+    List<JournalPage> pages =
+        List<JournalPage>.from(Hive.box('${boxNameSuffix}journal').values);
+    JournalPage temp;
+    if (pages.isEmpty) {
+      temp = JournalPage();
+    } else {
+      temp = pages.first;
+      pages.forEach((element) {
+        if (element.created.millisecondsSinceEpoch <
+            temp.created.millisecondsSinceEpoch) {
+          temp = element;
+        }
+      });
+    }
+    Text title = Text(
+      temp.title.isEmpty ? "What happened today?" : temp.title,
+      style: GoogleFonts.gloriaHallelujah(
+        fontSize: 17,
+      ),
+    );
+    Expanded contentArea = Expanded(
+      child: Container(
+        width: double.maxFinite,
+        padding: EdgeInsets.only(
+          left: 7.5,
+          right: 7.5,
+        ),
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            child: Text(
+              temp.content.isEmpty ? "Write something" : temp.content,
+              style: GoogleFonts.gloriaHallelujah(
+                fontSize: 12,
+                color: Color(0xFF0938BC),
+              ),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+        ),
+      ),
+    );
+    Column result = Column(
+      children: [
+        title,
+        SizedBox(
+          height: 5.0,
+        ),
+        contentArea,
+      ],
+    );
+    return result;
+  }
+
+  TabController tabCtrl;
   Container createStatContainer(
     String label, {
     IconData statIconData,
@@ -132,55 +237,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    initializeGameInfo();
-    tabController = TabController(
+    //initializeGameInfo();
+    tabCtrl = TabController(
+      initialIndex: 1,
       vsync: this,
-      length: 2,
+      length: 4,
     );
-  }
-
-  Future<void> initializeGameInfo() async {
-    final SharedPreferences prefs = await this._prefs;
-    playerLevel =
-        !prefs.containsKey("playerLevel") ? 1 : prefs.getInt("playerLevel");
-    health = !prefs.containsKey("health") ? 1 : prefs.getInt("health");
-    trophies = !prefs.containsKey("trophies") ? 1 : prefs.getInt("trophies");
-    prefs.setInt("playerLevel", playerLevel).then((bool success) {
-      print("playerLevel set? success=$success");
-      return playerLevel;
-    });
-    prefs.setInt("health", health).then((bool success) {
-      print("health set? success=$success");
-      return health;
-    });
-    prefs.setInt("trophies", trophies).then((bool success) {
-      print("trophies set? success=$success");
-      return trophies;
-    });
   }
 
   @override
   void dispose() {
     super.dispose();
     scrollController.dispose();
-    tabController.dispose();
-  }
-
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  /*late*/ Future<int> _counter;
-  Future<void> _incrementCounter() async {
-    final SharedPreferences prefs = await this._prefs;
-    final int counter = (prefs.getInt('counter') ?? 0) + 1;
-    prefs.getKeys();
-    setState(() {
-      this._counter = prefs.setInt("counter", counter).then((bool success) {
-        return counter;
-      });
-    });
+    tabCtrl.dispose();
   }
 
   ScrollController scrollController = new ScrollController();
-  TabController tabController;
   @override
   Widget build(BuildContext context) {
     Container health = createStatContainer(
@@ -282,7 +354,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ],
       ),
     );
-    Container getMoodStatBar({
+    Container getJournalingStreakBar({
       int current,
       String day,
       bool done,
@@ -383,11 +455,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
 
     Widget streakGraph = Container(
-      margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
+      margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
       constraints: BoxConstraints(
         minHeight: 40.0,
         maxHeight: 200.0,
-        //minWidth: MediaQuery.of(context).size.width,
         maxWidth: MediaQuery.of(context).size.width,
       ),
       decoration: BoxDecoration(
@@ -407,22 +478,20 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       child: Column(
         children: [
           Container(
+            alignment: Alignment.center,
             height: 45.0,
-            width: double.maxFinite,
             decoration: BoxDecoration(
               color: Colors.black,
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(10.0),
               ),
             ),
-            child: Center(
-              child: Text(
-                "Streak graph",
-                textAlign: TextAlign.left,
-                style: GoogleFonts.gloriaHallelujah(
-                  fontSize: 20,
-                  color: Colors.white,
-                ),
+            child: Text(
+              "Streak graph",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.gloriaHallelujah(
+                fontSize: 20,
+                color: Colors.white,
               ),
             ),
           ),
@@ -436,33 +505,33 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  /**/ getMoodStatBar(
+                  getJournalingStreakBar(
                     current: 70,
                     day: "M",
                   ),
-                  getMoodStatBar(
+                  getJournalingStreakBar(
                     current: 64,
                     day: "T",
                     done: true,
                   ),
-                  getMoodStatBar(
+                  getJournalingStreakBar(
                     current: 80,
                     day: "W",
                     done: false,
                   ),
-                  getMoodStatBar(
+                  getJournalingStreakBar(
                     current: 70,
                     day: "T",
                   ),
-                  getMoodStatBar(
+                  getJournalingStreakBar(
                     current: 64,
                     day: "F",
                   ),
-                  getMoodStatBar(
+                  getJournalingStreakBar(
                     current: 80,
                     day: "S",
                   ),
-                  getMoodStatBar(
+                  getJournalingStreakBar(
                     current: 90,
                     day: "Today",
                   ),
@@ -470,12 +539,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
             ),
           ),
-          //notification,
         ],
       ),
     );
 
-    Widget notification = Container(
+    Container notification = Container(
       margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 0.0),
       height: 100.0,
       width: double.maxFinite,
@@ -502,9 +570,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       ),
     );
 
-    Widget notificationArea = Container(
-      margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
-      //margin: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 40.0),
+    Container journalOverview = Container(
+      margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
       constraints: BoxConstraints(
         minHeight: 100.0,
         maxHeight: 200.0,
@@ -526,6 +593,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       child: Column(
         children: [
           Container(
+            padding: EdgeInsets.only(left: 20.0),
             height: 45.0,
             width: double.maxFinite,
             decoration: BoxDecoration(
@@ -534,15 +602,154 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 top: Radius.circular(10.0),
               ),
             ),
-            child: Center(
-              child: Text(
-                "Notifications",
-                textAlign: TextAlign.left,
-                style: GoogleFonts.gloriaHallelujah(
-                  fontSize: 20,
-                  color: Colors.white,
+            child: Row(
+              children: [
+                Text(
+                  "Journal",
+                  textAlign: TextAlign.left,
+                  style: GoogleFonts.gloriaHallelujah(
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
                 ),
+                Spacer(),
+                IconButton(
+                  icon: Icon(
+                    Icons.open_in_new,
+                    color: Colors.blue,
+                  ),
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onPressed: () {
+                    print("Journal");
+                    Navigator.of(context).pushNamed('/jou');
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(
+                left: 5.0,
+                right: 5.0,
               ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+              child: GestureDetector(
+                child: getCurrentJournalEntry(),
+                onTap: () async {
+                  print("Journal");
+                  String boxNameSuffix =
+                      AppDataCommon.of(context).appData.userdata.uid;
+                  List<JournalPage> pages = List<JournalPage>.from(
+                      Hive.box('${boxNameSuffix}journal').values);
+                  if (pages.isEmpty) {
+                    JournalPage temp = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditJournalPage(
+                          journalPage: new JournalPage(),
+                          editMode: false,
+                        ),
+                      ),
+                    );
+                    if (temp != null) {
+                      saveToBox(temp.created, temp, boxNameSuffix + "journal");
+                      print("Journal page created");
+                    } else {
+                      print("No journal page created");
+                    }
+                  } else {
+                    JournalPage firstPage = pages.first;
+                    pages.forEach((element) {
+                      if (element.created.millisecondsSinceEpoch <
+                          firstPage.created.millisecondsSinceEpoch) {
+                        firstPage = element;
+                      }
+                    });
+                    firstPage = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditJournalPage(
+                          journalPage: firstPage,
+                          editMode: false,
+                        ),
+                      ),
+                    );
+                    if (firstPage != null) {
+                      JournalCommon.of(context).addPage(firstPage);
+                      print("Regular task created");
+                    } else {
+                      print("No regular task created");
+                    }
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Widget todoOverview = Container(
+      margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+      constraints: BoxConstraints(
+        minHeight: 100.0,
+        maxHeight: 200.0,
+        maxWidth: MediaQuery.of(context).size.width,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(10.0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.5),
+            blurRadius: 3.0,
+            spreadRadius: 1.0,
+            offset: Offset(2.0, 2.0),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(left: 20.0),
+            height: 45.0,
+            width: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(10.0),
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  "Todo",
+                  textAlign: TextAlign.left,
+                  style: GoogleFonts.gloriaHallelujah(
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+                Spacer(),
+                IconButton(
+                  icon: Icon(
+                    Icons.open_in_new,
+                    color: Colors.blue,
+                  ),
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onPressed: () {
+                    print("Open todo");
+                    Navigator.of(context).pushNamed('/tdl');
+                  },
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -553,12 +760,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: Scrollbar(
                 child: SingleChildScrollView(
                   child: Column(
-                    children: [
-                      notification,
-                      SizedBox(
-                        height: 5.0,
-                      )
-                    ],
+                    children: getRoutineList()
+                      ..add(
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                      ),
                   ),
                 ),
               ),
@@ -567,10 +774,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ],
       ),
     );
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0.0),
+        preferredSize: Size.fromHeight(190.0),
         child: AppBar(
           iconTheme: IconThemeData(
             color: Colors.black,
@@ -591,11 +799,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
             ],
           ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(130.0),
+            child: gameStatus,
+          ),
           actions: <Widget>[
             IconButton(
               icon: Icon(
-                Icons.more_vert_sharp,
-                color: Colors.white,
+                Icons.cloud_off,
+                color: Colors.blue,
                 size: 30.0,
               ),
               tooltip: 'Refresh',
@@ -607,52 +819,38 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ],
         ),
       ),
-      body:
-          /**/ Scrollbar(
-        child: SingleChildScrollView(
-          controller: scrollController,
-          child: Column(
+      body: TabBarView(
+        controller: tabCtrl,
+        children: [
+          Column(
             children: [
-              gameStatus,
-              /*streakGraph,
-              notificationArea,*/
-              GestureDetector(
-                onVerticalDragEnd: (details) {
-                  /*setState(() {
-                    horizontalDrag %= 180;
-                  });*/
-                },
-                onHorizontalDragUpdate: (details) {
-                  setState(() {
-                    showNotificationArea =
-                        ((270 < hd && hd < 360) || (0 < hd && hd < 90));
-                    hd += details.delta.dx;
-                    hd %= 360;
-                  });
-                  print("$hd");
-                },
-                child: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()
-                    ..setEntry(3, 2, -0.001)
-                    ..rotateY(showNotificationArea ? 0 : pi)
-                    ..rotateY(pi * hd / 180),
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      bottom: 50.0,
-                    ),
-                    constraints: BoxConstraints(
-                      minHeight: MediaQuery.of(context).size.height * 0.60,
-                      maxWidth: MediaQuery.of(context).size.width,
-                    ),
-                    child:
-                        showNotificationArea ? notificationArea : streakGraph,
-                  ),
-                ),
-              )
+              Expanded(
+                child: streakGraph,
+              ),
             ],
           ),
-        ),
+          Column(
+            children: [
+              Expanded(
+                child: streakGraph,
+              ),
+            ],
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: journalOverview,
+              ),
+            ],
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: todoOverview,
+              ),
+            ],
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -677,9 +875,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    /**/ margin: EdgeInsets.only(
+                    margin: EdgeInsets.only(
                       left: 10.0,
-                      /*top: 40.0,*/
                       bottom: 5.0,
                     ),
                     decoration: BoxDecoration(
@@ -700,13 +897,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   Text(
-                    "John Doe",
+                    "${AppDataCommon.of(context).appData.userName.isEmpty ? "<no username>" : AppDataCommon.of(context).appData.userName}",
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 20,
                     ),
                   ),
                   Text(
-                    "johndoe@gmail.com",
+                    "${AppDataCommon.of(context).appData.userdata.email}",
                     style: GoogleFonts.gloriaHallelujah(
                       fontSize: 15,
                     ),
@@ -721,7 +918,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         height: 70.0,
         decoration: new BoxDecoration(
           color: Colors.grey[100],
-          // color: Colors.blueGrey[900],
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(5.0),
           ),
@@ -735,332 +931,58 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-        child: Center(
-          child: Flex(
-            direction: Axis.horizontal,
-            children: [
-              Expanded(
-                child: Container(
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.stacked_bar_chart, //Icons.query_stats,
-                      color: Colors.green,
-                      // color: Colors.white,
-                      size: 35,
-                    ),
-                    onPressed: () {
-                      print("Productivity");
-                      Navigator.of(context).pushNamed('/ach');
-                    },
-                    tooltip: "Productivity",
-                  ),
-                ),
-                flex: 1,
-              ),
-              // Spacer(),
-              Expanded(
-                child: Container(
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.menu_book,
-                      color: Colors.orange[700],
-                      // color: Colors.blueGrey[500],
-                      // color: Colors.yellow[800],
-                      size: 35,
-                    ),
-                    onPressed: () async {
-                      print("Journal");
-                      print("is box open? ${Hive.isBoxOpen('goals')}");
-                      print(MediaQuery.of(context).size.width);
-                      Navigator.of(context).pushNamed('/jou');
-                      final SharedPreferences prefs = await _prefs;
-                      prefs.getKeys().forEach((key) {
-                        print("key: $key");
-                      });
-                    },
-                    tooltip: "Journal",
-                  ),
-                  //alignment: Alignment.center,
-                ),
-                flex: 2,
-              ),
-              // Spacer(),
-              Expanded(
-                child: Container(
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.list_alt,
-                      color: Colors.blue[800],
-                      // color: Colors.white,
-                      size: 35,
-                    ),
-                    onPressed: () {
-                      print("Todo list");
-                      Navigator.of(context).pushNamed('/tdl');
-                    },
-                    tooltip: "Todo list",
-                  ),
-                ),
-                flex: 1,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class Journal extends StatefulWidget {
-  @override
-  _JournalState createState() => _JournalState();
-}
-
-class _JournalState extends State<Journal> {
-  String titleText = "dfv";
-  bool titleInViewMode = true;
-  bool contentInViewMode = true;
-  void changeTitleMode() {
-    setState(() {
-      titleInViewMode = !titleInViewMode;
-    });
-  }
-
-  void changeContentMode() {
-    setState(() {
-      contentInViewMode = !contentInViewMode;
-    });
-  }
-
-  FocusNode titleFocus;
-
-  @override
-  void initState() {
-    super.initState();
-    titleFocus = FocusNode();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    titleFocus.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    TextField titleField = TextField(
-      enabled: titleInViewMode,
-      focusNode: titleFocus,
-      textAlign: TextAlign.left,
-      cursorColor: Colors.white,
-      style: GoogleFonts.gloriaHallelujah(
-        fontSize: 18,
-      ),
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(5.0, 0.0, 20.0, 0.0),
-        hintText: "Title",
-        disabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.transparent,
-          ),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-      ),
-    );
-
-    /**/ Container pageTitleArea = Container(
-      alignment: Alignment.centerLeft,
-      child: titleField,
-      constraints: BoxConstraints(
-        maxHeight: 40.0,
-      ),
-      //width: double.maxFinite,
-    );
-
-    Container contentField = Container(
-      alignment: Alignment.topCenter,
-      decoration: BoxDecoration(
-        color: Color(0xFFF3EFE4),
-        /*border: Border.all(
-          color: Colors.grey,
-          width: 1.0,
-        ),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(5.0),
-          //bottom: Radius.zero,
-        ),*/
-      ),
-      child: Scrollbar(
-        child: TextField(
-          textCapitalization: TextCapitalization.sentences,
-          enabled: contentInViewMode,
-          expands: true,
-          maxLines: null,
-          minLines: null,
-          keyboardType: TextInputType.multiline,
-          textAlign: TextAlign.justify,
-          style: GoogleFonts.gloriaHallelujah(
-            fontSize: 18,
-            color: Color(0xFF0938BC),
-          ),
-          decoration: InputDecoration(
-            hintText: "Write something",
-            contentPadding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
-          ),
-        ),
-      ),
-    );
-
-    return Scaffold(
-      //backgroundColor: Color(0xFFF3EFE4),
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0.0),
-        child: AppBar(
-          elevation: 3.0,
-          backgroundColor: Colors.white,
-          toolbarHeight: 60.0,
-          title: Column(
-            //crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              pageTitleArea,
-              Row(
+        child: TabBar(
+          controller: tabCtrl,
+          tabs: [
+            Tab(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: 7.0,
-                  ),
-                  Text(
-                    "10 April 2021, 7:45 pm",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
+                  Icon(
+                    Icons.stacked_bar_chart, //Icons.query_stats,
+                    color: Colors.green,
+                    size: 28,
                   ),
                 ],
               ),
-            ],
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.more_vert_sharp,
-                color: Colors.white,
-                size: 30.0,
-              ),
-              tooltip: 'Refresh',
-              onPressed: () {
-                Navigator.of(context).popUntil((route) => false);
-                Navigator.of(context).pushNamed('/');
-              },
             ),
-          ],
-        ),
-      ),
-      body: Padding(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: contentField,
-              flex: 1,
-            ),
-            Expanded(
-              child: contentField,
-              flex: 5,
-            ),
-          ],
-        ),
-        padding: EdgeInsets.all(0.0),
-      ),
-      /*persistentFooterButtons: [
-        IconButton(
-          alignment: Alignment.centerLeft,
-          onPressed: () {},
-          icon: Icon(
-            Icons.arrow_back,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
-        ),
-      ],*/
-
-      bottomNavigationBar: Container(
-        height: 70.0,
-        decoration: new BoxDecoration(
-          color: Colors.grey[100],
-          // color: Colors.blueGrey[900],
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(5.0),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue[200],
-              // color: Colors.grey,
-              offset: Offset(0.0, -0.5),
-              blurRadius: 5.0,
-              spreadRadius: 0.0,
-            ),
-          ],
-        ),
-        child: Center(
-          child: Flex(
-            direction: Axis.horizontal,
-            children: [
-              Expanded(
-                child: Container(
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.check,
-                      color: Colors.green,
-                      // color: Colors.white,
-                      size: 35,
-                    ),
-                    onPressed: () {
-                      changeContentMode();
-                      print("save button");
-                      Navigator.of(context).pop();
-                    },
-                    tooltip: "Save",
+            Tab(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.home,
+                    color: Colors.blue,
+                    size: 40,
                   ),
-                ),
-                flex: 2,
+                ],
               ),
-              Expanded(
-                child: Container(
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.cancel,
-                      color: Colors.red[600],
-                      // color: Colors.white,
-                      size: 35,
-                    ),
-                    onPressed: () {
-                      print("cancel button");
-                      Navigator.of(context).pop();
-                    },
-                    tooltip: "Todo list",
+            ),
+            Tab(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.menu_book,
+                    color: Colors.orange[700],
+                    size: 28,
                   ),
-                ),
-                flex: 2,
+                ],
               ),
-            ],
-          ),
+            ),
+            Tab(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.list_alt,
+                    color: Colors.blue[800],
+                    size: 28,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

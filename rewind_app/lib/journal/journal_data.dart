@@ -1,40 +1,39 @@
 import 'package:collection/collection.dart';
-import 'package:rewind_app/models/task.dart';
+import 'package:rewind_app/models/journal_page.dart';
 
-class GoalListData {
-  List<Task> tasks;
+class JournalData {
+  List<JournalPage> pages;
   bool ascendingOrder = true;
   int sortByOption;
   DeepCollectionEquality deepEq = DeepCollectionEquality();
   List<Function> sortByFunction = [
-    (Task a, Task b) => a.created.compareTo(b.created),
-    (Task a, Task b) => a.deadline.compareTo(b.deadline),
-    (Task a, Task b) => a.level.compareTo(b.level),
+    (JournalPage a, JournalPage b) => a.created.compareTo(b.created),
+    (JournalPage a, JournalPage b) => a.title.compareTo(b.title),
   ];
   Set<int> selected;
-  Function get currentSortByFunction => (Task a, Task b) =>
+  Function get currentSortByFunction => (JournalPage a, JournalPage b) =>
       (ascendingOrder ? 1 : -1) * sortByFunction[sortByOption](a, b) as int;
 
-  GoalListData({
-    List<Task> tasks,
+  JournalData({
+    List<JournalPage> pages,
     Set<int> selected,
     int sortByOption,
     bool ascendingOrder,
   }) {
-    this.tasks = tasks;
+    this.pages = pages;
     this.selected = selected;
     this.sortByOption = sortByOption;
     this.ascendingOrder = ascendingOrder;
   }
 
-  GoalListData copy({
-    List<Task> tasks,
+  JournalData copy({
+    List<JournalPage> pages,
     Set<int> selected,
     int sortByOption,
     bool ascendingOrder,
   }) =>
-      GoalListData(
-        tasks: tasks ?? this.tasks,
+      JournalData(
+        pages: pages ?? this.pages,
         selected: selected ?? this.selected,
         sortByOption: sortByOption ?? this.sortByOption,
         ascendingOrder: ascendingOrder ?? this.ascendingOrder,
@@ -43,9 +42,9 @@ class GoalListData {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is GoalListData &&
+      other is JournalData &&
           runtimeType == other.runtimeType &&
-          deepEq.equals(tasks, other.tasks) &&
+          deepEq.equals(pages, other.pages) &&
           deepEq.equals(selected, other.selected) &&
           sortByOption == other.sortByOption &&
           ascendingOrder == other.ascendingOrder;

@@ -64,7 +64,6 @@ class AchievementBadge{
     return badge;
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(

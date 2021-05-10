@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:rewind_app/app_data/app_data_state.dart';
 import 'package:rewind_app/models/regular_task.dart';
 import 'package:rewind_app/models/task.dart';
 import 'package:rewind_app/todo_list/todo_list_data/routine_list_data.dart';
@@ -7,9 +8,11 @@ import 'package:rewind_app/todo_list/todo_list_data/goal_list_data.dart';
 
 class TodoListWrapper extends StatefulWidget {
   final Widget child;
+  final String boxNameSuffix;
   const TodoListWrapper({
     Key key,
     @required this.child,
+    this.boxNameSuffix,
   }) : super(key: key);
   @override
   _TodoListWrapperState createState() => _TodoListWrapperState();
@@ -18,6 +21,7 @@ class TodoListWrapper extends StatefulWidget {
 class _TodoListWrapperState extends State<TodoListWrapper> {
   GoalListData gldState;
   RoutineListData rldState;
+
   static const GOAL_BOX_NAME = 'goals';
   static const ROUTINE_BOX_NAME = 'routine';
 
@@ -45,9 +49,11 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
     int sortByOption,
     bool ascendingOrder,
   })*/
+    String boxNameSuffix = widget.boxNameSuffix;
     print("todo list state initState()");
+    print(boxNameSuffix + GOAL_BOX_NAME);
     gldState = GoalListData(
-      tasks: List<Task>.from(Hive.box(GOAL_BOX_NAME).values),
+      tasks: List<Task>.from(Hive.box(boxNameSuffix + GOAL_BOX_NAME).values),
       sortByOption: 0,
       ascendingOrder: true,
     );
@@ -55,8 +61,10 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
     gldState.tasks.forEach((element) {
       print("goal: ${element.toString()}");
     });*/
+    print(boxNameSuffix + ROUTINE_BOX_NAME);
     rldState = RoutineListData(
-      regularTasks: List<RegularTask>.from(Hive.box(ROUTINE_BOX_NAME).values),
+      regularTasks: List<RegularTask>.from(
+          Hive.box(boxNameSuffix + ROUTINE_BOX_NAME).values),
       ascendingOrder: true,
     );
     /*print("regular tasks=${rldState.regularTasks.length}");

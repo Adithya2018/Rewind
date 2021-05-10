@@ -1,27 +1,49 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+import 'package:rewind_app/app_data/app_data.dart';
+import 'package:rewind_app/app_data/app_data_state.dart';
+import 'package:rewind_app/common_screens/message_scaffold.dart';
 import 'package:rewind_app/home/home.dart';
+import 'package:rewind_app/journal/journal.dart';
+import 'package:rewind_app/journal/journal_state.dart';
 import 'package:rewind_app/models/interval.dart';
+import 'package:rewind_app/models/journal_page.dart';
+import 'package:rewind_app/services/auth.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
-import 'package:rewind_app/todo_list/todo_list_db_wrapper.dart';
+import 'package:rewind_app/todo_list/todo_list.dart';
+import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
+import 'package:rewind_app/authentication/authentication_wrapper.dart';
+import 'package:path_provider/path_provider.dart' as ppr;
 import 'achievements/achievements.dart';
-import 'journal/journal.dart';
+import 'database_provider/local_db_provider.dart';
+import 'journal/edit_journal_page.dart';
 import 'models/regular_task.dart';
 import 'models/task.dart';
-import 'package:path_provider/path_provider.dart' as ppr;
+import 'models/user.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  /*await SystemChrome.setPreferredOrientations([
+  /**/ await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]);*/
+  ]);
   final appDocDirectory = await ppr.getApplicationDocumentsDirectory();
+  appDocDirectory
+      .list(
+    recursive: true,
+  )
+      .forEach((element) {
+    print("${element.uri}");
+  });
   Hive.init(appDocDirectory.path);
+  Hive.registerAdapter(JournalPageAdapter());
   Hive.registerAdapter(TaskAdapter());
   Hive.registerAdapter(RegularTaskAdapter());
   Hive.registerAdapter(TimeIntervalAdapter());
-  print("starting app");
   runApp(RewindApp());
 }
 
@@ -33,22 +55,56 @@ class RewindApp extends StatefulWidget {
 }
 
 class _RewindAppState extends State<RewindApp> {
-
+  final Future<FirebaseApp> initialization = Firebase.initializeApp();
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Rewind App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return AppDataWrapper(
+      child: MaterialApp(
+        title: 'Rewind App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: FutureBuilder(
+          // Initialize FlutterFire:
+          future: initialization,
+          builder: (context, snapshot) {
+            // Check for errors
+            if (snapshot.hasError) {
+              return SimpleMessageScaffold(
+                message: "Cannot load",
+                iconData: MaterialCommunityIcons.robot,
+              );
+            }
+            // Once complete, show your application
+            if (snapshot.connectionState == ConnectionState.done) {
+              return StreamProvider<UserData>.value(
+                value: AuthService().user,
+                initialData: null,
+                child: AuthenticationWrapper(),
+              );
+            }
+
+            // Otherwise, show something whilst waiting for initialization to complete
+            return SimpleMessageScaffold(
+              message: "Loading...",
+              iconData: FontAwesome5Solid.hourglass_half,
+            );
+          },
+        ),
+        routes: <String, WidgetBuilder>{
+          '/ach': (BuildContext context) => Achievements(),
+          '/jou': (BuildContext context) => JournalWrapper(
+                boxNameSuffix: AppDataCommon.of(context).appData.userdata.uid,
+                child: Journal(),
+              ),
+          '/tdl': (BuildContext context) => TodoListWrapper(
+            boxNameSuffix: AppDataCommon.of(context).appData.userdata.uid,
+                child: TodoList(),
+              ),
+          '/vt': (BuildContext context) => EditTask(),
+        },
+        debugShowCheckedModeBanner: false,
       ),
-      home: Home(),
-      routes: <String, WidgetBuilder>{
-        '/ach': (BuildContext context) => Achievements(),
-        '/jou': (BuildContext context) => JournalTemp(),
-        '/tdl': (BuildContext context) => TodoListDBWrapper(),
-        '/vt': (BuildContext context) => EditTask(),
-      },
-      debugShowCheckedModeBanner: false,
     );
   }
 

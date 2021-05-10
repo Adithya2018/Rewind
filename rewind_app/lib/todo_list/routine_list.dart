@@ -331,7 +331,7 @@ class _RoutineListState extends State<RoutineList>
       );
     }
 
-    Container dateAndTimeContainer = Container(
+    Container dateTimeContainer = Container(
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.vertical(
@@ -372,7 +372,7 @@ class _RoutineListState extends State<RoutineList>
       ),
       child: Column(
         children: [
-          dateAndTimeContainer,
+          dateTimeContainer,
           list[index].weekly ? weeklyRepeat : customRepeat,
           mainContainer,
         ],

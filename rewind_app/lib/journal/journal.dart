@@ -1,115 +1,191 @@
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/models/day_and_time.dart';
+import 'package:rewind_app/models/journal_page.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
+import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
+import 'edit_journal_page.dart';
+import 'journal_state.dart';
 
-class JournalTemp extends StatefulWidget {
+class Journal extends StatefulWidget {
   @override
-  _JournalTempState createState() => _JournalTempState();
+  _JournalState createState() => _JournalState();
 }
 
-class _JournalTempState extends State<JournalTemp> {
-  String titleText = "dfv";
-  bool titleInViewMode = true;
-  bool contentInViewMode = true;
-  void changeTitleMode() {
-    setState(() {
-      titleInViewMode = !titleInViewMode;
-    });
+class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
+  List<Container> listTiles = [];
+  bool ascendingOrder = true;
+  int sortByOption = 0;
+  TaskLevel taskLevel = TaskLevel();
+
+  bool showActive = true;
+
+  bool isSameDate(DateTime d1, DateTime d2) =>
+      d2.day == d1.day && d2.month == d1.month && d2.year == d1.year;
+
+  String dateToString(DateTime date) {
+    DateTime now = DateTime.now();
+    String result = "${date.day} ${dtf.month[date.month - 1]}";
+    bool dateToday = isSameDate(now, date);
+    result = dateToday ? "Today" : result;
+    bool dateTomorrow = isSameDate(
+        now.add(Duration(
+          days: 1,
+        )),
+        date);
+    result = dateTomorrow ? "Tomorrow" : result;
+    print("${now.year}");
+    result += (date.year == now.year) ? "" : ", ${date.year}";
+    return result;
   }
 
-  void changeContentMode() {
-    setState(() {
-      contentInViewMode = !contentInViewMode;
-    });
+  Container listTile({
+    int index,
+  }) {
+    final list = JournalCommon.of(context).jnlState.pages;
+    DateTime created = list[index].created;
+    TimeOfDay timeOfDay = TimeOfDay(
+      hour: created.hour,
+      minute: created.minute,
+    );
+    Container timeContainer = Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(10.0),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "${dtf.formatTime(timeOfDay)}",
+            style: GoogleFonts.gloriaHallelujah(
+              fontSize: 15,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+    Container titleArea = Container(
+      padding: EdgeInsets.only(left: 10.0),
+      width: double.maxFinite,
+      decoration: BoxDecoration(
+        color: Colors.white,
+      ),
+      child: Text(
+        list[index].title,
+        style: GoogleFonts.gloriaHallelujah(
+          fontSize: 20,
+          color: Colors.black,
+        ),
+      ),
+    );
+    Container contentArea = Container(
+      padding: EdgeInsets.only(
+        left: 10.0,
+        bottom: 10.0,
+      ),
+      width: double.maxFinite,
+      decoration: BoxDecoration(
+        color: Colors.white,
+      ),
+      child: Text(
+        list[index].content.isEmpty ? "<no content>" : list[index].content,
+        style: GoogleFonts.gloriaHallelujah(
+          fontSize: 12,
+          color: Colors.black,
+        ),
+        maxLines: 3,
+      ),
+    );
+
+    Container framedContainer = Container(
+      margin: EdgeInsets.fromLTRB(10.0, 12.0, 10.0, 0.0),
+      padding: EdgeInsets.all(2.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(10.0),
+          bottom: Radius.circular(10.0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.2),
+            blurRadius: 3.0,
+            spreadRadius: 1.0,
+            offset: Offset(1.0, 2.0),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          timeContainer,
+          GestureDetector(
+            onTap: () async {
+              print("edit journal${dtf.formatTime(timeOfDay)}");
+              JournalPage temp = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditJournalPage(
+                    journalPage: list[index],
+                    editMode: true,
+                  ),
+                ),
+              );
+              if (temp != null) {
+                setState(() {
+                  list[index] = JournalPage.fromJournalPage(temp);
+                });
+              } else {
+                print("edit journal page cancelled");
+              }
+            },
+            child: Column(
+              children: [
+                titleArea,
+                contentArea,
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+    return framedContainer;
   }
 
-  FocusNode titleFocus;
+  void updateGoals() {
+    final list = JournalCommon.of(context).jnlState.pages;
+    listTiles = List.generate(
+      list.length,
+      (index) => listTile(
+        index: index,
+      ),
+    )..add(
+        Container(
+          height: 12.0,
+        ),
+      );
+  }
 
   @override
   void initState() {
     super.initState();
-    titleFocus = FocusNode();
   }
 
   @override
   void dispose() {
     super.dispose();
-    titleFocus.dispose();
+    //Hive.deleteFromDisk();
   }
 
+  DateAndTimeFormat dtf = new DateAndTimeFormat();
   @override
   Widget build(BuildContext context) {
-    Container titleArea = Container(
-      alignment: Alignment.topCenter,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.symmetric(),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(5.0),
-          //bottom: Radius.zero,
-        ),
-      ),
-      child: TextField(
-        enabled: titleInViewMode,
-        focusNode: titleFocus,
-        textAlign: TextAlign.center,
-        textInputAction: TextInputAction.next,
-        cursorColor: Colors.blueGrey,
-        style: TextStyle(
-          fontFamily: 'Gloria',
-          fontSize: 18,
-        ),
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(5.0, 0.0, 20.0, 0.0),
-          hintText: "Title",
-          border: InputBorder.none,
-        ),
-      ),
-    );
-
-    DateAndTimeFormat dtf = DateAndTimeFormat();
-
-    Container dateTime = Container(
-      child: Text("${dtf.formatDate(DateTime.now())}"),
-    );
-
-    Container contentArea = Container(
-      alignment: Alignment.topCenter,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(5.0),
-          //bottom: Radius.zero,
-        ),
-      ),
-      child: Scrollbar(
-        child: TextField(
-          expands: true,
-          maxLines: null,
-          minLines: null,
-          keyboardType: TextInputType.multiline,
-          textAlign: TextAlign.justify,
-          cursorColor: Colors.blueGrey,
-          style: TextStyle(
-            fontFamily: 'Gloria',
-            fontSize: 18,
-            color: Color(0xFF0938BC),
-          ),
-          decoration: InputDecoration(
-            hintText: "Write something",
-            contentPadding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
-            border: InputBorder.none,
-          ),
-        ),
-      ),
-    );
-
+    updateGoals();
     return Scaffold(
-      //backgroundColor: Color(0xFFF3EFE4),
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60.0),
         child: AppBar(
@@ -135,54 +211,28 @@ class _JournalTempState extends State<JournalTemp> {
                 size: 30.0,
               ),
               tooltip: 'Refresh',
-              onPressed: () {
-                print("more options");
-              },
+              onPressed: () {},
             ),
           ],
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          titleArea,
-          Expanded(
-            child: contentArea,
-          ),
-        ],
+      body: Scrollbar(
+        child: ListView(
+          children: listTiles,
+        ),
       ),
-      /*persistentFooterButtons: [
-        IconButton(
-          alignment: Alignment.centerLeft,
-          onPressed: () {},
-          icon: Icon(
-            Icons.arrow_back,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
-        ),
-      ],*/
       bottomNavigationBar: Container(
         height: 70.0,
         decoration: new BoxDecoration(
-          color: Colors.white,
+          color: Colors.grey[100],
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(10.0),
+            top: Radius.circular(5.0),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue,
-              offset: Offset(0.0, -1.0),
-              blurRadius: 7.0,
+              color: Colors.blue[200],
+              offset: Offset(0.0, -0.5),
+              blurRadius: 5.0,
               spreadRadius: 0.0,
             ),
           ],
@@ -193,48 +243,164 @@ class _JournalTempState extends State<JournalTemp> {
             children: [
               Expanded(
                 child: Container(
-                  margin: EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: TextButton(
-                    child: Text(
-                      "Save",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.gloriaHallelujah(
-                        fontSize: 20,
-                        color: Colors.black,
-                      ),
-                    ),
+                  child: MaterialButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
                     onPressed: () async {
-                      print("Save");
+                      print("Add page");
+                      JournalPage temp = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditJournalPage(
+                            journalPage: new JournalPage(),
+                            editMode: false,
+                          ),
+                        ),
+                      );
+                      if (temp != null) {
+                        JournalCommon.of(context).addPage(temp);
+                        print("Regular task created");
+                      } else {
+                        print("No regular task created");
+                      }
                     },
+                    onLongPress: () {},
+                    child: Icon(
+                      MaterialCommunityIcons.plus_circle,
+                      color: Colors.lightBlueAccent,
+                      size: 55,
+                    ),
                   ),
                 ),
               ),
               Expanded(
                 child: Container(
-                  margin: EdgeInsets.symmetric(
-                    horizontal: 10.0,
+                  child: IconButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onPressed: () async {
+                      await showDialog<int>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          int temp = sortByOption;
+                          return AlertDialog(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text("Sort by"),
+                                Spacer(),
+                                Icon(
+                                  MaterialCommunityIcons.sort,
+                                  color: Colors.black,
+                                ),
+                              ],
+                            ),
+                            content: StatefulBuilder(
+                              builder:
+                                  (BuildContext context, StateSetter setState) {
+                                return Scrollbar(
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        ListTile(
+                                          title: const Text('Date created'),
+                                          leading: Radio<int>(
+                                            value: 0,
+                                            groupValue: temp,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                temp = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        ListTile(
+                                          title: const Text('Deadline'),
+                                          leading: Radio<int>(
+                                            value: 1,
+                                            groupValue: temp,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                temp = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        ListTile(
+                                          title: const Text('Level'),
+                                          leading: Radio<int>(
+                                            value: 2,
+                                            groupValue: temp,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                temp = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  sortByOption = temp;
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Apply"),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: Text("Cancel"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      TodoListCommon.of(context).sortTasksBy(sortByOption);
+                      updateGoals();
+                      print("sorted");
+                    },
+                    icon: Icon(
+                      MaterialCommunityIcons.sort,
+                      color: Colors.black,
+                      size: 30,
+                    ),
+                    tooltip: "Sort by",
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: TextButton(
-                    child: Text(
-                      "Cancel",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.gloriaHallelujah(
-                        fontSize: 20,
-                        color: Colors.black,
-                      ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  child: IconButton(
+                    icon: Icon(
+                      ascendingOrder
+                          ? MaterialCommunityIcons.alpha_a_circle
+                          : MaterialCommunityIcons.alpha_d_circle,
+                      color: Colors.blue[800],
+                      size: 35,
                     ),
                     onPressed: () {
-                      print("Cancel");
-                      Navigator.of(context).pop();
+                      print("sort in ascending or descending");
+                      JournalCommon.of(context).switchListOrder();
+                      print(
+                          "Order: ${JournalCommon.of(context).jnlState.ascendingOrder ? "asc" : "desc"}ending");
+                      //JournalCommon.of(context).sortTasks();
+                      setState(() {
+                        ascendingOrder =
+                            JournalCommon.of(context).jnlState.ascendingOrder;
+                      });
+                      updateGoals();
                     },
+                    tooltip: "Order: ${ascendingOrder ? "asc" : "desc"}ending",
                   ),
                 ),
               ),
