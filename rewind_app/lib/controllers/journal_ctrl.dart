@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:provider/provider.dart';
 import 'package:rewind_app/journal/journal_data.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
-import 'package:rewind_app/models/user.dart';
 
-class JournalWrapper extends StatefulWidget {
-  final Widget child;
-  final String? boxNameSuffix;
-  const JournalWrapper({
+class JournalController extends GetxController {
+  late final Widget child;
+  late final String? boxNameSuffix;
+  /*const JournalController({
     Key? key,
     required this.child,
     required this.boxNameSuffix,
   }) : super(key: key);
   @override
-  _JournalWrapperState createState() => _JournalWrapperState();
-}
+  _JournalControllerState createState() => _JournalControllerState();*/
 
-class _JournalWrapperState extends State<JournalWrapper> {
   JournalData? jnlState;
   String journalBoxName = 'journal';
 
@@ -33,25 +30,15 @@ class _JournalWrapperState extends State<JournalWrapper> {
   }
 
   void setBoxName() {
-    String boxNameSuffix = Provider.of<UserData>(context).uid!;
+    String boxNameSuffix = ''; //Provider.of<UserData>(context).uid!;
     journalBoxName = boxNameSuffix + journalBoxName;
   }
 
   @override
-  void initState() {
-    super.initState();
-    /*for (int i = 0; i < 5; ++i) {
-      DateTime now = DateTime.now();
-      print(now.toString().length);
-    }*/
-    /*GoalListData({
-    List<Task> tasks,
-    Set<int> selected,
-    int sortByOption,
-    bool ascendingOrder,
-  })*/
+  void onInit() {
+    super.onInit();
     print("todo list state initState()");
-    journalBoxName = widget.boxNameSuffix! + journalBoxName;
+    journalBoxName = boxNameSuffix! + journalBoxName;
     print(journalBoxName);
     jnlState = JournalData(
       pages: List<JournalPage>.from(Hive.box(journalBoxName).values),
@@ -93,11 +80,7 @@ class _JournalWrapperState extends State<JournalWrapper> {
 
   void addPage(JournalPage? journalPage) {
     List<JournalPage?> newList = [journalPage] + jnlState!.pages!;
-    /*int id = 0;
-    newList.forEach((element) {
-      element.orderIndex = id++;
-    });*/
-    setState(() => jnlState = jnlState!.copy(pages: newList));
+    //setState(() => jnlState = jnlState!.copy(pages: newList));
   }
 
   /*void sortPages() {
@@ -129,30 +112,10 @@ class _JournalWrapperState extends State<JournalWrapper> {
     jnlState!.ascendingOrder = !jnlState!.ascendingOrder!;
   }
 
-  @override
+  /*@override
   Widget build(BuildContext context) => JournalCommon(
-        child: widget.child,
-        jnlState: jnlState,
-        stateWidget: this,
-      );
-}
-
-class JournalCommon extends InheritedWidget {
-  final JournalData? jnlState;
-  final _JournalWrapperState stateWidget;
-
-  const JournalCommon({
-    Key? key,
-    required Widget child,
-    required this.jnlState,
-    required this.stateWidget,
-  }) : super(child: child);
-
-  static _JournalWrapperState of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<JournalCommon>()!.stateWidget;
-
-  @override
-  bool updateShouldNotify(JournalCommon oldWidget) {
-    return oldWidget.jnlState != jnlState;
-  }
+    child: widget.child,
+    jnlState: jnlState,
+    stateWidget: this,
+  );*/
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:hive/hive.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rewind_app/app_data/app_data_state.dart';
 import 'package:rewind_app/journal/edit_journal_page.dart';
 import 'package:rewind_app/journal/journal_state.dart';
-import 'package:rewind_app/models/journal_page.dart';
+import 'package:rewind_app/models/journal_page/journal_page.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -13,10 +13,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  int playerLevel;
-  int xp;
-  int health;
-  int trophies;
+  int? playerLevel;
+  int? xp;
+  int? health;
+  int? trophies;
 
   String dateTimeToKey(DateTime date) {
     String result = "";
@@ -54,9 +54,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "New challenge!",
+              "challenge!",
               textAlign: TextAlign.left,
-              style: GoogleFonts.gloriaHallelujah(
+              style: GoogleFonts.openSans(
                 fontSize: 14,
                 color: Colors.white,
               ),
@@ -69,7 +69,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   Column getCurrentJournalEntry() {
-    String boxNameSuffix = AppDataCommon.of(context).appData.userdata.uid;
+    String? boxNameSuffix = '';//AppDataCommon.of(context).appData!.userdata!.uid;
     List<JournalPage> pages =
         List<JournalPage>.from(Hive.box('${boxNameSuffix}journal').values);
     JournalPage temp;
@@ -78,15 +78,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     } else {
       temp = pages.first;
       pages.forEach((element) {
-        if (element.created.millisecondsSinceEpoch <
-            temp.created.millisecondsSinceEpoch) {
+        if (element.created!.millisecondsSinceEpoch <
+            temp.created!.millisecondsSinceEpoch) {
           temp = element;
         }
       });
     }
     Text title = Text(
-      temp.title.isEmpty ? "What happened today?" : temp.title,
-      style: GoogleFonts.gloriaHallelujah(
+      temp.title!.isEmpty ? "What happened today?" : temp.title!,
+      style: GoogleFonts.openSans(
         fontSize: 17,
       ),
     );
@@ -100,8 +100,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         child: Scrollbar(
           child: SingleChildScrollView(
             child: Text(
-              temp.content.isEmpty ? "Write something" : temp.content,
-              style: GoogleFonts.gloriaHallelujah(
+              temp.content!.isEmpty ? "Write something" : temp.content!,
+              style: GoogleFonts.openSans(
                 fontSize: 12,
                 color: Color(0xFF0938BC),
               ),
@@ -123,15 +123,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return result;
   }
 
-  TabController tabCtrl;
+  TabController? tabCtrl;
   Container createStatContainer(
     String label, {
-    IconData statIconData,
-    Color iconColor,
-    int statCurrent,
-    int statMax,
+    IconData? statIconData,
+    Color? iconColor,
+    required int statCurrent,
+    required int statMax,
   }) {
-    Container statContainer = new Container(
+    Container statContainer = Container(
       decoration: BoxDecoration(
         // color: Color(0xFFB2E5E3),
         color: Colors.blueGrey[800],
@@ -168,7 +168,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   Text(
                     label,
                     textAlign: TextAlign.left,
-                    style: GoogleFonts.gloriaHallelujah(
+                    style: GoogleFonts.openSans(
                       fontSize: 10,
                       color: Colors.white,
                     ),
@@ -219,7 +219,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           colors: [
             Colors.white,
             Colors.black,
-            Colors.blueGrey[300],
+            Colors.blueGrey[300]!,
           ],
         ),
       ),
@@ -232,7 +232,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return MediaQuery.of(context).size.width;
   }
 
-  DateTime now;
+  DateTime? now;
 
   @override
   void initState() {
@@ -249,10 +249,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   void dispose() {
     super.dispose();
     scrollController.dispose();
-    tabCtrl.dispose();
+    tabCtrl!.dispose();
   }
 
-  ScrollController scrollController = new ScrollController();
+  ScrollController scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
     Container health = createStatContainer(
@@ -265,7 +265,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
     Container trophies = createStatContainer(
       "Trophies",
-      statIconData: MaterialCommunityIcons.trophy,
+      statIconData: Icons.stream, //MaterialCommunityIcons.trophy,
       // iconColor: Color(0xFFD4AF37),
       iconColor: Colors.yellow[800],
       statCurrent: 60,
@@ -273,7 +273,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
     Container xp = createStatContainer(
       "XP",
-      statIconData: MaterialCommunityIcons.star,
+      statIconData: Icons.stream, //MaterialCommunityIcons.star,
       // iconColor: Color(0xFFD4AF37),
       iconColor: Colors.yellow[600],
       statCurrent: 700,
@@ -322,7 +322,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               children: [
                 Text(
                   "Level $playerLevel",
-                  style: GoogleFonts.gloriaHallelujah(
+                  style: GoogleFonts.openSans(
                       color: Colors.white, fontSize: 13),
                 ),
                 xp,
@@ -355,25 +355,25 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       ),
     );
     Container getJournalingStreakBar({
-      int current,
-      String day,
-      bool done,
+      required int current,
+      required String day,
+      bool? done,
     }) {
       int max = 100;
       Icon check;
       if (done == null) {
         check = Icon(
-          MaterialCommunityIcons.help,
+          MdiIcons.help,
           size: 14.0,
         );
       } else {
         check = Icon(
-          done ? MaterialCommunityIcons.check : MaterialCommunityIcons.cancel,
+          done ? MdiIcons.check : MdiIcons.cancel,
           color: done ? Colors.green : Colors.red,
           size: 14.0,
         );
       }
-      Container statBar = new Container(
+      Container statBar = Container(
         constraints: BoxConstraints(
           maxWidth: 4.0,
           maxHeight: 200.0,
@@ -402,12 +402,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ],
         ),
       );
-      Container result = new Container(
+      Container result = Container(
         child: Column(
           children: [
             Text(
               "$current%",
-              style: GoogleFonts.gloriaHallelujah(
+              style: GoogleFonts.openSans(
                 fontSize: 9,
               ),
             ),
@@ -420,7 +420,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             check,
             Text(
               day,
-              style: GoogleFonts.gloriaHallelujah(
+              style: GoogleFonts.openSans(
                 fontSize: 9,
               ),
             ),
@@ -489,7 +489,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             child: Text(
               "Streak graph",
               textAlign: TextAlign.center,
-              style: GoogleFonts.gloriaHallelujah(
+              style: GoogleFonts.openSans(
                 fontSize: 20,
                 color: Colors.white,
               ),
@@ -559,9 +559,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "New challenge!",
+            "challenge!",
             textAlign: TextAlign.left,
-            style: GoogleFonts.gloriaHallelujah(
+            style: GoogleFonts.openSans(
               fontSize: 14,
               color: Colors.white,
             ),
@@ -607,7 +607,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 Text(
                   "Journal",
                   textAlign: TextAlign.left,
-                  style: GoogleFonts.gloriaHallelujah(
+                  style: GoogleFonts.openSans(
                     fontSize: 20,
                     color: Colors.white,
                   ),
@@ -641,31 +641,30 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 child: getCurrentJournalEntry(),
                 onTap: () async {
                   print("Journal");
-                  String boxNameSuffix =
-                      AppDataCommon.of(context).appData.userdata.uid;
+                  String? boxNameSuffix = '';//AppDataCommon.of(context).appData!.userdata!.uid;
                   List<JournalPage> pages = List<JournalPage>.from(
                       Hive.box('${boxNameSuffix}journal').values);
                   if (pages.isEmpty) {
-                    JournalPage temp = await Navigator.push(
+                    JournalPage? temp = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => EditJournalPage(
-                          journalPage: new JournalPage(),
+                          journalPage: JournalPage(),
                           editMode: false,
                         ),
                       ),
                     );
                     if (temp != null) {
-                      saveToBox(temp.created, temp, boxNameSuffix + "journal");
+                      saveToBox(temp.created!, temp, boxNameSuffix + "journal");
                       print("Journal page created");
                     } else {
                       print("No journal page created");
                     }
                   } else {
-                    JournalPage firstPage = pages.first;
+                    JournalPage? firstPage = pages.first;
                     pages.forEach((element) {
-                      if (element.created.millisecondsSinceEpoch <
-                          firstPage.created.millisecondsSinceEpoch) {
+                      if (element.created!.millisecondsSinceEpoch <
+                          firstPage!.created!.millisecondsSinceEpoch) {
                         firstPage = element;
                       }
                     });
@@ -731,7 +730,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 Text(
                   "Todo",
                   textAlign: TextAlign.left,
-                  style: GoogleFonts.gloriaHallelujah(
+                  style: GoogleFonts.openSans(
                     fontSize: 20,
                     color: Colors.white,
                   ),
@@ -792,7 +791,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               Text(
                 "Rewind",
                 textAlign: TextAlign.left,
-                style: GoogleFonts.gloriaHallelujah(
+                style: GoogleFonts.openSans(
                   fontSize: 22,
                   color: Colors.black,
                 ),
@@ -866,8 +865,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   begin: Alignment.topRight,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.blueGrey[100],
-                    Colors.blue[200],
+                    Colors.blueGrey[100]!,
+                    Colors.blue[200]!,
                   ],
                 ),
               ),
@@ -897,14 +896,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   Text(
-                    "${AppDataCommon.of(context).appData.userName.isEmpty ? "<no username>" : AppDataCommon.of(context).appData.userName}",
-                    style: GoogleFonts.gloriaHallelujah(
+                    "${AppDataCommon.of(context).appData!.userName!.isEmpty ? "<no username>" : AppDataCommon.of(context).appData!.userName}",
+                    style: GoogleFonts.openSans(
                       fontSize: 20,
                     ),
                   ),
                   Text(
-                    "${AppDataCommon.of(context).appData.userdata.email}",
-                    style: GoogleFonts.gloriaHallelujah(
+                    '',//"${AppDataCommon.of(context).appData!.userdata!.email}",
+                    style: GoogleFonts.openSans(
                       fontSize: 15,
                     ),
                   ),
@@ -916,14 +915,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       ),
       bottomNavigationBar: Container(
         height: 70.0,
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.grey[100],
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(5.0),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue[200],
+              color: Colors.blue[200]!,
               // color: Colors.grey,
               offset: Offset(0.0, -0.5),
               blurRadius: 5.0,
@@ -975,7 +974,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.list_alt,
+                    MdiIcons.viewList,
                     color: Colors.blue[800],
                     size: 28,
                   ),

@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class JournalOverview extends StatefulWidget {
-  const JournalOverview({Key key}) : super(key: key);
+  const JournalOverview({Key? key}) : super(key: key);
 
   @override
   _JournalOverviewState createState() => _JournalOverviewState();

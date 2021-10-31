@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/models/journal_page.dart';
+import 'package:rewind_app/models/journal_page/journal_page.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 import 'edit_journal_page.dart';
@@ -14,8 +13,8 @@ class Journal extends StatefulWidget {
 
 class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
   List<Container> listTiles = [];
-  bool ascendingOrder = true;
-  int sortByOption = 0;
+  bool? ascendingOrder = true;
+  int? sortByOption = 0;
   TaskLevel taskLevel = TaskLevel();
 
   bool showActive = true;
@@ -40,10 +39,10 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
   }
 
   Container listTile({
-    int index,
+    required int index,
   }) {
-    final list = JournalCommon.of(context).jnlState.pages;
-    DateTime created = list[index].created;
+    final list = JournalCommon.of(context).jnlState!.pages!;
+    DateTime created = list[index]!.created!;
     TimeOfDay timeOfDay = TimeOfDay(
       hour: created.hour,
       minute: created.minute,
@@ -76,7 +75,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
         color: Colors.white,
       ),
       child: Text(
-        list[index].title,
+        list[index]!.title!,
         style: GoogleFonts.gloriaHallelujah(
           fontSize: 20,
           color: Colors.black,
@@ -93,7 +92,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
         color: Colors.white,
       ),
       child: Text(
-        list[index].content.isEmpty ? "<no content>" : list[index].content,
+        list[index]!.content!.isEmpty ? "<no content>" : list[index]!.content!,
         style: GoogleFonts.gloriaHallelujah(
           fontSize: 12,
           color: Colors.black,
@@ -125,7 +124,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
           GestureDetector(
             onTap: () async {
               print("edit journal${dtf.formatTime(timeOfDay)}");
-              JournalPage temp = await Navigator.push(
+              JournalPage? temp = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => EditJournalPage(
@@ -156,7 +155,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
   }
 
   void updateGoals() {
-    final list = JournalCommon.of(context).jnlState.pages;
+    final list = JournalCommon.of(context).jnlState!.pages!;
     listTiles = List.generate(
       list.length,
       (index) => listTile(
@@ -230,7 +229,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue[200],
+              color: Colors.blue[200]!,
               offset: Offset(0.0, -0.5),
               blurRadius: 5.0,
               spreadRadius: 0.0,
@@ -248,7 +247,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                     highlightColor: Colors.transparent,
                     onPressed: () async {
                       print("Add page");
-                      JournalPage temp = await Navigator.push(
+                      JournalPage? temp = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => EditJournalPage(
@@ -266,7 +265,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                     },
                     onLongPress: () {},
                     child: Icon(
-                      MaterialCommunityIcons.plus_circle,
+                      Icons.add_circle, // MaterialCommunityIcons.plus_circle,
                       color: Colors.lightBlueAccent,
                       size: 55,
                     ),
@@ -282,7 +281,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                       await showDialog<int>(
                         context: context,
                         builder: (BuildContext context) {
-                          int temp = sortByOption;
+                          int? temp = sortByOption;
                           return AlertDialog(
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -290,7 +289,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                                 Text("Sort by"),
                                 Spacer(),
                                 Icon(
-                                  MaterialCommunityIcons.sort,
+                                  Icons.add_circle, // MaterialCommunityIcons.sort,
                                   color: Colors.black,
                                 ),
                               ],
@@ -370,7 +369,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                       print("sorted");
                     },
                     icon: Icon(
-                      MaterialCommunityIcons.sort,
+                      Icons.add_circle, // MaterialCommunityIcons.sort,
                       color: Colors.black,
                       size: 30,
                     ),
@@ -382,9 +381,9 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                 child: Container(
                   child: IconButton(
                     icon: Icon(
-                      ascendingOrder
-                          ? MaterialCommunityIcons.alpha_a_circle
-                          : MaterialCommunityIcons.alpha_d_circle,
+                      ascendingOrder!
+                          ? Icons.add_circle // MaterialCommunityIcons.alpha_a_circle
+                          : Icons.add_circle, // MaterialCommunityIcons.alpha_d_circle,
                       color: Colors.blue[800],
                       size: 35,
                     ),
@@ -392,15 +391,15 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                       print("sort in ascending or descending");
                       JournalCommon.of(context).switchListOrder();
                       print(
-                          "Order: ${JournalCommon.of(context).jnlState.ascendingOrder ? "asc" : "desc"}ending");
+                          "Order: ${JournalCommon.of(context).jnlState!.ascendingOrder! ? "asc" : "desc"}ending");
                       //JournalCommon.of(context).sortTasks();
                       setState(() {
                         ascendingOrder =
-                            JournalCommon.of(context).jnlState.ascendingOrder;
+                            JournalCommon.of(context).jnlState!.ascendingOrder;
                       });
                       updateGoals();
                     },
-                    tooltip: "Order: ${ascendingOrder ? "asc" : "desc"}ending",
+                    tooltip: "Order: ${ascendingOrder! ? "asc" : "desc"}ending",
                   ),
                 ),
               ),

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/regular_task.dart';
-import '../models/task.dart';
+import '../models/regular_task/regular_task.dart';
+import '../models/task/task.dart';
 import 'edit_regular_task.dart';
 import 'goal_list.dart';
 import 'routine_list.dart';
@@ -18,8 +17,8 @@ class TodoList extends StatefulWidget {
 class _TodoListState extends State<TodoList>
     with SingleTickerProviderStateMixin {
   List<Container> listTiles = [];
-  bool ascendingOrder = true;
-  int sortByOption = 0;
+  bool? ascendingOrder = true;
+  int? sortByOption = 0;
   TaskLevel taskLevel = TaskLevel();
   bool showActive = true;
 
@@ -43,7 +42,7 @@ class _TodoListState extends State<TodoList>
   }
 
   Container goalsListTile({
-    int index,
+    required int index,
   }) {
     /*Container taskDescription = Container(
       width: double.maxFinite,
@@ -87,9 +86,9 @@ class _TodoListState extends State<TodoList>
         ),
       ),
     );*/
-    final list = TodoListCommon.of(context).gldState.tasks;
-    final created = list[index].created;
-    final deadline = list[index].deadline;
+    final list = TodoListCommon.of(context).gldState!.tasks!;
+    final created = list[index].created!;
+    final deadline = list[index].deadline!;
     String createdTime = dtf.formatTime(
       TimeOfDay(
         hour: created.hour,
@@ -143,7 +142,7 @@ class _TodoListState extends State<TodoList>
                       onChanged: (value) {
                         setState(() {
                           list[index].completionStatus =
-                              !list[index].completionStatus;
+                              !list[index].completionStatus!;
                         });
                       },
                     );
@@ -158,7 +157,7 @@ class _TodoListState extends State<TodoList>
                   children: [
                     TextButton(
                       onPressed: () async {
-                        Task temp = await Navigator.push(
+                        Task? temp = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditTask(
@@ -177,7 +176,7 @@ class _TodoListState extends State<TodoList>
                       },
                       onLongPress: () {},
                       child: Text(
-                        list[index].label,
+                        list[index].label!,
                         textAlign: TextAlign.justify,
                         style: GoogleFonts.gloriaHallelujah(
                           fontSize: 15,
@@ -210,10 +209,10 @@ class _TodoListState extends State<TodoList>
                       ),
                     ),
                     Icon(
-                      taskLevel.diffLevelNumeric[list[index].level - 1],
+                      taskLevel.diffLevelNumeric[list[index].level! - 1],
                       size: 40,
                       color: taskLevel
-                          .diffLevelNumericColor[list[index].level - 1],
+                          .diffLevelNumericColor[list[index].level! - 1],
                     ),
                   ],
                 ),
@@ -237,7 +236,7 @@ class _TodoListState extends State<TodoList>
             width: 5.0,
           ),
           Icon(
-            MaterialCommunityIcons.clock_start,
+            Icons.info, // MaterialCommunityIcons.clock_start,
             color: Colors.white,
             size: 20,
           ),
@@ -287,7 +286,7 @@ class _TodoListState extends State<TodoList>
             width: 5.0,
           ),
           Icon(
-            MaterialCommunityIcons.flag_checkered,
+            Icons.info, // MaterialCommunityIcons.flag_checkered,
             color: Colors.white,
             size: 20,
           ),
@@ -363,16 +362,16 @@ class _TodoListState extends State<TodoList>
   }
 
   void updateGoals() {
-    final list = TodoListCommon.of(context).gldState.tasks;
+    final list = TodoListCommon.of(context).gldState!.tasks!;
     listTiles = List.generate(
       list.length,
       (index) => goalsListTile(
-        index: list[index].orderIndex,
+        index: list[index].orderIndex!,
       ),
     );
   }
 
-  TabController tabCtrl;
+  TabController? tabCtrl;
 
   @override
   void initState() {
@@ -381,16 +380,16 @@ class _TodoListState extends State<TodoList>
       vsync: this,
       length: 2,
     );
-    tabCtrl.addListener(() {
+    tabCtrl!.addListener(() {
       setState(() {
         final provider = TodoListCommon.of(context);
-        switch (tabCtrl.index) {
+        switch (tabCtrl!.index) {
           case 0:
-            ascendingOrder = provider.rldState.ascendingOrder;
+            ascendingOrder = provider.rldState!.ascendingOrder;
             break;
           case 1:
-            sortByOption = provider.gldState.sortByOption;
-            ascendingOrder = provider.gldState.ascendingOrder;
+            sortByOption = provider.gldState!.sortByOption;
+            ascendingOrder = provider.gldState!.ascendingOrder;
             break;
         }
       });
@@ -400,7 +399,7 @@ class _TodoListState extends State<TodoList>
   @override
   void dispose() {
     super.dispose();
-    tabCtrl.dispose();
+    tabCtrl!.dispose();
   }
 
   DateAndTimeFormat dtf = new DateAndTimeFormat();
@@ -448,7 +447,7 @@ class _TodoListState extends State<TodoList>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      MaterialCommunityIcons.alarm_bell,
+                      Icons.info, // MaterialCommunityIcons.alarm_bell,
                       color: Colors.yellow[600],
                       size: 30.0,
                     ),
@@ -470,7 +469,7 @@ class _TodoListState extends State<TodoList>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      MaterialCommunityIcons.bullseye_arrow,
+                      Icons.info, // MaterialCommunityIcons.bullseye_arrow,
                       color: Colors.redAccent,
                       size: 30.0,
                     ),
@@ -513,7 +512,7 @@ class _TodoListState extends State<TodoList>
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue[200],
+              color: Colors.blue[200]!,
               offset: Offset(0.0, -0.5),
               blurRadius: 5.0,
               spreadRadius: 0.0,
@@ -531,11 +530,11 @@ class _TodoListState extends State<TodoList>
                     highlightColor: Colors.transparent,
                     onPressed: () async {
                       print("Add task");
-                      switch (tabCtrl.index) {
+                      switch (tabCtrl!.index) {
                         case 0:
                           {
                             print("Add regular task");
-                            RegularTask temp = await Navigator.push(
+                            RegularTask? temp = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => EditRegularTask(
@@ -555,7 +554,7 @@ class _TodoListState extends State<TodoList>
                         case 1:
                           {
                             print("Add goal");
-                            Task temp = await Navigator.push(
+                            Task? temp = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => EditTask(
@@ -578,7 +577,7 @@ class _TodoListState extends State<TodoList>
                     },
                     onLongPress: () {},
                     child: Icon(
-                      MaterialCommunityIcons.plus_circle,
+                      Icons.info, // MaterialCommunityIcons.plus_circle,
                       color: Colors.lightBlueAccent,
                       size: 55,
                     ),
@@ -591,7 +590,7 @@ class _TodoListState extends State<TodoList>
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () async {
-                      switch (tabCtrl.index) {
+                      switch (tabCtrl!.index) {
                         case 0:
                           {
                             print("sort routine");
@@ -603,7 +602,7 @@ class _TodoListState extends State<TodoList>
                             await showDialog<int>(
                               context: context,
                               builder: (BuildContext context) {
-                                int temp = sortByOption;
+                                int? temp = sortByOption;
                                 return AlertDialog(
                                   title: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -611,7 +610,7 @@ class _TodoListState extends State<TodoList>
                                       Text("Sort by"),
                                       Spacer(),
                                       Icon(
-                                        MaterialCommunityIcons.sort,
+                                        Icons.info, // MaterialCommunityIcons.sort,
                                         color: Colors.black,
                                       ),
                                     ],
@@ -697,7 +696,7 @@ class _TodoListState extends State<TodoList>
                       }
                     },
                     icon: Icon(
-                      MaterialCommunityIcons.sort,
+                      Icons.info, // MaterialCommunityIcons.sort,
                       color: Colors.black,
                       size: 30,
                     ),
@@ -709,15 +708,15 @@ class _TodoListState extends State<TodoList>
                 child: Container(
                   child: IconButton(
                     icon: Icon(
-                      ascendingOrder
-                          ? MaterialCommunityIcons.alpha_a_circle
-                          : MaterialCommunityIcons.alpha_d_circle,
+                      ascendingOrder!
+                          ? Icons.info// MaterialCommunityIcons.alpha_a_circle
+                          : Icons.info, // MaterialCommunityIcons.alpha_d_circle,
                       color: Colors.blue[800],
                       size: 35,
                     ),
                     onPressed: () {
                       print("sort in ascending or descending");
-                      switch (tabCtrl.index) {
+                      switch (tabCtrl!.index) {
                         case 0:
                           {
                             /*final provider = TodoListCommon.of(context);
@@ -729,11 +728,11 @@ class _TodoListState extends State<TodoList>
                           {
                             TodoListCommon.of(context).switchTaskListOrder();
                             print(
-                                "Order: ${TodoListCommon.of(context).gldState.ascendingOrder ? "asc" : "desc"}ending");
+                                "Order: ${TodoListCommon.of(context).gldState!.ascendingOrder! ? "asc" : "desc"}ending");
                             TodoListCommon.of(context).sortTasks();
                             setState(() {
                               ascendingOrder = TodoListCommon.of(context)
-                                  .gldState
+                                  .gldState!
                                   .ascendingOrder;
                             });
                             updateGoals();
@@ -741,7 +740,7 @@ class _TodoListState extends State<TodoList>
                           break;
                       }
                     },
-                    tooltip: "Order: ${ascendingOrder ? "asc" : "desc"}ending",
+                    tooltip: "Order: ${ascendingOrder! ? "asc" : "desc"}ending",
                   ),
                 ),
               ),

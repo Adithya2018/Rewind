@@ -1,30 +1,29 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/models/journal_page.dart';
+import 'package:rewind_app/models/journal_page/journal_page.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class EditJournalPage extends StatefulWidget {
-  final JournalPage journalPage;
+  final JournalPage? journalPage;
   final bool editMode;
-  EditJournalPage({@required this.journalPage, @required this.editMode});
+  EditJournalPage({required this.journalPage, required this.editMode});
   @override
   _EditJournalPageState createState() => _EditJournalPageState();
 }
 
 class _EditJournalPageState extends State<EditJournalPage> {
-  JournalPage journalPage;
-  TextEditingController titleCtrl;
-  TextEditingController descriptionCtrl;
+  JournalPage? journalPage;
+  TextEditingController? titleCtrl;
+  TextEditingController? descriptionCtrl;
 
   @override
   void initState() {
     super.initState();
-    journalPage = JournalPage.fromJournalPage(widget.journalPage);
-    titleCtrl = TextEditingController(text: journalPage.title);
-    descriptionCtrl = TextEditingController(text: journalPage.content);
+    journalPage = JournalPage.fromJournalPage(widget.journalPage!);
+    titleCtrl = TextEditingController(text: journalPage!.title);
+    descriptionCtrl = TextEditingController(text: journalPage!.content);
   }
 
   @override
@@ -116,7 +115,7 @@ class _EditJournalPageState extends State<EditJournalPage> {
       ),
     );
 
-    Future<void> showErrorMessage({String title, String msg}) async {
+    Future<void> showErrorMessage({String? title, String? msg}) async {
       return showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -127,7 +126,7 @@ class _EditJournalPageState extends State<EditJournalPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  MaterialCommunityIcons.alert,
+                  Icons.info, // MaterialCommunityIcons.alert,
                   color: Colors.red,
                   size: 35.0,
                 ),
@@ -141,7 +140,7 @@ class _EditJournalPageState extends State<EditJournalPage> {
             ),
             content: Container(
               child: Text(
-                msg,
+                msg!,
                 style: GoogleFonts.gloriaHallelujah(
                   fontSize: 16,
                 ),
@@ -180,17 +179,17 @@ class _EditJournalPageState extends State<EditJournalPage> {
           actions: <Widget>[
             IconButton(
               icon: Icon(
-                journalPage.fav ? Icons.favorite : Icons.favorite_outline,
+                journalPage!.fav! ? Icons.favorite : Icons.favorite_outline,
                 color: Colors.pinkAccent,
                 size: 30.0,
               ),
               highlightColor: Colors.transparent,
               splashColor: Colors.transparent,
               tooltip:
-                  '${journalPage.fav ? "Remove from" : "Add to"} favorites',
+                  '${journalPage!.fav! ? "Remove from" : "Add to"} favorites',
               onPressed: () {
                 setState(() {
-                  journalPage.fav = !journalPage.fav;
+                  journalPage!.fav = !journalPage!.fav!;
                 });
                 print("more options");
               },
@@ -280,15 +279,15 @@ class _EditJournalPageState extends State<EditJournalPage> {
                     ),
                     onPressed: () async {
                       print("Save");
-                      if (titleCtrl.text.isEmpty) {
+                      if (titleCtrl!.text.isEmpty) {
                         await showErrorMessage(
                           msg: "Title cannot be empty",
                         );
                         return;
                       }
-                      journalPage.title = titleCtrl.text;
-                      journalPage.content = descriptionCtrl.text;
-                      journalPage.created = journalPage.createdDateTime;
+                      journalPage!.title = titleCtrl!.text;
+                      journalPage!.content = descriptionCtrl!.text;
+                      journalPage!.created = journalPage!.createdDateTime;
                       Navigator.pop(context, journalPage);
                     },
                   ),

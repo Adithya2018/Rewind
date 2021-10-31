@@ -17,8 +17,8 @@ class TimeIntervalAdapter extends TypeAdapter<TimeInterval> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TimeInterval()
-      ..startTime = (fields[0] as Map)?.cast<String, int>()
-      ..endTime = (fields[1] as Map)?.cast<String, int>();
+      ..startTime = (fields[0] as Map?)?.cast<String, int?>()
+      ..endTime = (fields[1] as Map?)?.cast<String, int?>();
   }
 
   @override

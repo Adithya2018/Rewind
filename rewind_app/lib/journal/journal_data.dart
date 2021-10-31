@@ -1,24 +1,24 @@
 import 'package:collection/collection.dart';
-import 'package:rewind_app/models/journal_page.dart';
+import 'package:rewind_app/models/journal_page/journal_page.dart';
 
 class JournalData {
-  List<JournalPage> pages;
-  bool ascendingOrder = true;
-  int sortByOption;
+  List<JournalPage?>? pages;
+  bool? ascendingOrder = true;
+  int? sortByOption;
   DeepCollectionEquality deepEq = DeepCollectionEquality();
   List<Function> sortByFunction = [
-    (JournalPage a, JournalPage b) => a.created.compareTo(b.created),
-    (JournalPage a, JournalPage b) => a.title.compareTo(b.title),
+    (JournalPage a, JournalPage b) => a.created!.compareTo(b.created!),
+    (JournalPage a, JournalPage b) => a.title!.compareTo(b.title!),
   ];
-  Set<int> selected;
+  Set<int>? selected;
   Function get currentSortByFunction => (JournalPage a, JournalPage b) =>
-      (ascendingOrder ? 1 : -1) * sortByFunction[sortByOption](a, b) as int;
+      (ascendingOrder! ? 1 : -1) * sortByFunction[sortByOption!](a, b) as int;
 
   JournalData({
-    List<JournalPage> pages,
-    Set<int> selected,
-    int sortByOption,
-    bool ascendingOrder,
+    List<JournalPage?>? pages,
+    Set<int>? selected,
+    int? sortByOption,
+    bool? ascendingOrder,
   }) {
     this.pages = pages;
     this.selected = selected;
@@ -27,10 +27,10 @@ class JournalData {
   }
 
   JournalData copy({
-    List<JournalPage> pages,
-    Set<int> selected,
-    int sortByOption,
-    bool ascendingOrder,
+    List<JournalPage?>? pages,
+    Set<int>? selected,
+    int? sortByOption,
+    bool? ascendingOrder,
   }) =>
       JournalData(
         pages: pages ?? this.pages,

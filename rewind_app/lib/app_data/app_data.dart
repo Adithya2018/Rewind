@@ -1,20 +1,20 @@
 import 'package:rewind_app/models/user.dart';
 
 class AppData {
-  UserData userdata;
-  String userName;
+  UserData? userdata;
+  String? userName;
 
   AppData({
-    UserData userdata,
-    String userName,
+    UserData? userdata,
+    String? userName,
   }) {
     this.userdata = userdata;
     this.userName = userName;
   }
 
   AppData copy({
-    UserData userdata,
-    String userName,
+    UserData? userdata,
+    String? userName,
   }) =>
       AppData(
         userdata: userdata ?? this.userdata,

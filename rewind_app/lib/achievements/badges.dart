@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 class AchievementBadge{
   Container createBadge(
-    IconData badgeIconData, {
-    @required Color badgeIconColor,
-    @required Color inner1,
-    @required Color inner2,
-    @required Color outer1,
-    Color outer2,
-    @required Color outer3,
+    IconData? badgeIconData, {
+    required Color? badgeIconColor,
+    required Color inner1,
+    required Color inner2,
+    required Color outer1,
+    Color? outer2,
+    required Color outer3,
   }) {
     List<Color> innerGradientColors = [
       inner1,
@@ -100,8 +97,8 @@ class AchievementBadge{
           Row(
             children: [
               createBadge(
-                MaterialCommunityIcons.snowflake,
-                inner1: Colors.lightBlueAccent[400],
+                Icons.stream,
+                inner1: Colors.lightBlueAccent[400]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.purple[200],
@@ -109,7 +106,7 @@ class AchievementBadge{
                 badgeIconColor: Colors.white,
               ),
               createBadge(
-                MaterialCommunityIcons.emoticon_devil,
+                Icons.stream,
                 inner1: Colors.deepOrange,
                 inner2: Colors.yellow,
                 outer1: Colors.white,
@@ -118,8 +115,8 @@ class AchievementBadge{
                 badgeIconColor: Colors.red,
               ),
               createBadge(
-                MaterialCommunityIcons.skull,
-                inner1: Colors.blueGrey[800],
+                Icons.stream,
+                inner1: Colors.blueGrey[800]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.blue[200],
@@ -127,22 +124,22 @@ class AchievementBadge{
                 badgeIconColor: Colors.white,
               ),
               createBadge(
-                MaterialCommunityIcons.star,
+                Icons.stream,
                 inner1: Colors.black,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.blue[300],
-                outer3: Colors.blue[600],
+                outer3: Colors.blue[600]!,
                 badgeIconColor: Colors.white,
               ),
               createBadge(
-                MaterialCommunityIcons.sword,
+                Icons.stream,
                 //inner1: Colors.red,
-                inner1: Colors.blueGrey[200],
+                inner1: Colors.blueGrey[200]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.brown[300],
-                outer3: Colors.brown[500],
+                outer3: Colors.brown[500]!,
                 badgeIconColor: Color(0xFFB0B3B7),
               ),
             ],
@@ -150,16 +147,16 @@ class AchievementBadge{
           Row(
             children: [
               createBadge(
-                MaterialCommunityIcons.baby_face,
+                Icons.stream,
                 inner1: Colors.white,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Color(0xFFB2E5E3),
-                outer3: Colors.pink[200],
+                outer3: Colors.pink[200]!,
                 badgeIconColor: Color(0xFFFEDFD8),
               ),
               createBadge(
-                MaterialCommunityIcons.fire,
+                Icons.stream,
                 inner1: Colors.deepOrange,
                 inner2: Colors.yellow,
                 outer1: Colors.white,
@@ -168,26 +165,26 @@ class AchievementBadge{
                 badgeIconColor: Colors.red,
               ),
               createBadge(
-                MaterialCommunityIcons.star_half,
+                Icons.stream,
                 inner1: Colors.black,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.blue[300],
-                outer3: Colors.blue[600],
+                outer3: Colors.blue[600]!,
                 badgeIconColor: Colors.white,
               ),
               createBadge(
-                MaterialCommunityIcons.star_outline,
+                Icons.stream,
                 inner1: Colors.black,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.blue[300],
-                outer3: Colors.blue[600],
+                outer3: Colors.blue[600]!,
                 badgeIconColor: Colors.white,
               ),
               createBadge(
-                MaterialCommunityIcons.diamond_stone,
-                inner1: Colors.pinkAccent[100],
+                Icons.stream,
+                inner1: Colors.pinkAccent[100]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.grey[400],
@@ -199,17 +196,17 @@ class AchievementBadge{
           Row(
             children: [
               createBadge(
-                MaterialCommunityIcons.star_face,
+                Icons.stream,
                 inner1: Colors.white,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.red[100],
-                outer3: Colors.blue[600],
+                outer3: Colors.blue[600]!,
                 badgeIconColor: Colors.yellow[700],
               ),
               createBadge(
-                MaterialCommunityIcons.alarm_light,
-                inner1: Colors.yellow[200],
+                Icons.stream,
+                inner1: Colors.yellow[200]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.yellow,
@@ -217,8 +214,8 @@ class AchievementBadge{
                 badgeIconColor: Colors.yellow[600],
               ),
               createBadge(
-                MaterialCommunityIcons.chess_king,
-                inner1: Colors.purpleAccent[100],
+                Icons.stream,
+                inner1: Colors.purpleAccent[100]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.purpleAccent[100],
@@ -226,7 +223,7 @@ class AchievementBadge{
                 badgeIconColor: Colors.purple,
               ),
               createBadge(
-                MaterialCommunityIcons.alien,
+                Icons.stream,
                 inner1: Colors.black38,
                 inner2: Colors.white,
                 outer1: Colors.white,
@@ -235,7 +232,7 @@ class AchievementBadge{
                 badgeIconColor: Colors.grey[800],
               ),
               createBadge(
-                MaterialCommunityIcons.yin_yang,
+                Icons.stream,
                 inner1: Colors.white,
                 inner2: Colors.white,
                 outer1: Colors.white,
@@ -248,7 +245,7 @@ class AchievementBadge{
           Row(
             children: [
               createBadge(
-                MaterialCommunityIcons.nuke,
+                Icons.stream,
                 inner1: Colors.black,
                 inner2: Colors.white,
                 outer1: Colors.white,
@@ -257,7 +254,7 @@ class AchievementBadge{
                 badgeIconColor: Colors.yellowAccent,
               ),
               createBadge(
-                MaterialCommunityIcons.tea,
+                Icons.stream,
                 inner1: Colors.brown,
                 inner2: Colors.white,
                 outer1: Colors.white,
@@ -266,8 +263,8 @@ class AchievementBadge{
                 badgeIconColor: Colors.white,
               ),
               createBadge(
-                MaterialCommunityIcons.trophy,
-                inner1: Colors.yellow[600],
+                Icons.stream,
+                inner1: Colors.yellow[600]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.orange[100],
@@ -275,7 +272,7 @@ class AchievementBadge{
                 badgeIconColor: Color(0xFFB08D57),
               ),
               createBadge(
-                MaterialCommunityIcons.ghost,
+                Icons.stream,
                 inner1: Colors.black,
                 inner2: Colors.black,
                 outer1: Colors.white,
@@ -284,7 +281,7 @@ class AchievementBadge{
                 badgeIconColor: Colors.white,
               ),
               createBadge(
-                MaterialCommunityIcons.owl,
+                Icons.stream,
                 inner1: Colors.black,
                 inner2: Colors.black,
                 outer1: Colors.white,
@@ -297,16 +294,16 @@ class AchievementBadge{
           Row(
             children: [
               createBadge(
-                MaterialCommunityIcons.arrow_up_thick,
-                inner1: Colors.greenAccent[400],
+                Icons.stream,
+                inner1: Colors.greenAccent[400]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.green[100],
-                outer3: Colors.greenAccent[400],
+                outer3: Colors.greenAccent[400]!,
                 badgeIconColor: Colors.white,
               ),
               createBadge(
-                MaterialCommunityIcons.bomb,
+                Icons.stream,
                 inner1: Colors.grey,
                 inner2: Colors.white,
                 outer1: Colors.white,
@@ -315,7 +312,7 @@ class AchievementBadge{
                 badgeIconColor: Colors.blueGrey,
               ),
               createBadge(
-                MaterialCommunityIcons.home,
+                Icons.stream,
                 inner1: Colors.grey,
                 inner2: Colors.white,
                 outer1: Colors.white,
@@ -392,12 +389,12 @@ class AchievementTest extends StatefulWidget {
 class _AchievementTestState extends State<AchievementTest> {
   Container createBadge(
       IconData badgeIconData, {
-        @required Color badgeIconColor,
-        @required Color inner1,
-        @required Color inner2,
-        @required Color outer1,
-        Color outer2,
-        @required Color outer3,
+        required Color? badgeIconColor,
+        required Color inner1,
+        required Color inner2,
+        required Color outer1,
+        Color? outer2,
+        required Color outer3,
       }) {
     List<Color> innerGradientColors = [
       inner1,
@@ -486,8 +483,8 @@ class _AchievementTestState extends State<AchievementTest> {
             Row(
               children: [
                 createBadge(
-                  MaterialCommunityIcons.snowflake,
-                  inner1: Colors.lightBlueAccent[400],
+                  Icons.stream,
+                  inner1: Colors.lightBlueAccent[400]!,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.purple[200],
@@ -495,7 +492,7 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.white,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.emoticon_devil,
+                  Icons.stream,
                   inner1: Colors.deepOrange,
                   inner2: Colors.yellow,
                   outer1: Colors.white,
@@ -504,8 +501,8 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.red,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.skull,
-                  inner1: Colors.blueGrey[800],
+                  Icons.stream,
+                  inner1: Colors.blueGrey[800]!,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.blue[200],
@@ -513,22 +510,22 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.white,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.star,
+                  Icons.stream,
                   inner1: Colors.black,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.blue[300],
-                  outer3: Colors.blue[600],
+                  outer3: Colors.blue[600]!,
                   badgeIconColor: Colors.white,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.sword,
+                  Icons.stream,
                   //inner1: Colors.red,
-                  inner1: Colors.blueGrey[200],
+                  inner1: Colors.blueGrey[200]!,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.brown[300],
-                  outer3: Colors.brown[500],
+                  outer3: Colors.brown[500]!,
                   badgeIconColor: Color(0xFFB0B3B7),
                 ),
               ],
@@ -536,16 +533,16 @@ class _AchievementTestState extends State<AchievementTest> {
             Row(
               children: [
                 createBadge(
-                  MaterialCommunityIcons.baby_face,
+                  Icons.stream,
                   inner1: Colors.white,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Color(0xFFB2E5E3),
-                  outer3: Colors.pink[200],
+                  outer3: Colors.pink[200]!,
                   badgeIconColor: Color(0xFFFEDFD8),
                 ),
                 createBadge(
-                  MaterialCommunityIcons.fire,
+                  Icons.stream,
                   inner1: Colors.deepOrange,
                   inner2: Colors.yellow,
                   outer1: Colors.white,
@@ -554,26 +551,26 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.red,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.star_half,
+                  Icons.stream,
                   inner1: Colors.black,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.blue[300],
-                  outer3: Colors.blue[600],
+                  outer3: Colors.blue[600]!,
                   badgeIconColor: Colors.white,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.star_outline,
+                  Icons.stream,
                   inner1: Colors.black,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.blue[300],
-                  outer3: Colors.blue[600],
+                  outer3: Colors.blue[600]!,
                   badgeIconColor: Colors.white,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.diamond_stone,
-                  inner1: Colors.pinkAccent[100],
+                  Icons.stream,
+                  inner1: Colors.pinkAccent[100]!,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.grey[400],
@@ -585,17 +582,17 @@ class _AchievementTestState extends State<AchievementTest> {
             Row(
               children: [
                 createBadge(
-                  MaterialCommunityIcons.star_face,
+                  Icons.stream,
                   inner1: Colors.white,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.red[100],
-                  outer3: Colors.blue[600],
+                  outer3: Colors.blue[600]!,
                   badgeIconColor: Colors.yellow[700],
                 ),
                 createBadge(
-                  MaterialCommunityIcons.alarm_light,
-                  inner1: Colors.yellow[200],
+                  Icons.stream,
+                  inner1: Colors.yellow[200]!,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.yellow,
@@ -603,8 +600,8 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.yellow[600],
                 ),
                 createBadge(
-                  MaterialCommunityIcons.chess_king,
-                  inner1: Colors.purpleAccent[100],
+                  Icons.stream,
+                  inner1: Colors.purpleAccent[100]!,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.purpleAccent[100],
@@ -612,7 +609,7 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.purple,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.alien,
+                  Icons.stream,
                   inner1: Colors.black38,
                   inner2: Colors.white,
                   outer1: Colors.white,
@@ -621,7 +618,7 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.grey[800],
                 ),
                 createBadge(
-                  MaterialCommunityIcons.yin_yang,
+                  Icons.stream,
                   inner1: Colors.white,
                   inner2: Colors.white,
                   outer1: Colors.white,
@@ -634,7 +631,7 @@ class _AchievementTestState extends State<AchievementTest> {
             Row(
               children: [
                 createBadge(
-                  MaterialCommunityIcons.nuke,
+                  Icons.stream,
                   inner1: Colors.black,
                   inner2: Colors.white,
                   outer1: Colors.white,
@@ -643,7 +640,7 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.yellowAccent,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.tea,
+                  Icons.stream,
                   inner1: Colors.brown,
                   inner2: Colors.white,
                   outer1: Colors.white,
@@ -652,8 +649,8 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.white,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.trophy,
-                  inner1: Colors.yellow[600],
+                  Icons.stream,
+                  inner1: Colors.yellow[600]!,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.orange[100],
@@ -661,7 +658,7 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Color(0xFFB08D57),
                 ),
                 createBadge(
-                  MaterialCommunityIcons.ghost,
+                  Icons.stream,
                   inner1: Colors.black,
                   inner2: Colors.black,
                   outer1: Colors.white,
@@ -670,7 +667,7 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.white,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.owl,
+                  Icons.stream,
                   inner1: Colors.black,
                   inner2: Colors.black,
                   outer1: Colors.white,
@@ -683,16 +680,16 @@ class _AchievementTestState extends State<AchievementTest> {
             Row(
               children: [
                 createBadge(
-                  MaterialCommunityIcons.arrow_up_thick,
-                  inner1: Colors.greenAccent[400],
+                  Icons.stream,
+                  inner1: Colors.greenAccent[400]!,
                   inner2: Colors.white,
                   outer1: Colors.white,
                   outer2: Colors.green[100],
-                  outer3: Colors.greenAccent[400],
+                  outer3: Colors.greenAccent[400]!,
                   badgeIconColor: Colors.white,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.bomb,
+                  Icons.stream,
                   inner1: Colors.grey,
                   inner2: Colors.white,
                   outer1: Colors.white,
@@ -701,7 +698,7 @@ class _AchievementTestState extends State<AchievementTest> {
                   badgeIconColor: Colors.blueGrey,
                 ),
                 createBadge(
-                  MaterialCommunityIcons.home,
+                  Icons.stream,
                   inner1: Colors.grey,
                   inner2: Colors.white,
                   outer1: Colors.white,

@@ -4,17 +4,17 @@ part 'journal_page.g.dart';
 @HiveType(typeId: 3)
 class JournalPage extends HiveObject {
   @HiveField(0)
-  DateTime created;
+  DateTime? created;
 
   @HiveField(1)
-  String title;
+  String? title;
 
   @HiveField(2)
-  String content;
+  String? content;
 
   @HiveField(3)
-  bool fav;
-  DateTime get createdDateTime => created == null ? DateTime.now() : created;
+  bool? fav;
+  DateTime? get createdDateTime => created == null ? DateTime.now() : created;
 
   JournalPage() {
     created = createdDateTime;

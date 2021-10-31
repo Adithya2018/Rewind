@@ -4,28 +4,28 @@ part 'task.g.dart';
 @HiveType(typeId: 0)
 class Task extends HiveObject {
   @HiveField(0)
-  DateTime created;
+  DateTime? created;
 
   @HiveField(1)
-  int orderIndex;
+  int? orderIndex;
 
   @HiveField(2)
-  String label;
+  String? label;
 
   @HiveField(3)
-  String description;
+  String? description;
 
   @HiveField(4)
-  DateTime deadline;
+  DateTime? deadline;
 
   @HiveField(5)
-  int level;
+  int? level;
 
   @HiveField(6)
-  bool completionStatus;
+  bool? completionStatus;
 
   @HiveField(7)
-  DateTime completed;
+  DateTime? completed;
 
   Task() {
     orderIndex = 0;
@@ -46,17 +46,17 @@ class Task extends HiveObject {
     this.completed = task.completed;
   }
 
-  DateTime get createdDateTime => created == null ? DateTime.now() : created;
+  DateTime? get createdDateTime => created == null ? DateTime.now() : created;
 
   @override
   String toString() {
     List<String> result = [];
     result.add("created: ${created.toString()}");
     result.add("title: $label");
-    result.add("description: ${description.isEmpty?"no description":description}");
+    result.add("description: ${description!.isEmpty?"no description":description}");
     result.add("deadline: ${deadline.toString()}");
     result.add("level: $level");
-    result.add("completionStatus: ${completionStatus?"":"not"} completed");
+    result.add("completionStatus: ${completionStatus!?"":"not"} completed");
     result.add("completed: ${completed.toString()}");
     String s = "";
     result.forEach((element) {

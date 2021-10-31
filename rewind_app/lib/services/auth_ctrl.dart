@@ -1,14 +1,13 @@
+import 'package:get/get.dart';
 import 'package:rewind_app/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/services.dart';
 
-/*
-* sign-in and sign-out service
-**/
-class AuthService {
+/// Sign-in and sign-out service using Firebase.
+class AuthService extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  UserData userFromDB(User user) {
+  UserData? fromFirebaseUser(User? user) {
     return (user == null)
         ? null
         : UserData(
@@ -18,23 +17,23 @@ class AuthService {
           );
   }
 
-  // determine whether user is signed in or signed out
-  Stream<UserData> get user {
-    return _auth.authStateChanges().map(userFromDB);
+  /// Stream for checking whether user is signed in or signed out.
+  Stream<UserData?> get user {
+    return _auth.authStateChanges().map(fromFirebaseUser);
   }
 
-  // anonymous sign-in
+  /// Anonymous sign-in
   Future signInAnon() async {
     try {
       UserCredential result = await _auth.signInAnonymously();
-      return userFromDB(result.user);
+      return fromFirebaseUser(result.user);
     } catch (e) {
       print(e.toString());
       return null;
     }
   }
 
-  // email and password sign-in
+  /// Email and password sign-in.
   Future signInWithEmailAndPwd(String email, String pwd) async {
     UserCredential result;
     try {
@@ -42,9 +41,9 @@ class AuthService {
         email: email,
         password: pwd,
       );
-      User user = result.user;
+      User? user = result.user;
       print(user);
-      return userFromDB(user);
+      return fromFirebaseUser(user);
     } on FirebaseAuthException catch (e) {
       print(e.message);
       print("Error!!!");
@@ -63,8 +62,9 @@ class AuthService {
         email: email,
         password: pwd,
       );
-      User user = result.user;
-      return userFromDB(user);
+      GoogleAuthProvider.credential();
+      User? user = result.user;
+      return fromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
       print("user exists");

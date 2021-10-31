@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/models/regular_task.dart';
+import 'package:rewind_app/models/regular_task/regular_task.dart';
 import 'package:rewind_app/todo_list/edit_regular_task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 import './todo_list_state/todo_list_state.dart';
@@ -22,7 +21,7 @@ class _RoutineListState extends State<RoutineList>
   }
   List<Function> sortByFunction = [
     //(RegularTask a, RegularTask b) => a.deadline.compareTo(b.deadline),
-    (RegularTask a, RegularTask b) => a.level.compareTo(b.level),
+    (RegularTask a, RegularTask b) => a.level!.compareTo(b.level!),
   ];
 
   DateAndTimeFormat dtf = new DateAndTimeFormat();
@@ -49,10 +48,10 @@ class _RoutineListState extends State<RoutineList>
   }
 
   Container listTile({
-    int index,
+    required int index,
   }) {
     final provider = TodoListCommon.of(context);
-    final list = provider.rldState.regularTasks;
+    final list = provider.rldState!.regularTasks!;
     Container mainContainer = Container(
       padding: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
       decoration: BoxDecoration(
@@ -104,18 +103,18 @@ class _RoutineListState extends State<RoutineList>
                   children: [
                     TextButton(
                       onPressed: () async {
-                        RegularTask temp = await Navigator.push(
+                        RegularTask? temp = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditRegularTask(
-                              taskCurrent: provider.rldState.regularTasks[index],
+                              taskCurrent: provider.rldState!.regularTasks![index],
                               editMode: true,
                             ),
                           ),
                         );
                         if (temp != null) {
                           setState(() {
-                            provider.rldState.regularTasks[index] =
+                            provider.rldState!.regularTasks![index] =
                             RegularTask.fromRegularTask(temp);
                           });
                         }
@@ -123,7 +122,7 @@ class _RoutineListState extends State<RoutineList>
                       },
                       onLongPress: () {},
                       child: Text(
-                        list[index].label,
+                        list[index].label!,
                         textAlign: TextAlign.justify,
                         style: GoogleFonts.gloriaHallelujah(
                           fontSize: 15,
@@ -156,10 +155,10 @@ class _RoutineListState extends State<RoutineList>
                       ),
                     ),
                     Icon(
-                      taskLevel.diffLevelNumeric[list[index].level - 1],
+                      taskLevel.diffLevelNumeric[list[index].level! - 1],
                       size: 40,
                       color: taskLevel
-                          .diffLevelNumericColor[list[index].level - 1],
+                          .diffLevelNumericColor[list[index].level! - 1],
                     ),
                   ],
                 ),
@@ -181,15 +180,15 @@ class _RoutineListState extends State<RoutineList>
           7,
           (i) => Icon(
             dtf.weekDayIcon[i],
-            color: (list[index].weeklyRepeat[i].isNotEmpty)
+            color: (list[index].weeklyRepeat![i].isNotEmpty)
                 ? Colors.blue
                 : Colors.grey[300],
           ),
         ),
       ),
     );
-    int rptEvery = list[index].customRepeat['rptEvery'];
-    int nRpt = list[index].customRepeat['nRpt'];
+    int? rptEvery = list[index].customRepeat!['rptEvery'];
+    int? nRpt = list[index].customRepeat!['nRpt'];
     Container customRepeat = Container(
       padding: EdgeInsets.only(
         top: 10.0,
@@ -203,7 +202,7 @@ class _RoutineListState extends State<RoutineList>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  MaterialCommunityIcons.repeat,
+                  Icons.info, // MaterialCommunityIcons.repeat,
                 ),
                 Text(
                   " $rptEvery day${rptEvery == 1 ? "" : "s"}",
@@ -219,7 +218,7 @@ class _RoutineListState extends State<RoutineList>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  MaterialCommunityIcons.bell_ring,
+                  Icons.info, // MaterialCommunityIcons.bell_ring,
                 ),
                 Text(
                   " ${nRpt == -1 ? "Regular" : "$nRpt times"}",
@@ -272,22 +271,22 @@ class _RoutineListState extends State<RoutineList>
       }
     }*/
     DateTime now = DateTime.now();
-    DateTime nextRpt;
+    DateTime? nextRpt;
     DateTime test = DateTime(2021);
     print(test);
     print(now);
-    /**/if (list[index].weekly) {
+    /**/if (list[index].weekly!) {
       bool thisWeekDay = false;
       bool nextWeekDay = false;
       int weekDay = 1;
-      list[index].weeklyRepeat.forEach((e1) {
+      list[index].weeklyRepeat!.forEach((e1) {
         e1.forEach((element) {
           DateTime test = DateTime(
             now.year,
             now.month,
             now.day,
-            element.startTime['hh'],
-            element.startTime['mm'],
+            element.startTime!['hh']!,
+            element.startTime!['mm']!,
           );
           if (test.difference(now).inMilliseconds < 0 && !nextWeekDay) {
             nextRpt = test.add(Duration(days: weekDay - test.weekday + 7));
@@ -302,7 +301,7 @@ class _RoutineListState extends State<RoutineList>
         ++weekDay;
       });
     } else {
-      nextRpt = list[index].customRepeat['startDate'];
+      nextRpt = list[index].customRepeat!['startDate'];
     }
     if (nextRpt == null) {
       print("nextRpt is not set");
@@ -312,21 +311,21 @@ class _RoutineListState extends State<RoutineList>
     String dateAndTime = "";
     if (nextRpt == null) {
       String nextRptTime;
-      nextRptTime = list[index].weekly ? "<not available>" : "";
+      nextRptTime = list[index].weekly! ? "<not available>" : "";
       dateAndTime += nextRptTime;
     } else {
       String nextRptTime;
-      nextRptTime = list[index].weekly
+      nextRptTime = list[index].weekly!
           ? "${dtf.formatTime(
               TimeOfDay(
-                hour: nextRpt.hour,
-                minute: nextRpt.minute,
+                hour: nextRpt!.hour,
+                minute: nextRpt!.minute,
               ),
             )} "
           : "";
       dateAndTime += nextRptTime;
       dateAndTime += dtf.formatDate(
-        nextRpt,
+        nextRpt!,
         abbr: true,
       );
     }
@@ -373,7 +372,7 @@ class _RoutineListState extends State<RoutineList>
       child: Column(
         children: [
           dateTimeContainer,
-          list[index].weekly ? weeklyRepeat : customRepeat,
+          list[index].weekly! ? weeklyRepeat : customRepeat,
           mainContainer,
         ],
       ),
@@ -391,7 +390,7 @@ class _RoutineListState extends State<RoutineList>
   bool get wantKeepAlive => true;
 
   void updateListTiles() {
-    final list = TodoListCommon.of(context).rldState.regularTasks;
+    final list = TodoListCommon.of(context).rldState!.regularTasks!;
     listTiles = List.generate(
       list.length,
       (index) => listTile(

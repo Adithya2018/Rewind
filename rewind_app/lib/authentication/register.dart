@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/services/auth.dart';
+import 'package:rewind_app/services/auth_ctrl.dart';
 
 class CreateAccWithEmail extends StatefulWidget {
-  final Function toggleView;
+  final Function? toggleView;
   CreateAccWithEmail({this.toggleView});
   @override
   _CreateAccWithEmailState createState() => _CreateAccWithEmailState();
@@ -20,9 +20,9 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
   TextEditingController _pwdFieldController = new TextEditingController();
   String _confPwd = "";
 
-  FocusNode _n1;
-  FocusNode _n2;
-  FocusNode _n3;
+  FocusNode? _n1;
+  FocusNode? _n2;
+  FocusNode? _n3;
 
   @override
   void initState() {
@@ -35,9 +35,9 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
   @override
   void dispose() {
     super.dispose();
-    _n1.dispose();
-    _n2.dispose();
-    _n3.dispose();
+    _n1!.dispose();
+    _n2!.dispose();
+    _n3!.dispose();
   }
 
   @override
@@ -52,7 +52,7 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
         focusNode: _n1,
         textInputAction: TextInputAction.next,
         onFieldSubmitted: (term) {
-          _n1.unfocus();
+          _n1!.unfocus();
           FocusScope.of(context).requestFocus(_n2);
         },
         style: style,
@@ -69,8 +69,8 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
           ),
         ),
         validator: (val) {
-          String s;
-          if (val.isEmpty) {
+          String? s;
+          if (val!.isEmpty) {
             s = "Email cannot be empty";
           }
           return s;
@@ -89,7 +89,7 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
         focusNode: _n2,
         textInputAction: TextInputAction.next,
         onFieldSubmitted: (term) {
-          _n2.unfocus();
+          _n2!.unfocus();
           FocusScope.of(context).requestFocus(_n3);
         },
         obscureText: true,
@@ -108,8 +108,8 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
           ),
         ),
         validator: (val) {
-          String s;
-          if (val.isEmpty) {
+          String? s;
+          if (val!.isEmpty) {
             s = "Password cannot be empty";
           } else if (val.length < 8) {
             s = "Password must be at least 8 characters long";
@@ -143,8 +143,8 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
           ),
         ),
         validator: (val) {
-          String s;
-          if (val.isEmpty) {
+          String? s;
+          if (val!.isEmpty) {
             s = "Password cannot be empty";
           } else if (val.length < 8) {
             s = "Password must be at least 8 characters long";
@@ -204,7 +204,7 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
             print("Email: $_email");
             print("Password: $_pwd");
             print("Re-typed password: $_confPwd");
-            if (_formKey.currentState.validate()) {
+            if (_formKey.currentState!.validate()) {
               dynamic result = await _auth.reqNewAccountWithEmail(
                 _email,
                 _pwd,
@@ -262,7 +262,7 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
               tooltip: 'Sign-in options',
               onPressed: () {
                 print("Sign In w/ Email");
-                widget.toggleView();
+                widget.toggleView!();
               },
             ),
           ],

@@ -1,29 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/app_data/app_data.dart';
 import 'package:rewind_app/app_data/app_data_state.dart';
-import 'package:rewind_app/models/user.dart';
-import 'package:rewind_app/services/auth.dart';
-import 'authenticate.dart';
+import 'package:rewind_app/services/auth_ctrl.dart';
 
 class SignInWithEmail extends StatefulWidget {
-  final Function toggleView;
+  final Function? toggleView;
   SignInWithEmail({this.toggleView});
   @override
   _SignInWithEmailState createState() => _SignInWithEmailState();
 }
 
 class _SignInWithEmailState extends State<SignInWithEmail> {
-  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+  TextStyle style = TextStyle(
+    fontFamily: 'Montserrat',
+    fontSize: 20.0,
+  );
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String _email = "";
   String _pwd = "";
 
-  FocusNode _n1;
-  FocusNode _n2;
-  FocusNode _n3;
+  FocusNode? _n1;
+  FocusNode? _n2;
+  FocusNode? _n3;
 
   @override
   void initState() {
@@ -36,9 +36,9 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
   @override
   void dispose() {
     super.dispose();
-    _n1.dispose();
-    _n2.dispose();
-    _n3.dispose();
+    _n1!.dispose();
+    _n2!.dispose();
+    _n3!.dispose();
   }
 
   @override
@@ -53,7 +53,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
         focusNode: _n1,
         textInputAction: TextInputAction.next,
         onFieldSubmitted: (term) {
-          _n1.unfocus();
+          _n1!.unfocus();
           FocusScope.of(context).requestFocus(_n2);
         },
         onChanged: (val) {
@@ -70,8 +70,8 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
           ),
         ),
         validator: (val) {
-          String s;
-          if (val.isEmpty) {
+          String? s;
+          if (val!.isEmpty) {
             s = "Email cannot be empty";
           }
           return s;
@@ -89,7 +89,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
         focusNode: _n2,
         textInputAction: TextInputAction.next,
         onFieldSubmitted: (term) {
-          _n2.unfocus();
+          _n2!.unfocus();
           FocusScope.of(context).requestFocus(_n3);
         },
         onChanged: (val) {
@@ -108,8 +108,8 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
           ),
         ),
         validator: (val) {
-          String s;
-          if (val.isEmpty) {
+          String? s;
+          if (val!.isEmpty) {
             s = "Password cannot be empty";
           }
           return s;
@@ -118,7 +118,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
     );
 
     // name was _invalidOrAccExists
-    Future<void> _credentialErrMsg({String msg}) async {
+    Future<void> _credentialErrMsg({String? msg}) async {
       return showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -137,7 +137,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
             ),
             content: Container(
               child: Text(
-                msg,
+                msg!,
               ),
             ),
             actions: <Widget>[
@@ -165,7 +165,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
             borderRadius: new BorderRadius.circular(30.0),
           ),
           onPressed: () async {
-            if (_formKey.currentState.validate()) {
+            if (_formKey.currentState!.validate()) {
               print("valid");
               dynamic result = await _auth.signInWithEmailAndPwd(_email, _pwd);
               if (result.runtimeType == FirebaseAuthException) {
@@ -223,7 +223,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
               tooltip: 'Register',
               onPressed: () {
                 print('Create an account w/ Email');
-                widget.toggleView();
+                widget.toggleView!();
               },
             ),
           ],

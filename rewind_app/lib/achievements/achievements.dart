@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+//import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'ach_common.dart';
 import 'badges.dart';
@@ -14,17 +14,17 @@ class _AchievementsState extends State<Achievements> {
   //List<Container> listOfTiles = [];
   AchievementBadge badge = new AchievementBadge();
   Container createAchievement({
-    String label,
-    String description,
-    IconData rewardIcon,
-    int progress,
-    int required,
-    @required Color badgeIconColor,
-    @required Color inner1,
-    @required Color inner2,
-    @required Color outer1,
-    Color outer2,
-    @required Color outer3,
+    required String label,
+    required String description,
+    IconData? rewardIcon,
+    int? progress,
+    int? required,
+    required Color? badgeIconColor,
+    required Color inner1,
+    required Color inner2,
+    required Color outer1,
+    Color? outer2,
+    required Color outer3,
   }) {
     Container achievement = Container(
       //height: 110.0,
@@ -132,7 +132,8 @@ class _AchievementsState extends State<Achievements> {
     achievement.label = "Speed demon";
     achievement.description =
         "Complete 3 Level 3 tasks with 80% time remaining";
-    achievement.rewardIcon = MaterialCommunityIcons.emoticon_devil;
+    achievement.rewardIcon =
+        Icons.stream; //MaterialCommunityIcons.emoticon_devil;
     achievement.progress = 0;
     achievement.required = 3;
   }
@@ -179,23 +180,23 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Bomb",
                 description: "Locked!",
-                rewardIcon: MaterialCommunityIcons.lock,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.lock,
                 progress: 0,
                 required: 100,
-                inner1: Colors.grey[600],
-                inner2: Colors.grey[300],
+                inner1: Colors.grey[600]!,
+                inner2: Colors.grey[300]!,
                 outer1: Colors.white,
                 outer2: Colors.black54,
-                outer3: Colors.grey[200],
+                outer3: Colors.grey[200]!,
                 badgeIconColor: Colors.blueGrey,
               ),
               createAchievement(
                 label: "Task master",
                 description: "Complete 100 Level 1 tasks",
-                rewardIcon: MaterialCommunityIcons.skull,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.skull,
                 progress: 0,
                 required: 100,
-                inner1: Colors.blueGrey[800],
+                inner1: Colors.blueGrey[800]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.blue[200],
@@ -205,10 +206,11 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Diamond Medallion",
                 description: "Complete 20 Level 5 tasks",
-                rewardIcon: MaterialCommunityIcons.diamond_stone,
+                rewardIcon:
+                    Icons.stream, //MaterialCommunityIcons.diamond_stone,
                 progress: 0,
                 required: 100,
-                inner1: Colors.pinkAccent[100],
+                inner1: Colors.pinkAccent[100]!,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.grey[400],
@@ -218,20 +220,21 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "New Kid",
                 description: "Welcome to Rewind!",
-                rewardIcon: MaterialCommunityIcons.baby_face,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.baby_face,
                 progress: 0,
                 required: 100,
                 inner1: Colors.white,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Color(0xFFB2E5E3),
-                outer3: Colors.pink[200],
+                outer3: Colors.pink[200]!,
                 badgeIconColor: Color(0xFFFEDFD8),
               ),
               createAchievement(
                 label: "Speed demon",
                 description: "Complete 3 Level 3 tasks with 80% time remaining",
-                rewardIcon: MaterialCommunityIcons.emoticon_devil,
+                rewardIcon:
+                    Icons.stream, //MaterialCommunityIcons.emoticon_devil,
                 progress: 0,
                 required: 100,
                 inner1: Colors.deepOrange,
@@ -244,7 +247,7 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Yin-Yang",
                 description: "Welcome to Rewind!",
-                rewardIcon: MaterialCommunityIcons.yin_yang,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.yin_yang,
                 progress: 0,
                 required: 100,
                 inner1: Colors.white,
@@ -257,7 +260,7 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Night owl",
                 description: "Welcome to Rewind!",
-                rewardIcon: MaterialCommunityIcons.owl,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.owl,
                 progress: 0,
                 required: 100,
                 inner1: Colors.black,
@@ -270,20 +273,21 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Early bird",
                 description: "Level 25",
-                rewardIcon: MaterialCommunityIcons.weather_sunny,
+                rewardIcon:
+                    Icons.stream, //MaterialCommunityIcons.weather_sunny,
                 progress: 0,
                 required: 100,
-                inner1: Colors.yellow[100],
-                inner2: Colors.lightBlue[100],
+                inner1: Colors.yellow[100]!,
+                inner2: Colors.lightBlue[100]!,
                 outer1: Colors.white,
                 outer2: Colors.blue[300],
-                outer3: Colors.greenAccent[200],
+                outer3: Colors.greenAccent[200]!,
                 badgeIconColor: Colors.yellow[700],
               ),
               createAchievement(
                 label: "Bomb",
                 description: "Welcome to Rewind!",
-                rewardIcon: MaterialCommunityIcons.bomb,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.bomb,
                 progress: 0,
                 required: 100,
                 inner1: Colors.grey,
@@ -303,68 +307,68 @@ class _AchievementsState extends State<Achievements> {
               createAchievement(
                 label: "Achiever",
                 description: "Level 25",
-                rewardIcon: MaterialCommunityIcons.star_face,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.star_face,
                 progress: 0,
                 required: 100,
                 inner1: Colors.white,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.red[100],
-                outer3: Colors.blue[600],
+                outer3: Colors.blue[600]!,
                 badgeIconColor: Colors.yellow[700],
               ),
               createAchievement(
                 label: "Grand Task Master",
                 description: "Level 50",
-                rewardIcon: MaterialCommunityIcons.star_outline,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.star_outline,
                 progress: 0,
                 required: 100,
                 inner1: Colors.black,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.blue[300],
-                outer3: Colors.blue[600],
+                outer3: Colors.blue[600]!,
                 badgeIconColor: Colors.white,
               ),
 
               createAchievement(
                 label: "Enlightened Entity",
                 description: "Level 75",
-                rewardIcon: MaterialCommunityIcons.star_half,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.star_half,
                 progress: 0,
                 required: 100,
                 inner1: Colors.black,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.blue[300],
-                outer3: Colors.blue[600],
+                outer3: Colors.blue[600]!,
                 badgeIconColor: Colors.white,
               ),
 
               createAchievement(
                 label: "Eternal Entity",
                 description: "Level 100",
-                rewardIcon: MaterialCommunityIcons.star,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.star,
                 progress: 0,
                 required: 100,
                 inner1: Colors.black,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.blue[300],
-                outer3: Colors.blue[600],
+                outer3: Colors.blue[600]!,
                 badgeIconColor: Colors.white,
               ),
               createAchievement(
                 label: "Eternal Entity",
                 description: "Level 25",
-                rewardIcon: MaterialCommunityIcons.star,
+                rewardIcon: Icons.stream, //MaterialCommunityIcons.star,
                 progress: 0,
                 required: 100,
                 inner1: Colors.white,
                 inner2: Colors.white,
                 outer1: Colors.white,
                 outer2: Colors.blue[100],
-                outer3: Colors.purple[400],
+                outer3: Colors.purple[400]!,
                 badgeIconColor: Colors.yellow[700],
               ),
 

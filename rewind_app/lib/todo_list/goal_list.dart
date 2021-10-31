@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/models/regular_task.dart';
-import 'package:rewind_app/models/task.dart';
+import 'package:rewind_app/models/regular_task/regular_task.dart';
+import 'package:rewind_app/models/task/task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 import './todo_list_state/todo_list_state.dart';
 import 'edit_task.dart';
@@ -19,7 +18,7 @@ class _GoalListState extends State<GoalList>
   int sortByOption = 0;
   List<Function> sortByFunction = [
     //(RegularTask a, RegularTask b) => a.deadline.compareTo(b.deadline),
-    (RegularTask a, RegularTask b) => a.level.compareTo(b.level),
+    (RegularTask a, RegularTask b) => a.level!.compareTo(b.level!),
   ];
 
   DateAndTimeFormat dtf = new DateAndTimeFormat();
@@ -46,7 +45,7 @@ class _GoalListState extends State<GoalList>
   }
 
   Container goalsListTile({
-    int index,
+    required int index,
   }) {
     /*Container taskDescription = Container(
       width: double.maxFinite,
@@ -90,9 +89,9 @@ class _GoalListState extends State<GoalList>
         ),
       ),
     );*/
-    final list = TodoListCommon.of(context).gldState.tasks;
-    final created = list[index].created;
-    final deadline = list[index].deadline;
+    final list = TodoListCommon.of(context).gldState!.tasks!;
+    final created = list[index].created!;
+    final deadline = list[index].deadline!;
     String createdTime = dtf.formatTime(
       TimeOfDay(
         hour: created.hour,
@@ -147,7 +146,7 @@ class _GoalListState extends State<GoalList>
                         setState(() {
                           //final provider = TodoListCommon.of(context);
                           list[index].completionStatus =
-                          !list[index].completionStatus;
+                          !list[index].completionStatus!;
                         });
                       },
                     );
@@ -162,7 +161,7 @@ class _GoalListState extends State<GoalList>
                   children: [
                     TextButton(
                       onPressed: () async {
-                        Task temp = await Navigator.push(
+                        Task? temp = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditTask(
@@ -183,7 +182,7 @@ class _GoalListState extends State<GoalList>
                       },
                       onLongPress: () {},
                       child: Text(
-                        list[index].label,
+                        list[index].label!,
                         textAlign: TextAlign.justify,
                         style: GoogleFonts.gloriaHallelujah(
                           fontSize: 15,
@@ -216,10 +215,10 @@ class _GoalListState extends State<GoalList>
                       ),
                     ),
                     Icon(
-                      taskLevel.diffLevelNumeric[list[index].level - 1],
+                      taskLevel.diffLevelNumeric[list[index].level! - 1],
                       size: 40,
                       color: taskLevel
-                          .diffLevelNumericColor[list[index].level - 1],
+                          .diffLevelNumericColor[list[index].level! - 1],
                     ),
                   ],
                 ),
@@ -243,7 +242,7 @@ class _GoalListState extends State<GoalList>
             width: 5.0,
           ),
           Icon(
-            MaterialCommunityIcons.clock_start,
+            Icons.info, // MaterialCommunityIcons.clock_start,
             color: Colors.white,
             size: 20,
           ),
@@ -293,7 +292,7 @@ class _GoalListState extends State<GoalList>
             width: 5.0,
           ),
           Icon(
-            MaterialCommunityIcons.flag_checkered,
+            Icons.info, // MaterialCommunityIcons.flag_checkered,
             color: Colors.white,
             size: 20,
           ),
@@ -378,7 +377,7 @@ class _GoalListState extends State<GoalList>
   bool get wantKeepAlive => true;
 
   void updateListTiles() {
-    final list = TodoListCommon.of(context).gldState.tasks;
+    final list = TodoListCommon.of(context).gldState!.tasks!;
     listTiles = List.generate(
       list.length,
       (index) => goalsListTile(

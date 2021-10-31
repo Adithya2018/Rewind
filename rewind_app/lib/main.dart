@@ -1,28 +1,27 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
-import 'package:rewind_app/app_data/app_data.dart';
 import 'package:rewind_app/app_data/app_data_state.dart';
 import 'package:rewind_app/common_screens/message_scaffold.dart';
-import 'package:rewind_app/home/home.dart';
+import 'package:rewind_app/controllers/journal_ctrl.dart';
 import 'package:rewind_app/journal/journal.dart';
 import 'package:rewind_app/journal/journal_state.dart';
-import 'package:rewind_app/models/interval.dart';
-import 'package:rewind_app/models/journal_page.dart';
-import 'package:rewind_app/services/auth.dart';
+import 'package:rewind_app/models/interval/interval.dart';
+import 'package:rewind_app/models/journal_page/journal_page.dart';
+import 'package:rewind_app/services/auth_ctrl.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
 import 'package:rewind_app/todo_list/todo_list.dart';
 import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 import 'package:rewind_app/authentication/authentication_wrapper.dart';
 import 'package:path_provider/path_provider.dart' as ppr;
 import 'achievements/achievements.dart';
-import 'database_provider/local_db_provider.dart';
-import 'journal/edit_journal_page.dart';
-import 'models/regular_task.dart';
-import 'models/task.dart';
+import 'controllers/bindings/journal_bindings.dart';
+import 'controllers/bindings/todo_list_bindings.dart';
+import 'models/regular_task/regular_task.dart';
+import 'models/task/task.dart';
 import 'models/user.dart';
 
 void main() async {
@@ -48,7 +47,7 @@ void main() async {
 }
 
 class RewindApp extends StatefulWidget {
-  const RewindApp({Key key}) : super(key: key);
+  const RewindApp({Key? key}) : super(key: key);
 
   @override
   _RewindAppState createState() => _RewindAppState();
@@ -59,7 +58,7 @@ class _RewindAppState extends State<RewindApp> {
   @override
   Widget build(BuildContext context) {
     return AppDataWrapper(
-      child: MaterialApp(
+      child: GetMaterialApp(
         title: 'Rewind App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
@@ -72,12 +71,13 @@ class _RewindAppState extends State<RewindApp> {
             if (snapshot.hasError) {
               return SimpleMessageScaffold(
                 message: "Cannot load",
-                iconData: MaterialCommunityIcons.robot,
+                iconData: Icons.info, // MaterialCommunityIcons.robot,
               );
             }
             // Once complete, show your application
             if (snapshot.connectionState == ConnectionState.done) {
-              return StreamProvider<UserData>.value(
+              print("ConnectionState.done");
+              return StreamProvider<UserData?>.value(
                 value: AuthService().user,
                 initialData: null,
                 child: AuthenticationWrapper(),
@@ -87,18 +87,32 @@ class _RewindAppState extends State<RewindApp> {
             // Otherwise, show something whilst waiting for initialization to complete
             return SimpleMessageScaffold(
               message: "Loading...",
-              iconData: FontAwesome5Solid.hourglass_half,
+              iconData: Icons.info,
             );
           },
         ),
+        getPages: [
+          GetPage(
+            name: '/jou',
+            binding: JournalBindings(),
+            page: () => Journal(),
+          ),
+          GetPage(
+            name: '/ach',
+            binding: TodoListBindings(),
+            page: () => TodoList(),
+          ),
+        ],
         routes: <String, WidgetBuilder>{
           '/ach': (BuildContext context) => Achievements(),
           '/jou': (BuildContext context) => JournalWrapper(
-                boxNameSuffix: AppDataCommon.of(context).appData.userdata.uid,
+                boxNameSuffix:
+                    '', //AppDataCommon.of(context).appData!.userdata!.uid,
                 child: Journal(),
               ),
           '/tdl': (BuildContext context) => TodoListWrapper(
-            boxNameSuffix: AppDataCommon.of(context).appData.userdata.uid,
+                boxNameSuffix:
+                    '', //AppDataCommon.of(context).appData!.userdata!.uid,
                 child: TodoList(),
               ),
           '/vt': (BuildContext context) => EditTask(),
@@ -110,6 +124,7 @@ class _RewindAppState extends State<RewindApp> {
 
   @override
   void dispose() {
+    print("closing app");
     Hive.close();
     super.dispose();
   }
@@ -118,7 +133,7 @@ class _RewindAppState extends State<RewindApp> {
 /*class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
+  // This widget is the views.home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
 
@@ -204,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SharedPreferences Demo',
-      home: SharedPreferencesDemo(),
+      views.home: SharedPreferencesDemo(),
     );
   }
 }

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:rewind_app/app_data/app_data_state.dart';
-import 'package:rewind_app/models/regular_task.dart';
-import 'package:rewind_app/models/task.dart';
+import 'package:rewind_app/models/regular_task/regular_task.dart';
+import 'package:rewind_app/models/task/task.dart';
 import 'package:rewind_app/todo_list/todo_list_data/routine_list_data.dart';
 import 'package:rewind_app/todo_list/todo_list_data/goal_list_data.dart';
 
 class TodoListWrapper extends StatefulWidget {
   final Widget child;
-  final String boxNameSuffix;
+  final String? boxNameSuffix;
   const TodoListWrapper({
-    Key key,
-    @required this.child,
+    Key? key,
+    required this.child,
     this.boxNameSuffix,
   }) : super(key: key);
   @override
@@ -19,8 +19,8 @@ class TodoListWrapper extends StatefulWidget {
 }
 
 class _TodoListWrapperState extends State<TodoListWrapper> {
-  GoalListData gldState;
-  RoutineListData rldState;
+  GoalListData? gldState;
+  RoutineListData? rldState;
 
   static const GOAL_BOX_NAME = 'goals';
   static const ROUTINE_BOX_NAME = 'routine';
@@ -49,7 +49,7 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
     int sortByOption,
     bool ascendingOrder,
   })*/
-    String boxNameSuffix = widget.boxNameSuffix;
+    String boxNameSuffix = widget.boxNameSuffix!;
     print("todo list state initState()");
     print(boxNameSuffix + GOAL_BOX_NAME);
     gldState = GoalListData(
@@ -76,11 +76,11 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
   @override
   void dispose() {
     //Created: 2021-05-07 05:04:04.204453
-    gldState.tasks.forEach((task) {
-      saveToBox(task.created, task, GOAL_BOX_NAME);
+    gldState!.tasks!.forEach((task) {
+      saveToBox(task.created!, task, GOAL_BOX_NAME);
     });
-    rldState.regularTasks.forEach((task) {
-      saveToBox(task.created, task, ROUTINE_BOX_NAME);
+    rldState!.regularTasks!.forEach((task) {
+      saveToBox(task.created!, task, ROUTINE_BOX_NAME);
     });
     super.dispose();
   }
@@ -94,55 +94,55 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
   }
 
   void sortTasks() {
-    List<Task> tasks = List<Task>.from(gldState.tasks);
-    tasks.sort(gldState.currentSortByFunction);
+    List<Task> tasks = List<Task>.from(gldState!.tasks!);
+    tasks.sort(gldState!.currentSortByFunction as int Function(Task, Task)?);
     int id = 0;
     tasks.forEach((element) {
       element.orderIndex = id++;
     });
-    setState(() => gldState = gldState.copy(tasks: tasks));
+    setState(() => gldState = gldState!.copy(tasks: tasks));
   }
 
   void sortRegularTasks(Function f) {
     List<RegularTask> regularTasks =
-        List<RegularTask>.from(rldState.regularTasks);
-    regularTasks.sort(f);
+        List<RegularTask>.from(rldState!.regularTasks!);
+    regularTasks.sort(f as int Function(RegularTask, RegularTask)?);
     int id = 0;
     regularTasks.forEach((element) {
       element.orderIndex = id++;
     });
-    setState(() => rldState = rldState.copy(regularTasks: regularTasks));
+    setState(() => rldState = rldState!.copy(regularTasks: regularTasks));
   }
 
   void addTask(Task task) {
-    List<Task> newList = [task] + gldState.tasks;
+    List<Task> newList = [task] + gldState!.tasks!;
     //newList.sort(gldState.currentSortByFunction);
     int id = 0;
     newList.forEach((element) {
       element.orderIndex = id++;
     });
-    setState(() => gldState = gldState.copy(tasks: newList));
+    setState(() => gldState = gldState!.copy(tasks: newList));
   }
 
   void switchRegularTaskCompletionStatus(int index) {
-    List<RegularTask> newList = rldState.regularTasks;
-    newList[index].completionStatus = !newList[index].completionStatus;
-    setState(() => rldState = rldState.copy(regularTasks: newList));
+    List<RegularTask> newList = rldState!.regularTasks!;
+    newList[index].completionStatus = !newList[index].completionStatus!;
+    setState(() => rldState = rldState!.copy(regularTasks: newList));
   }
 
   void removeRegularTask(RegularTask regularTask) {
-    List<RegularTask> newList = rldState.regularTasks;
-    setState(() => rldState = rldState.copy(regularTasks: newList));
+    List<RegularTask>? newList = rldState!.regularTasks;
+    setState(() => rldState = rldState!.copy(regularTasks: newList));
   }
 
   void addRegularTask(RegularTask regularTask) {
-    List<RegularTask> newList = rldState.regularTasks + [regularTask];
-    newList.sort((RegularTask a, RegularTask b) => a.level.compareTo(b.level));
+    List<RegularTask> newList = rldState!.regularTasks! + [regularTask];
+    newList.sort((RegularTask a, RegularTask b) => a.level!.compareTo(b.level!));
     int id = 0;
     newList.forEach((element) {
       element.orderIndex = id++;
     });
-    setState(() => rldState = rldState.copy(regularTasks: newList));
+    setState(() => rldState = rldState!.copy(regularTasks: newList));
   }
 
   @override
@@ -153,31 +153,31 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
         stateWidget: this,
       );
 
-  void sortTasksBy(int temp) {
-    gldState.sortByOption = temp;
+  void sortTasksBy(int? temp) {
+    gldState!.sortByOption = temp;
     sortTasks();
   }
 
   void switchTaskListOrder() {
-    gldState.ascendingOrder = !gldState.ascendingOrder;
+    gldState!.ascendingOrder = !gldState!.ascendingOrder!;
   }
 }
 
 class TodoListCommon extends InheritedWidget {
-  final RoutineListData rldState;
-  final GoalListData gldState;
+  final RoutineListData? rldState;
+  final GoalListData? gldState;
   final _TodoListWrapperState stateWidget;
 
   const TodoListCommon({
-    Key key,
-    @required Widget child,
-    @required this.gldState,
-    @required this.rldState,
-    @required this.stateWidget,
+    Key? key,
+    required Widget child,
+    required this.gldState,
+    required this.rldState,
+    required this.stateWidget,
   }) : super(child: child);
 
   static _TodoListWrapperState of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<TodoListCommon>().stateWidget;
+      context.dependOnInheritedWidgetOfExactType<TodoListCommon>()!.stateWidget;
 
   @override
   bool updateShouldNotify(TodoListCommon oldWidget) {

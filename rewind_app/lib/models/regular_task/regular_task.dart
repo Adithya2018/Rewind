@@ -1,39 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:rewind_app/models/interval.dart';
-import 'interval.dart';
+import 'package:rewind_app/models/interval/interval.dart';
+import '../interval/interval.dart';
 part 'regular_task.g.dart';
 
 @HiveType(typeId: 1)
 class RegularTask extends HiveObject {
   @HiveField(0)
-  DateTime created;
+  DateTime? created;
 
   @HiveField(1)
-  int orderIndex;
+  int? orderIndex;
 
   @HiveField(2)
-  String label;
+  String? label;
 
   @HiveField(3)
-  String description;
+  String? description;
 
   @HiveField(4)
-  bool weekly;
+  bool? weekly;
 
   @HiveField(5)
-  List<List<TimeInterval>> weeklyRepeat;
+  List<List<TimeInterval>>? weeklyRepeat;
 
   @HiveField(6)
-  Map customRepeat;
+  Map? customRepeat;
 
   @HiveField(7)
-  int level;
+  int? level;
 
   @HiveField(8)
-  bool completionStatus;
+  bool? completionStatus;
 
-  DateTime get createdDateTime => created == null ? DateTime.now() : created;
+  DateTime? get createdDateTime => created == null ? DateTime.now() : created;
 
   RegularTask() {
     orderIndex = 0;
@@ -51,10 +51,10 @@ class RegularTask extends HiveObject {
     List<String> result = [];
     result.add("created: ${created.toString()}");
     result.add("title: $label");
-    result.add("description: ${description.isEmpty?"no description":description}");
+    result.add("description: ${description!.isEmpty?"no description":description}");
     result.add("weeklyRepeat: ${weeklyRepeat.toString()}");
     result.add("level: $level");
-    result.add("completionStatus: ${completionStatus?"":"not"} completed");
+    result.add("completionStatus: ${completionStatus!?"":"not"} completed");
     String s = "";
     result.forEach((element) {
       s += "$element\n";
@@ -62,7 +62,7 @@ class RegularTask extends HiveObject {
     return s;
   }
 
-  static Map<String, int> get newCustomRepeat {
+  static Map<String, int?> get newCustomRepeat {
     return {
       "startDate": null,
       "rptEvery": 1,
@@ -70,7 +70,7 @@ class RegularTask extends HiveObject {
     };
   }
 
-  static Map<String, int> get newTime {
+  static Map<String, int?> get newTime {
     return {
       "hh": null,
       "mm": null,
@@ -86,8 +86,8 @@ class RegularTask extends HiveObject {
 
   static TimeOfDay toTimeOfDay(Map<String, int> map) {
     return TimeOfDay(
-      hour: map['hh'],
-      minute: map['mm'],
+      hour: map['hh']!,
+      minute: map['mm']!,
     );
   }
 
