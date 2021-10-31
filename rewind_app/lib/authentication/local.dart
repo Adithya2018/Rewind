@@ -9,8 +9,8 @@ class LocalAuth extends StatefulWidget {
 
 class _LocalAuthState extends State<LocalAuth> {
   LocalAuthentication localAuth = LocalAuthentication();
-  Future<List<BiometricType>> getBiometricTypes() async {
-    List<BiometricType> listOfBiometrics;
+  Future<List<BiometricType>?> getBiometricTypes() async {
+    List<BiometricType>? listOfBiometrics;
     try {
       listOfBiometrics = await localAuth.getAvailableBiometrics();
     } on PlatformException catch (e) {
@@ -23,8 +23,8 @@ class _LocalAuthState extends State<LocalAuth> {
     return listOfBiometrics;
   }
 
-  Future<bool> checkUser() async {
-    bool canAuthenticate;
+  Future<bool?> checkUser() async {
+    bool? canAuthenticate;
     try {
         canAuthenticate = await localAuth
           .authenticate(
@@ -43,10 +43,10 @@ class _LocalAuthState extends State<LocalAuth> {
     return canAuthenticate;
   }
 
-  List<BiometricType> authType;
+  List<BiometricType>? authType;
   @override
   Widget build(BuildContext context) {
-    Future<List<BiometricType>> listOfBiometrics = getBiometricTypes();
+    Future<List<BiometricType>?> listOfBiometrics = getBiometricTypes();
     //var didAuthenticate = checkUser();
     return Scaffold(
       backgroundColor: Colors.white,

@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,20 +10,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  String username;
-  int playerLevel;
-  int xp;
-  int health;
-  int trophies;
+  String? username;
+  int? playerLevel;
+  int? xp;
+  int? health;
+  int? trophies;
 
   double hd = 0;
   bool showNotificationArea = true;
   Container createStatContainer(
     String label, {
-    IconData statIconData,
-    Color iconColor,
-    int statCurrent,
-    int statMax,
+    IconData? statIconData,
+    Color? iconColor,
+    required int statCurrent,
+    required int statMax,
   }) {
     Container statContainer = new Container(
       decoration: BoxDecoration(
@@ -114,7 +113,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           colors: [
             Colors.white,
             Colors.black,
-            Colors.blueGrey[300],
+            Colors.blueGrey[300]!,
           ],
         ),
       ),
@@ -127,7 +126,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return MediaQuery.of(context).size.width;
   }
 
-  DateTime now;
+  DateTime? now;
 
   @override
   void initState() {
@@ -145,15 +144,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         !prefs.containsKey("playerLevel") ? 1 : prefs.getInt("playerLevel");
     health = !prefs.containsKey("health") ? 1 : prefs.getInt("health");
     trophies = !prefs.containsKey("trophies") ? 1 : prefs.getInt("trophies");
-    prefs.setInt("playerLevel", playerLevel).then((bool success) {
+    prefs.setInt("playerLevel", playerLevel!).then((bool success) {
       print("playerLevel set? success=$success");
       return playerLevel;
     });
-    prefs.setInt("health", health).then((bool success) {
+    prefs.setInt("health", health!).then((bool success) {
       print("health set? success=$success");
       return health;
     });
-    prefs.setInt("trophies", trophies).then((bool success) {
+    prefs.setInt("trophies", trophies!).then((bool success) {
       print("trophies set? success=$success");
       return trophies;
     });
@@ -167,7 +166,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  /*late*/ Future<int> _counter;
+  late Future<int> _counter;
   Future<void> _incrementCounter() async {
     final SharedPreferences prefs = await this._prefs;
     final int counter = (prefs.getInt('counter') ?? 0) + 1;
@@ -180,7 +179,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   ScrollController scrollController = new ScrollController();
-  TabController tabController;
+  late TabController tabController;
   @override
   Widget build(BuildContext context) {
     Container health = createStatContainer(
@@ -193,7 +192,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
     Container trophies = createStatContainer(
       "Trophies",
-      statIconData: MaterialCommunityIcons.trophy,
+      statIconData: Icons.flag, // MaterialCommunityIcons.trophy,
       // iconColor: Color(0xFFD4AF37),
       iconColor: Colors.yellow[800],
       statCurrent: 60,
@@ -201,7 +200,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
     Container xp = createStatContainer(
       "XP",
-      statIconData: MaterialCommunityIcons.star,
+      statIconData: Icons.star, // MaterialCommunityIcons.star,
       // iconColor: Color(0xFFD4AF37),
       iconColor: Colors.yellow[600],
       statCurrent: 700,
@@ -283,20 +282,21 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       ),
     );
     Container getMoodStatBar({
-      int current,
-      String day,
-      bool done,
+      required int current,
+      required String day,
+      bool? done,
     }) {
       int max = 100;
       Icon check;
       if (done == null) {
         check = Icon(
-          MaterialCommunityIcons.help,
+          Icons.help, // MaterialCommunityIcons.help,
           size: 14.0,
         );
       } else {
         check = Icon(
-          done ? MaterialCommunityIcons.check : MaterialCommunityIcons.cancel,
+          done ? Icons.check // MaterialCommunityIcons.check
+          : Icons.cancel, // MaterialCommunityIcons.cancel,
           color: done ? Colors.green : Colors.red,
           size: 14.0,
         );
@@ -668,8 +668,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   begin: Alignment.topRight,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.blueGrey[100],
-                    Colors.blue[200],
+                    Colors.blueGrey[100]!,
+                    Colors.blue[200]!,
                   ],
                 ),
               ),
@@ -727,7 +727,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue[200],
+              color: Colors.blue[200]!,
               // color: Colors.grey,
               offset: Offset(0.0, -0.5),
               blurRadius: 5.0,
@@ -832,7 +832,7 @@ class _JournalState extends State<Journal> {
     });
   }
 
-  FocusNode titleFocus;
+  FocusNode? titleFocus;
 
   @override
   void initState() {
@@ -843,7 +843,7 @@ class _JournalState extends State<Journal> {
   @override
   void dispose() {
     super.dispose();
-    titleFocus.dispose();
+    titleFocus!.dispose();
   }
 
   @override
@@ -1010,7 +1010,7 @@ class _JournalState extends State<Journal> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue[200],
+              color: Colors.blue[200]!,
               // color: Colors.grey,
               offset: Offset(0.0, -0.5),
               blurRadius: 5.0,

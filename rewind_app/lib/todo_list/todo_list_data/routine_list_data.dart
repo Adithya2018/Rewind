@@ -2,9 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:rewind_app/models/regular_task.dart';
 
 class RoutineListData {
-  List<RegularTask> regularTasks;
-  DeepCollectionEquality deepEq;
-  bool ascendingOrder;
+  List<RegularTask>? regularTasks;
+  late DeepCollectionEquality deepEq;
+  bool? ascendingOrder;
 
   Function currentSortByFunction(int sortByOption, bool ascendingOrder) {
     return (RegularTask a, RegularTask b) =>
@@ -13,7 +13,7 @@ class RoutineListData {
 
   List<Function> _sortByFunction = [
     //(RegularTask a, RegularTask b) => a.deadline.compareTo(b.deadline),
-    (RegularTask a, RegularTask b) => a.level.compareTo(b.level),
+    (RegularTask a, RegularTask b) => a.level!.compareTo(b.level!),
   ];
   /*const RoutineListData({
     this.regularTasks = const [],
@@ -21,8 +21,8 @@ class RoutineListData {
   });*/
 
   RoutineListData({
-    List<RegularTask> regularTasks,
-    bool ascendingOrder,
+    List<RegularTask>? regularTasks,
+    bool? ascendingOrder,
   }) {
     this.regularTasks = regularTasks;
     this.ascendingOrder = ascendingOrder;
@@ -37,8 +37,8 @@ class RoutineListData {
   }*/
 
   RoutineListData copy({
-    List<RegularTask> regularTasks,
-    bool ascendingOrder,
+    List<RegularTask>? regularTasks,
+    bool? ascendingOrder,
   }) =>
       RoutineListData(
         regularTasks: regularTasks ?? this.regularTasks,

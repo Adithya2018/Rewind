@@ -26,13 +26,14 @@ void main() async {
 }
 
 class RewindApp extends StatefulWidget {
-  const RewindApp({Key key}) : super(key: key);
+  const RewindApp({Key? key}) : super(key: key);
 
   @override
   _RewindAppState createState() => _RewindAppState();
 }
 
 class _RewindAppState extends State<RewindApp> {
+  int k = 0;
 
   @override
   Widget build(BuildContext context) {

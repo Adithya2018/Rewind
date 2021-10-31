@@ -27,7 +27,7 @@ class _JournalTempState extends State<JournalTemp> {
     });
   }
 
-  FocusNode titleFocus;
+  FocusNode? titleFocus;
 
   @override
   void initState() {
@@ -38,7 +38,7 @@ class _JournalTempState extends State<JournalTemp> {
   @override
   void dispose() {
     super.dispose();
-    titleFocus.dispose();
+    titleFocus!.dispose();
   }
 
   @override

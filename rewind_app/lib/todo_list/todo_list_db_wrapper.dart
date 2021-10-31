@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:rewind_app/todo_list/todo_list.dart';
 import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 
 class TodoListDBWrapper extends StatefulWidget {
-  const TodoListDBWrapper({Key key}) : super(key: key);
+  const TodoListDBWrapper({Key? key}) : super(key: key);
 
   @override
   _TodoListDBWrapperState createState() => _TodoListDBWrapperState();
@@ -73,7 +72,7 @@ class _TodoListDBWrapperState extends State<TodoListDBWrapper> {
           if (snapshot.hasError) {
             return messageScaffold(
               "Cannot load",
-              MaterialCommunityIcons.robot,
+              Icons.not_interested, //MaterialCommunityIcons.robot,
             );
           } else
             return TodoListWrapper(
@@ -82,7 +81,7 @@ class _TodoListDBWrapperState extends State<TodoListDBWrapper> {
         }
         return messageScaffold(
           "Loading...",
-          FontAwesome5Solid.hourglass_half,
+          Icons.not_interested, //FontAwesome5Solid.hourglass_half,
         );
       },
     );

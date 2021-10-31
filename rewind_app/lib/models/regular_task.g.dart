@@ -17,17 +17,17 @@ class RegularTaskAdapter extends TypeAdapter<RegularTask> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return RegularTask()
-      ..created = fields[0] as DateTime
-      ..orderIndex = fields[1] as int
-      ..label = fields[2] as String
-      ..description = fields[3] as String
-      ..weekly = fields[4] as bool
-      ..weeklyRepeat = (fields[5] as List)
+      ..created = fields[0] as DateTime?
+      ..orderIndex = fields[1] as int?
+      ..label = fields[2] as String?
+      ..description = fields[3] as String?
+      ..weekly = fields[4] as bool?
+      ..weeklyRepeat = (fields[5] as List?)
           ?.map((dynamic e) => (e as List)?.cast<TimeInterval>())
           ?.toList()
-      ..customRepeat = (fields[6] as Map)?.cast<dynamic, dynamic>()
-      ..level = fields[7] as int
-      ..completionStatus = fields[8] as bool;
+      ..customRepeat = (fields[6] as Map?)?.cast<dynamic, dynamic>()
+      ..level = fields[7] as int?
+      ..completionStatus = fields[8] as bool?;
   }
 
   @override

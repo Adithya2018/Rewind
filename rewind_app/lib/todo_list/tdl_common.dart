@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 class DateAndTimeFormat {
   List<String> month = [
@@ -48,13 +47,13 @@ class DateAndTimeFormat {
   ];
 
   List<IconData> weekDayIcon = [
-    MaterialCommunityIcons.alpha_m_box,
-    MaterialCommunityIcons.alpha_t_box,
-    MaterialCommunityIcons.alpha_w_box,
-    MaterialCommunityIcons.alpha_t_box,
-    MaterialCommunityIcons.alpha_f_box,
-    MaterialCommunityIcons.alpha_s_box,
-    MaterialCommunityIcons.alpha_s_box,
+    Icons.repeat, //MaterialCommunityIcons.alpha_m_box,
+    Icons.repeat, //MaterialCommunityIcons.alpha_t_box,
+    Icons.repeat, //MaterialCommunityIcons.alpha_w_box,
+    Icons.repeat, //MaterialCommunityIcons.alpha_t_box,
+    Icons.repeat, //MaterialCommunityIcons.alpha_f_box,
+    Icons.repeat, //MaterialCommunityIcons.alpha_s_box,
+    Icons.repeat, //MaterialCommunityIcons.alpha_s_box,
   ];
 
   String formatTime(TimeOfDay timeOfDay) {
@@ -104,19 +103,19 @@ class TaskLevel {
   ];
 
   List<IconData> diffLevelIcon = [
-    MaterialCommunityIcons.tea,
-    MaterialCommunityIcons.cake_variant,
-    MaterialCommunityIcons.alarm_light,
-    MaterialCommunityIcons.bomb,
-    MaterialCommunityIcons.skull,
+    Icons.repeat, //MaterialCommunityIcons.tea,
+    Icons.repeat, //MaterialCommunityIcons.cake_variant,
+    Icons.repeat, //MaterialCommunityIcons.alarm_light,
+    Icons.repeat, //MaterialCommunityIcons.bomb,
+    Icons.repeat, //MaterialCommunityIcons.skull,
   ];
 
   List<IconData> diffLevelNumeric = [
-    MaterialCommunityIcons.numeric_1_box,
-    MaterialCommunityIcons.numeric_2_box,
-    MaterialCommunityIcons.numeric_3_box,
-    MaterialCommunityIcons.numeric_4_box,
-    MaterialCommunityIcons.numeric_5_box,
+    Icons.repeat, //MaterialCommunityIcons.numeric_1_box,
+    Icons.repeat, //MaterialCommunityIcons.numeric_2_box,
+    Icons.repeat, //MaterialCommunityIcons.numeric_3_box,
+    Icons.repeat, //MaterialCommunityIcons.numeric_4_box,
+    Icons.repeat, //MaterialCommunityIcons.numeric_5_box,
   ];
 
   List<Color> diffLevelNumericColor = [

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rewind_app/models/interval.dart';
 import 'package:rewind_app/models/regular_task.dart';
@@ -8,7 +7,7 @@ import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class EditRegularTask extends StatefulWidget {
   final taskCurrent;
-  final bool editMode;
+  final bool? editMode;
   EditRegularTask({this.taskCurrent, this.editMode});
   @override
   _EditRegularTaskState createState() => _EditRegularTaskState();
@@ -16,14 +15,14 @@ class EditRegularTask extends StatefulWidget {
 
 class _EditRegularTaskState extends State<EditRegularTask>
     with TickerProviderStateMixin {
-  RegularTask taskCurrent;
+  late RegularTask taskCurrent;
   DateAndTimeFormat dtf = DateAndTimeFormat();
   TaskLevel taskLevel = TaskLevel();
 
-  DateTime startDate;
-  Future<DateTime> _selectDate(BuildContext context) async {
+  DateTime? startDate;
+  Future<DateTime?> _selectDate(BuildContext context) async {
     DateTime now = DateTime.now();
-    final DateTime pickedDate = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: now,
       firstDate: DateTime(
@@ -36,15 +35,15 @@ class _EditRegularTaskState extends State<EditRegularTask>
     return pickedDate;
   }
 
-  TimeOfDay selectedTime;
+  TimeOfDay? selectedTime;
 
   Future<Null> _selectTime(
     BuildContext context, {
-    @required String helpText,
-    TimeOfDay initialTime,
+    required String helpText,
+    TimeOfDay? initialTime,
   }) async {
     initialTime = initialTime ?? TimeOfDay.now();
-    final TimeOfDay picked = await showTimePicker(
+    final TimeOfDay? picked = await showTimePicker(
       helpText: helpText,
       context: context,
       initialTime: initialTime,
@@ -56,15 +55,15 @@ class _EditRegularTaskState extends State<EditRegularTask>
     }
   }
 
-  FocusNode titleFocusNode;
-  FocusNode descriptionFocusNode;
-  TextEditingController titleCtrl;
-  TextEditingController descriptionCtrl;
-  TabController tabController;
-  Animation timeSelectedAnimation;
-  AnimationController timeSelectedAnimationCtrl;
-  Tween colorTween;
-  ScrollController timeListScrollCtrl;
+  FocusNode? titleFocusNode;
+  FocusNode? descriptionFocusNode;
+  TextEditingController? titleCtrl;
+  TextEditingController? descriptionCtrl;
+  TabController? tabController;
+  late Animation timeSelectedAnimation;
+  late AnimationController timeSelectedAnimationCtrl;
+  Tween? colorTween;
+  ScrollController? timeListScrollCtrl;
 
   @override
   void initState() {
@@ -103,28 +102,28 @@ class _EditRegularTaskState extends State<EditRegularTask>
     timeListScrollCtrl = ScrollController(
       initialScrollOffset: 0.0,
     );
-    startDate = taskCurrent.customRepeat['startDate'];
+    startDate = taskCurrent.customRepeat!['startDate'];
     rptEveryCtrl = TextEditingController(
-      text: "${taskCurrent.customRepeat['rptEvery']}",
+      text: "${taskCurrent.customRepeat!['rptEvery']}",
     );
-    int nRpt = taskCurrent.customRepeat['nRpt'];
+    int? nRpt = taskCurrent.customRepeat!['nRpt'];
     nRptCtrl = TextEditingController(
-      text: "${widget.editMode ? (nRpt == -1 ? "" : nRpt) : ""}",
+      text: "${widget.editMode! ? (nRpt == -1 ? "" : nRpt) : ""}",
     );
   }
 
   List<Widget> createTimeList() {
     int i = -1;
-    i = weeklyRepeat[selectedWeekDay - 1].indexWhere((element) {
-      return TimeInterval.toTimeOfDay(element.endTime) == selectedTime;
+    i = weeklyRepeat![selectedWeekDay - 1].indexWhere((element) {
+      return TimeInterval.toTimeOfDay(element.endTime!) == selectedTime;
     });
     List<Widget> list = List.generate(
-      weeklyRepeat[selectedWeekDay - 1].length,
+      weeklyRepeat![selectedWeekDay - 1].length,
       (index) {
         TimeOfDay t1 = TimeInterval.toTimeOfDay(
-            weeklyRepeat[selectedWeekDay - 1][index].startTime);
+            weeklyRepeat![selectedWeekDay - 1][index].startTime!);
         TimeOfDay t2 = TimeInterval.toTimeOfDay(
-            weeklyRepeat[selectedWeekDay - 1][index].endTime);
+            weeklyRepeat![selectedWeekDay - 1][index].endTime!);
         Container item = Container(
           constraints: BoxConstraints(
             maxHeight: 50.0,
@@ -183,7 +182,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
                 onPressed: () {
                   setState(() {
                     timeSelectedAnimationCtrl.reset();
-                    weeklyRepeat[selectedWeekDay - 1].removeAt(index);
+                    weeklyRepeat![selectedWeekDay - 1].removeAt(index);
                   });
                 },
                 icon: Icon(
@@ -203,18 +202,18 @@ class _EditRegularTaskState extends State<EditRegularTask>
   @override
   void dispose() {
     super.dispose();
-    titleFocusNode.dispose();
-    descriptionFocusNode.dispose();
-    titleCtrl.dispose();
-    descriptionCtrl.dispose();
-    tabController.dispose();
+    titleFocusNode!.dispose();
+    descriptionFocusNode!.dispose();
+    titleCtrl!.dispose();
+    descriptionCtrl!.dispose();
+    tabController!.dispose();
     timeSelectedAnimationCtrl.dispose();
-    timeListScrollCtrl.dispose();
-    rptEveryCtrl.dispose();
-    nRptCtrl.dispose();
+    timeListScrollCtrl!.dispose();
+    rptEveryCtrl!.dispose();
+    nRptCtrl!.dispose();
   }
 
-  Future<void> showErrorMessage({String title, String msg}) async {
+  Future<void> showErrorMessage({String? title, String? msg}) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -225,7 +224,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                MaterialCommunityIcons.alert,
+                Icons.help, // MaterialCommunityIcons.alert,
                 color: Colors.red,
                 size: 35.0,
               ),
@@ -239,7 +238,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
           ),
           content: Container(
             child: Text(
-              msg,
+              msg!,
               style: GoogleFonts.gloriaHallelujah(
                 fontSize: 16,
               ),
@@ -257,9 +256,9 @@ class _EditRegularTaskState extends State<EditRegularTask>
   }
 
   int selectedWeekDay = 1;
-  List<List<TimeInterval>> weeklyRepeat = [];
-  TextEditingController rptEveryCtrl;
-  TextEditingController nRptCtrl;
+  List<List<TimeInterval>>? weeklyRepeat = [];
+  TextEditingController? rptEveryCtrl;
+  TextEditingController? nRptCtrl;
 
   @override
   Widget build(BuildContext context) {
@@ -280,7 +279,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
                 width: 7.0,
               ),
               Text(
-                "${widget.editMode ? "Edit" : "New"} task",
+                "${widget.editMode! ? "Edit" : "New"} task",
                 textAlign: TextAlign.left,
                 style: GoogleFonts.gloriaHallelujah(
                   fontSize: 22,
@@ -435,7 +434,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
                           ),
                         ),
                         Text(
-                          "${dtf.weekDay[selectedWeekDay - 1]} (${weeklyRepeat[selectedWeekDay - 1].length})",
+                          "${dtf.weekDay[selectedWeekDay - 1]} (${weeklyRepeat![selectedWeekDay - 1].length})",
                           style: GoogleFonts.gloriaHallelujah(
                             fontSize: 16,
                           ),
@@ -461,7 +460,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
                           iconSize: 35,
                           onPressed: () async {
                             timeSelectedAnimationCtrl.reset();
-                            TimeOfDay start, end;
+                            TimeOfDay? start, end;
                             selectedTime = null;
                             await _selectTime(
                               context,
@@ -496,19 +495,19 @@ class _EditRegularTaskState extends State<EditRegularTask>
                               return;
                             }
                             bool timeConflict = false;
-                            weeklyRepeat[selectedWeekDay - 1]
+                            weeklyRepeat![selectedWeekDay - 1]
                                 .forEach((element) async {
-                              timeConflict = element.containsTime(start) ||
-                                  element.containsTime(end);
+                              timeConflict = element.containsTime(start!) ||
+                                  element.containsTime(end!);
                               if (timeConflict) {
                                 TimeOfDay t1 =
-                                    TimeInterval.toTimeOfDay(element.startTime);
+                                    TimeInterval.toTimeOfDay(element.startTime!);
                                 TimeOfDay t2 =
-                                    TimeInterval.toTimeOfDay(element.endTime);
+                                    TimeInterval.toTimeOfDay(element.endTime!);
                                 String s1 = "";
                                 s1 += dtf.formatTime(start);
                                 s1 += " to ";
-                                s1 += dtf.formatTime(end);
+                                s1 += dtf.formatTime(end!);
                                 String s2 = "";
                                 s2 += dtf.formatTime(t1);
                                 s2 += " to ";
@@ -522,26 +521,26 @@ class _EditRegularTaskState extends State<EditRegularTask>
                             });
                             if (!timeConflict) {
                               setState(() {
-                                weeklyRepeat[selectedWeekDay - 1]
-                                  ..add(TimeInterval.fromTimes(start, end))
+                                weeklyRepeat![selectedWeekDay - 1]
+                                  ..add(TimeInterval.fromTimes(start!, end!))
                                   ..sort((TimeInterval a, TimeInterval b) =>
-                                  (a.startTime['hh'] != b.startTime['hh'])
-                                      ? (a.startTime['hh'] >
-                                      b.startTime['hh']
+                                  (a.startTime!['hh'] != b.startTime!['hh'])
+                                      ? (a.startTime!['hh']! >
+                                      b.startTime!['hh']!
                                       ? 1
                                       : -1)
-                                      : (a.startTime['mm'] >
-                                      b.startTime['mm']
+                                      : (a.startTime!['mm']! >
+                                      b.startTime!['mm']!
                                       ? 1
                                       : -1));
-                                int i = weeklyRepeat[selectedWeekDay - 1]
+                                int i = weeklyRepeat![selectedWeekDay - 1]
                                     .indexWhere((element) {
                                   return TimeInterval.toTimeOfDay(
-                                      element.startTime) ==
+                                      element.startTime!) ==
                                       start;
                                 });
                                 print("index = $i");
-                                timeListScrollCtrl.jumpTo(51.5 * (i - 1));
+                                timeListScrollCtrl!.jumpTo(51.5 * (i - 1));
                                 timeSelectedAnimationCtrl.forward();
                               });
                             }
@@ -563,7 +562,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
                               children: [
                                 Expanded(
                                   child: Text(
-                                    "Start date: ${startDate == null ? "???" : dtf.formatDate(startDate)}",
+                                    "Start date: ${startDate == null ? "???" : dtf.formatDate(startDate!)}",
                                     style: GoogleFonts.gloriaHallelujah(
                                       fontSize: 15,
                                       color: Colors.black,
@@ -573,9 +572,9 @@ class _EditRegularTaskState extends State<EditRegularTask>
                                 ),
                                 Expanded(
                                   child: IconButton(
-                                    icon: Icon(MaterialCommunityIcons.calendar),
+                                    icon: Icon(Icons.help), // MaterialCommunityIcons.calendar),
                                     onPressed: () async {
-                                      DateTime date =
+                                      DateTime? date =
                                           await _selectDate(context);
                                       if (date != null) {
                                         setState(() {
@@ -602,7 +601,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
                                     inputFormatters: [
                                       FilteringTextInputFormatter.allow(
                                         RegExp(
-                                          rptEveryCtrl.text.isEmpty
+                                          rptEveryCtrl!.text.isEmpty
                                               ? r'[1-9]'
                                               : r'[0-9]',
                                         ),
@@ -645,7 +644,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
                                     inputFormatters: [
                                       FilteringTextInputFormatter.allow(
                                         RegExp(
-                                          nRptCtrl.text.isEmpty
+                                          nRptCtrl!.text.isEmpty
                                               ? r'[1-9]'
                                               : r'[0-9]',
                                         ),
@@ -695,7 +694,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
                     style: GoogleFonts.gloriaHallelujah(),
                   ),
                   Icon(
-                    taskLevel.diffLevelNumeric[taskCurrent.level - 1],
+                    taskLevel.diffLevelNumeric[taskCurrent.level! - 1],
                   ),
                 ],
               ),
@@ -703,11 +702,11 @@ class _EditRegularTaskState extends State<EditRegularTask>
                 height: 10.0,
               ),
               Icon(
-                taskLevel.diffLevelIcon[taskCurrent.level - 1],
+                taskLevel.diffLevelIcon[taskCurrent.level! - 1],
                 size: 80.0,
               ),
               Text(
-                taskLevel.diffLevelText[taskCurrent.level - 1],
+                taskLevel.diffLevelText[taskCurrent.level! - 1],
                 style: GoogleFonts.gloriaHallelujah(
                   fontSize: 15,
                   color: Colors.black,
@@ -718,10 +717,10 @@ class _EditRegularTaskState extends State<EditRegularTask>
                 child: Slider(
                   activeColor: Color(0xFFB2E5E3),
                   inactiveColor: Color(0xFFB2E5E3),
-                  value: taskCurrent.level.toDouble(),
+                  value: taskCurrent.level!.toDouble(),
                   onChanged: (val) {
-                    titleFocusNode.unfocus();
-                    descriptionFocusNode.unfocus();
+                    titleFocusNode!.unfocus();
+                    descriptionFocusNode!.unfocus();
                     setState(() {
                       taskCurrent.level = val.toInt();
                     });
@@ -766,7 +765,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
                   ),
                   child: TextButton(
                     child: Text(
-                      "${widget.editMode ? "Save" : "Create"}",
+                      "${widget.editMode! ? "Save" : "Create"}",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.gloriaHallelujah(
                         fontSize: 20,
@@ -777,13 +776,13 @@ class _EditRegularTaskState extends State<EditRegularTask>
                       print("Create");
                       RegularTask temp =
                           RegularTask.fromRegularTask(taskCurrent);
-                      if (titleCtrl.text.isEmpty) {
+                      if (titleCtrl!.text.isEmpty) {
                         await showErrorMessage(
                           msg: "Title cannot be empty",
                         );
                         return;
                       }
-                      switch (tabController.index) {
+                      switch (tabController!.index) {
                         case 0:
                           {
                             temp.weekly = true;
@@ -802,12 +801,12 @@ class _EditRegularTaskState extends State<EditRegularTask>
                               return;
                             }
                             int rptEvery = 1;
-                            if (rptEveryCtrl.text.isNotEmpty) {
-                              rptEvery = int.parse(rptEveryCtrl.text);
+                            if (rptEveryCtrl!.text.isNotEmpty) {
+                              rptEvery = int.parse(rptEveryCtrl!.text);
                             }
                             int nRpt = -1;
-                            if (nRptCtrl.text.isNotEmpty) {
-                              nRpt = int.parse(nRptCtrl.text);
+                            if (nRptCtrl!.text.isNotEmpty) {
+                              nRpt = int.parse(nRptCtrl!.text);
                             }
                             temp.customRepeat = {
                               "startDate": startDate,
@@ -817,8 +816,8 @@ class _EditRegularTaskState extends State<EditRegularTask>
                           }
                           break;
                       }
-                      temp.label = titleCtrl.text;
-                      temp.description = descriptionCtrl.text;
+                      temp.label = titleCtrl!.text;
+                      temp.description = descriptionCtrl!.text;
                       temp.created = temp.createdDateTime;
                       Navigator.pop(context, temp);
                     },

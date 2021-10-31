@@ -17,14 +17,14 @@ class TaskAdapter extends TypeAdapter<Task> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Task()
-      ..created = fields[0] as DateTime
-      ..orderIndex = fields[1] as int
-      ..label = fields[2] as String
-      ..description = fields[3] as String
-      ..deadline = fields[4] as DateTime
-      ..level = fields[5] as int
-      ..completionStatus = fields[6] as bool
-      ..completed = fields[7] as DateTime;
+      ..created = fields[0] as DateTime?
+      ..orderIndex = fields[1] as int?
+      ..label = fields[2] as String?
+      ..description = fields[3] as String?
+      ..deadline = fields[4] as DateTime?
+      ..level = fields[5] as int?
+      ..completionStatus = fields[6] as bool?
+      ..completed = fields[7] as DateTime?;
   }
 
   @override
