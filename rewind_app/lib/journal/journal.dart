@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rewind_app/controllers/journal_ctrl.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 import 'edit_journal_page.dart';
-import 'journal_state.dart';
 
-class Journal extends StatefulWidget {
-  @override
-  _JournalState createState() => _JournalState();
-}
-
-class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
+class Journal extends GetWidget<JournalController> {
   List<Container> listTiles = [];
   List<Container> test = [];
   bool? ascendingOrder = true;
   int? sortByOption = 0;
   TaskLevel taskLevel = TaskLevel();
-
   bool showActive = true;
 
   bool isSameDate(DateTime d1, DateTime d2) =>
@@ -42,7 +37,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
   Container listTile({
     required int index,
   }) {
-    final list = JournalCommon.of(context).jnlState!.pages!;
+    final list = controller.journalData!.pages!;
     DateTime created = list[index]!.created!;
     TimeOfDay timeOfDay = TimeOfDay(
       hour: created.hour,
@@ -125,7 +120,13 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
           GestureDetector(
             onTap: () async {
               print("edit journal${dtf.formatTime(timeOfDay)}");
-              JournalPage? temp = await Navigator.push(
+              JournalPage? temp = await Get.to(
+                EditJournalPage(
+                  journalPage: list[index],
+                  editMode: true,
+                ),
+              );
+              /*JournalPage? temp = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => EditJournalPage(
@@ -133,11 +134,12 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                     editMode: true,
                   ),
                 ),
-              );
+              );*/
               if (temp != null) {
-                setState(() {
+                /*setState(() {
                   list[index] = JournalPage.fromJournalPage(temp);
-                });
+                });*/
+                list[index] = JournalPage.fromJournalPage(temp);
               } else {
                 print("edit journal page cancelled");
               }
@@ -156,7 +158,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
   }
 
   void updateGoals() {
-    final list = JournalCommon.of(context).jnlState!.pages!;
+    final list = controller.journalData!.pages!;
     listTiles = List.generate(
       list.length,
       (index) => listTile(
@@ -169,16 +171,16 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
       );
   }
 
-  @override
+  /*@override
   void initState() {
     super.initState();
-  }
+  }*/
 
-  @override
+  /*@override
   void dispose() {
     super.dispose();
     //Hive.deleteFromDisk();
-  }
+  }*/
 
   DateAndTimeFormat dtf = new DateAndTimeFormat();
   @override
@@ -258,7 +260,7 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                         ),
                       );
                       if (temp != null) {
-                        JournalCommon.of(context).addPage(temp);
+                        controller.addPage(temp);
                         print("Regular task created");
                       } else {
                         print("No regular task created");
@@ -290,7 +292,8 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                                 Text("Sort by"),
                                 Spacer(),
                                 Icon(
-                                  Icons.add_circle, // MaterialCommunityIcons.sort,
+                                  Icons
+                                      .add_circle, // MaterialCommunityIcons.sort,
                                   color: Colors.black,
                                 ),
                               ],
@@ -383,21 +386,23 @@ class _JournalState extends State<Journal> with SingleTickerProviderStateMixin {
                   child: IconButton(
                     icon: Icon(
                       ascendingOrder!
-                          ? Icons.add_circle // MaterialCommunityIcons.alpha_a_circle
-                          : Icons.add_circle, // MaterialCommunityIcons.alpha_d_circle,
+                          ? Icons
+                              .add_circle // MaterialCommunityIcons.alpha_a_circle
+                          : Icons
+                              .add_circle, // MaterialCommunityIcons.alpha_d_circle,
                       color: Colors.blue[800],
                       size: 35,
                     ),
                     onPressed: () {
                       print("sort in ascending or descending");
-                      JournalCommon.of(context).switchListOrder();
+                      controller.switchListOrder();
                       print(
-                          "Order: ${JournalCommon.of(context).jnlState!.ascendingOrder! ? "asc" : "desc"}ending");
-                      //JournalCommon.of(context).sortTasks();
-                      setState(() {
-                        ascendingOrder =
-                            JournalCommon.of(context).jnlState!.ascendingOrder;
-                      });
+                          "Order: ${controller.journalData!.ascendingOrder! ? "asc" : "desc"}ending");
+                      //controller.sortTasks();
+                      /*setState(() {
+                        ascendingOrder = controller.jnlState!.ascendingOrder;
+                      });*/
+                      ascendingOrder = controller.journalData!.ascendingOrder;
                       updateGoals();
                     },
                     tooltip: "Order: ${ascendingOrder! ? "asc" : "desc"}ending",

@@ -1,44 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/services/auth_ctrl.dart';
+import 'package:rewind_app/controllers/auth_controller.dart';
+import 'package:rewind_app/controllers/auth_page_ctrl.dart';
 
-class CreateAccWithEmail extends StatefulWidget {
-  final Function? toggleView;
-  CreateAccWithEmail({this.toggleView});
-  @override
-  _CreateAccWithEmailState createState() => _CreateAccWithEmailState();
-}
-
-class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
-  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
-  final AuthService _auth = AuthService();
+class CreateAccWithEmail extends GetWidget<AuthController> {
+  final TextStyle style = TextStyle(
+    fontFamily: 'Montserrat',
+    fontSize: 20.0,
+  );
+  //final AuthService _auth = AuthService();
   //String error = "";
   final _formKey = GlobalKey<FormState>();
 
-  String _email = "";
-  String _pwd = "";
-  TextEditingController _pwdFieldController = new TextEditingController();
-  String _confPwd = "";
+  final _emailFieldController = TextEditingController();
+  final _pwdFieldController = TextEditingController();
+  final _confPwdFieldController = TextEditingController();
 
-  FocusNode? _n1;
-  FocusNode? _n2;
-  FocusNode? _n3;
-
-  @override
-  void initState() {
-    super.initState();
-    _n1 = FocusNode();
-    _n2 = FocusNode();
-    _n3 = FocusNode();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _n1!.dispose();
-    _n2!.dispose();
-    _n3!.dispose();
-  }
+  final _n1 = FocusNode();
+  final _n2 = FocusNode();
+  final _n3 = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -49,18 +30,14 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: TextFormField(
+        controller: _emailFieldController,
         focusNode: _n1,
         textInputAction: TextInputAction.next,
         onFieldSubmitted: (term) {
-          _n1!.unfocus();
+          _n1.unfocus();
           FocusScope.of(context).requestFocus(_n2);
         },
         style: style,
-        onChanged: (val) {
-          setState(() {
-            _email = val;
-          });
-        },
         decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           labelText: "Email",
@@ -89,16 +66,11 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
         focusNode: _n2,
         textInputAction: TextInputAction.next,
         onFieldSubmitted: (term) {
-          _n2!.unfocus();
+          _n2.unfocus();
           FocusScope.of(context).requestFocus(_n3);
         },
         obscureText: true,
         style: style,
-        onChanged: (val) {
-          setState(() {
-            _pwd = val;
-          });
-        },
         decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           labelText: "Password",
@@ -126,15 +98,11 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: TextFormField(
+        controller: _confPwdFieldController,
         focusNode: _n3,
         obscureText: true,
         style: style,
         onFieldSubmitted: (val) {},
-        onChanged: (val) {
-          setState(() {
-            _confPwd = val;
-          });
-        },
         decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           labelText: "Re-type password",
@@ -148,7 +116,7 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
             s = "Password cannot be empty";
           } else if (val.length < 8) {
             s = "Password must be at least 8 characters long";
-          } else if (_pwd != _confPwd) {
+          } else if (_pwdFieldController.text != _confPwdFieldController.text) {
             s = "Passwords do not match";
           }
           return s;
@@ -165,7 +133,9 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
             backgroundColor: Colors.white,
             title: Row(
               children: [
-                Text("Error "),
+                Text(
+                  "Error ",
+                ),
                 Icon(
                   Icons.warning,
                   color: Colors.red,
@@ -197,28 +167,29 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
         child: MaterialButton(
           minWidth: MediaQuery.of(context).size.width,
           padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
           ),
           onPressed: () async {
-            print("Email: $_email");
+            /*print("Email: $_email");
             print("Password: $_pwd");
-            print("Re-typed password: $_confPwd");
+            print("Re-typed password: $_confPwd");*/
             if (_formKey.currentState!.validate()) {
-              dynamic result = await _auth.reqNewAccountWithEmail(
-                _email,
-                _pwd,
+              final result = await controller.createUser(
+                _emailFieldController.text,
+                _pwdFieldController.text,
               );
               if (result == null) {
                 await _invalidOrAccExists();
               } else {
+                print(result);
                 Navigator.of(context).popUntil((route) => false);
                 Navigator.of(context).pushNamed('/');
               }
             }
           },
           child: Text(
-            "Next",
+            "Sign Up",
             textAlign: TextAlign.center,
             style: style.copyWith(
               color: Colors.white,
@@ -262,7 +233,7 @@ class _CreateAccWithEmailState extends State<CreateAccWithEmail> {
               tooltip: 'Sign-in options',
               onPressed: () {
                 print("Sign In w/ Email");
-                widget.toggleView!();
+                Get.find<SignInPageController>().toggleView();
               },
             ),
           ],

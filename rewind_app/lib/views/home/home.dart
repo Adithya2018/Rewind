@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rewind_app/app_data/app_data_state.dart';
 import 'package:rewind_app/journal/edit_journal_page.dart';
-import 'package:rewind_app/journal/journal_state.dart';
+import 'package:rewind_app/dump/journal_state.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
 
 class Home extends StatefulWidget {
@@ -622,7 +625,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   splashColor: Colors.transparent,
                   onPressed: () {
                     print("Journal");
-                    Navigator.of(context).pushNamed('/jou');
+                    //Get.toNamed('/jou');
+                    Get.toNamed('/jou');
                   },
                 ),
               ],
@@ -896,7 +900,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   Text(
-                    "${AppDataCommon.of(context).appData!.userName!.isEmpty ? "<no username>" : AppDataCommon.of(context).appData!.userName}",
+                    '',//"${AppDataCommon.of(context).appData!.userName!.isEmpty ? "<no username>" : AppDataCommon.of(context).appData!.userName}",
                     style: GoogleFonts.openSans(
                       fontSize: 20,
                     ),
@@ -938,7 +942,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.stacked_bar_chart, //Icons.query_stats,
+                    Icons.stacked_bar_chart,
                     color: Colors.green,
                     size: 28,
                   ),
@@ -973,11 +977,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    MdiIcons.viewList,
+                  /*Icon(
+                    Icons.list_alt_rounded,
                     color: Colors.blue[800],
                     size: 28,
-                  ),
+                  ),*/
+                  FaIcon(
+                    FontAwesomeIcons.sortAlphaDown,
+                  )
                 ],
               ),
             ),

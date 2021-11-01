@@ -3,15 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:provider/provider.dart';
-import 'package:rewind_app/app_data/app_data_state.dart';
 import 'package:rewind_app/common_screens/message_scaffold.dart';
-import 'package:rewind_app/controllers/journal_ctrl.dart';
+import 'package:rewind_app/controllers/auth_controller.dart';
+import 'package:rewind_app/controllers/bindings/auth_bindings.dart';
 import 'package:rewind_app/journal/journal.dart';
-import 'package:rewind_app/journal/journal_state.dart';
 import 'package:rewind_app/models/interval/interval.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
-import 'package:rewind_app/services/auth_ctrl.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
 import 'package:rewind_app/todo_list/todo_list.dart';
 import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
@@ -22,7 +19,6 @@ import 'controllers/bindings/journal_bindings.dart';
 import 'controllers/bindings/todo_list_bindings.dart';
 import 'models/regular_task/regular_task.dart';
 import 'models/task/task.dart';
-import 'models/user.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,68 +53,66 @@ class _RewindAppState extends State<RewindApp> {
   final Future<FirebaseApp> initialization = Firebase.initializeApp();
   @override
   Widget build(BuildContext context) {
-    return AppDataWrapper(
-      child: GetMaterialApp(
-        title: 'Rewind App',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: FutureBuilder(
-          // Initialize FlutterFire:
-          future: initialization,
-          builder: (context, snapshot) {
-            // Check for errors
-            if (snapshot.hasError) {
-              return SimpleMessageScaffold(
-                message: "Cannot load",
-                iconData: Icons.info, // MaterialCommunityIcons.robot,
-              );
-            }
-            // Once complete, show your application
-            if (snapshot.connectionState == ConnectionState.done) {
-              print("ConnectionState.done");
-              return StreamProvider<UserData?>.value(
-                value: AuthService().user,
-                initialData: null,
-                child: AuthenticationWrapper(),
-              );
-            }
-
-            // Otherwise, show something whilst waiting for initialization to complete
-            return SimpleMessageScaffold(
-              message: "Loading...",
-              iconData: Icons.info,
-            );
-          },
-        ),
-        getPages: [
-          GetPage(
-            name: '/jou',
-            binding: JournalBindings(),
-            page: () => Journal(),
-          ),
-          GetPage(
-            name: '/ach',
-            binding: TodoListBindings(),
-            page: () => TodoList(),
-          ),
-        ],
-        routes: <String, WidgetBuilder>{
-          '/ach': (BuildContext context) => Achievements(),
-          '/jou': (BuildContext context) => JournalWrapper(
-                boxNameSuffix:
-                    '', //AppDataCommon.of(context).appData!.userdata!.uid,
-                child: Journal(),
-              ),
-          '/tdl': (BuildContext context) => TodoListWrapper(
-                boxNameSuffix:
-                    '', //AppDataCommon.of(context).appData!.userdata!.uid,
-                child: TodoList(),
-              ),
-          '/vt': (BuildContext context) => EditTask(),
-        },
-        debugShowCheckedModeBanner: false,
+    return /*AppDataWrapper(
+      child: ,
+    )*/
+        GetMaterialApp(
+      title: 'Rewind App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      initialBinding: AuthBindings(),
+      home: FutureBuilder(
+        // Initialize FlutterFire:
+        future: initialization,
+        builder: (context, snapshot) {
+          // Check for errors
+          if (snapshot.hasError) {
+            return SimpleMessageScaffold(
+              message: "Cannot load",
+              iconData: Icons.info, // MaterialCommunityIcons.robot,
+            );
+          }
+          // Once complete, show your application
+          if (snapshot.connectionState == ConnectionState.done) {
+            print("ConnectionState.done");
+            return AuthWrapper();
+          }
+
+          // Otherwise, show something whilst waiting for initialization to complete
+          return SimpleMessageScaffold(
+            message: "Loading...",
+            iconData: Icons.info,
+          );
+        },
+      ),
+      getPages: [
+        GetPage(
+          name: '/jou',
+          binding: JournalBindings(),
+          page: () => Journal(),
+        ),
+        GetPage(
+          name: '/ach',
+          binding: TodoListBindings(),
+          page: () => TodoList(),
+        ),
+      ],
+      routes: <String, WidgetBuilder>{
+        '/ach': (BuildContext context) => Achievements(),
+        /*'/jou': (BuildContext context) => JournalWrapper(
+              boxNameSuffix:
+                  '', //AppDataCommon.of(context).appData!.userdata!.uid,
+              child: Journal(),
+            ),*/
+        '/tdl': (BuildContext context) => TodoListWrapper(
+              boxNameSuffix:
+                  '', //AppDataCommon.of(context).appData!.userdata!.uid,
+              child: TodoList(),
+            ),
+        '/vt': (BuildContext context) => EditTask(),
+      },
+      debugShowCheckedModeBanner: false,
     );
   }
 

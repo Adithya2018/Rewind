@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:rewind_app/journal/journal_data.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
 
 class JournalController extends GetxController {
-  late final Widget child;
   late final String? boxNameSuffix;
   /*const JournalController({
     Key? key,
@@ -15,7 +13,7 @@ class JournalController extends GetxController {
   @override
   _JournalControllerState createState() => _JournalControllerState();*/
 
-  JournalData? jnlState;
+  JournalData? journalData;
   String journalBoxName = 'journal';
 
   String dateTimeToKey(DateTime date) {
@@ -38,15 +36,16 @@ class JournalController extends GetxController {
   void onInit() {
     super.onInit();
     print("todo list state initState()");
+    boxNameSuffix = '';
     journalBoxName = boxNameSuffix! + journalBoxName;
     print(journalBoxName);
-    jnlState = JournalData(
+    journalData = JournalData(
       pages: List<JournalPage>.from(Hive.box(journalBoxName).values),
       selected: {},
       sortByOption: 0,
       ascendingOrder: true,
     );
-    jnlState!.pages!.forEach((element) {
+    journalData!.pages!.forEach((element) {
       print("regular task: ${element.toString()}");
     });
     /*print("goals=${gldState.tasks.length}");
@@ -64,7 +63,7 @@ class JournalController extends GetxController {
   @override
   void dispose() {
     //Created: 2021-05-07 05:04:04.204453
-    jnlState!.pages!.forEach((task) {
+    journalData!.pages!.forEach((task) {
       saveToBox(task!.created!, task, journalBoxName);
     });
     super.dispose();
@@ -79,7 +78,7 @@ class JournalController extends GetxController {
   }
 
   void addPage(JournalPage? journalPage) {
-    List<JournalPage?> newList = [journalPage] + jnlState!.pages!;
+    List<JournalPage?> newList = [journalPage] + journalData!.pages!;
     //setState(() => jnlState = jnlState!.copy(pages: newList));
   }
 
@@ -109,7 +108,7 @@ class JournalController extends GetxController {
   }*/
 
   void switchListOrder() {
-    jnlState!.ascendingOrder = !jnlState!.ascendingOrder!;
+    journalData!.ascendingOrder = !journalData!.ascendingOrder!;
   }
 
   /*@override

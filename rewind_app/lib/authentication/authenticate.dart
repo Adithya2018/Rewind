@@ -1,24 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rewind_app/authentication/register.dart';
 import 'package:rewind_app/authentication/signin.dart';
+import 'package:rewind_app/controllers/auth_page_ctrl.dart';
 
-class Authenticate extends StatefulWidget {
-  @override
-  _AuthenticateState createState() => _AuthenticateState();
-}
-
-class _AuthenticateState extends State<Authenticate> {
-  bool showSignIn = true;
-  void toggleView() {
-    setState(() {
-      showSignIn = !showSignIn;
-    });
-  }
-
+class Authenticate extends GetWidget<SignInPageController> {
   @override
   Widget build(BuildContext context) {
-    return showSignIn
-        ? SignInWithEmail(toggleView: toggleView)
-        : CreateAccWithEmail(toggleView: toggleView);
+    return Obx(() {
+      return controller.showSignInPage.value
+          ? SignInWithEmail()
+          : CreateAccWithEmail();
+    });
   }
 }

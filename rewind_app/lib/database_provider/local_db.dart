@@ -54,7 +54,7 @@ class _LocalDBWrapperState extends State<LocalDBWrapper> {
               iconData: Icons.not_interested, //MaterialCommunityIcons.robot,
             );
           } else {
-            print('snapshot.hasError');
+            print('Home()');
             return Home();
           }
         }

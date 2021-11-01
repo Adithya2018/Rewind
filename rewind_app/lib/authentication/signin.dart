@@ -1,45 +1,22 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/app_data/app_data_state.dart';
-import 'package:rewind_app/services/auth_ctrl.dart';
+import 'package:rewind_app/controllers/auth_controller.dart';
+import 'package:rewind_app/controllers/auth_page_ctrl.dart';
 
-class SignInWithEmail extends StatefulWidget {
-  final Function? toggleView;
-  SignInWithEmail({this.toggleView});
-  @override
-  _SignInWithEmailState createState() => _SignInWithEmailState();
-}
-
-class _SignInWithEmailState extends State<SignInWithEmail> {
+class SignInWithEmail extends GetWidget<AuthController> {
   TextStyle style = TextStyle(
     fontFamily: 'Montserrat',
     fontSize: 20.0,
   );
-  final AuthService _auth = AuthService();
+  // final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String _email = "";
   String _pwd = "";
 
-  FocusNode? _n1;
-  FocusNode? _n2;
-  FocusNode? _n3;
-
-  @override
-  void initState() {
-    super.initState();
-    _n1 = FocusNode();
-    _n2 = FocusNode();
-    _n3 = FocusNode();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _n1!.dispose();
-    _n2!.dispose();
-    _n3!.dispose();
-  }
+  FocusNode? _n1 = FocusNode();
+  FocusNode? _n2 = FocusNode();
+  FocusNode? _n3 = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +34,10 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
           FocusScope.of(context).requestFocus(_n2);
         },
         onChanged: (val) {
-          setState(() {
+          _email = val;
+          /*setState(() {
             _email = val;
-          });
+          });*/
         },
         style: style,
         decoration: InputDecoration(
@@ -93,9 +71,10 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
           FocusScope.of(context).requestFocus(_n3);
         },
         onChanged: (val) {
-          setState(() {
+          _pwd = val;
+          /*setState(() {
             _pwd = val;
-          });
+          });*/
         },
         obscureText: true,
         style: style,
@@ -118,7 +97,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
     );
 
     // name was _invalidOrAccExists
-    Future<void> _credentialErrMsg({String? msg}) async {
+    Future<void> _credentialErrMsg({String? message}) async {
       return showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -137,7 +116,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
             ),
             content: Container(
               child: Text(
-                msg!,
+                message!,
               ),
             ),
             actions: <Widget>[
@@ -166,13 +145,16 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
           ),
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              print("valid");
-              dynamic result = await _auth.signInWithEmailAndPwd(_email, _pwd);
-              if (result.runtimeType == FirebaseAuthException) {
-                await _credentialErrMsg(msg: result.message);
+              final result = await controller.signInUser(_email, _pwd);
+              //_auth.signInWithEmailAndPwd(_email, _pwd);
+              if (result == null) {
+                print("could not sign in");
+                await _credentialErrMsg(
+                  message: controller.errorMessage.value,
+                );
               } else {
                 print(result);
-                AppDataCommon.of(context).setUserData(result);
+                // AppDataCommon.of(context).setUserData(result);
                 Navigator.of(context).popUntil((route) => false);
                 Navigator.of(context).pushNamed('/');
               }
@@ -223,7 +205,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
               tooltip: 'Register',
               onPressed: () {
                 print('Create an account w/ Email');
-                widget.toggleView!();
+                Get.find<SignInPageController>().toggleView();
               },
             ),
           ],

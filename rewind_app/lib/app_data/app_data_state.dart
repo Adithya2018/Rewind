@@ -30,16 +30,11 @@ class _AppDataWrapperState extends State<AppDataWrapper> {
   }
 
   Future<void> initializeGameInfo() async {
-    print("initializing preferences");
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String userID = !prefs.containsKey("userID") ? "" : prefs.getString("userID")!;
-    print("initializing preferences");
-    print("keys=${prefs.getKeys()}");
     await prefs.setString("userID", userID).then((bool success) {
-      print("userID set? success=$success");
       return userID;
     }).onError((dynamic error, stackTrace) {
-      print("initializing userID unsuccessful");
       return "userID";
     });
     print("initializing finished");
@@ -88,6 +83,6 @@ class AppDataCommon extends InheritedWidget {
 
   @override
   bool updateShouldNotify(AppDataCommon oldWidget) {
-    return true; //oldWidget.gldState != gldState;
+    return true;
   }
 }

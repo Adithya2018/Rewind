@@ -32,6 +32,7 @@ dependencies:
   local_auth: ^1.1.8
   google_fonts: ^2.1.0
   # flutter_icons: ^1.1.0
+  font_awesome_flutter: ^9.2.0
   material_design_icons_flutter: ^5.0.6295
 
   encrypt: ^5.0.1
