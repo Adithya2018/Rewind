@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:rewind_app/home/home.dart';
-import 'package:rewind_app/models/interval.dart';
 import 'package:rewind_app/todo_list/edit_task.dart';
 import 'package:rewind_app/todo_list/todo_list_db_wrapper.dart';
 import 'achievements/achievements.dart';
 import 'journal/journal.dart';
-import 'models/regular_task.dart';
-import 'models/task.dart';
 import 'package:path_provider/path_provider.dart' as ppr;
+import 'models/interval/interval.dart';
+import 'models/regular_task/regular_task.dart';
+import 'models/task/task.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  /*await SystemChrome.setPreferredOrientations([
+  /**/await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]);*/
+  ]);
   final appDocDirectory = await ppr.getApplicationDocumentsDirectory();
   Hive.init(appDocDirectory.path);
   Hive.registerAdapter(TaskAdapter());
@@ -33,7 +34,6 @@ class RewindApp extends StatefulWidget {
 }
 
 class _RewindAppState extends State<RewindApp> {
-  int k = 0;
 
   @override
   Widget build(BuildContext context) {

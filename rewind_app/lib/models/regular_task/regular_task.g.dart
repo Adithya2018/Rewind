@@ -23,8 +23,8 @@ class RegularTaskAdapter extends TypeAdapter<RegularTask> {
       ..description = fields[3] as String?
       ..weekly = fields[4] as bool?
       ..weeklyRepeat = (fields[5] as List?)
-          ?.map((dynamic e) => (e as List)?.cast<TimeInterval>())
-          ?.toList()
+          ?.map((dynamic e) => (e as List).cast<TimeInterval>())
+          .toList()
       ..customRepeat = (fields[6] as Map?)?.cast<dynamic, dynamic>()
       ..level = fields[7] as int?
       ..completionStatus = fields[8] as bool?;

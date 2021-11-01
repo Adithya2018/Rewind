@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:rewind_app/models/interval.dart';
-import 'interval.dart';
+import 'package:rewind_app/models/interval/interval.dart';
+import '../interval/interval.dart';
 part 'regular_task.g.dart';
 
 @HiveType(typeId: 1)

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/models/regular_task.dart';
-import 'package:rewind_app/models/task.dart';
+import 'package:rewind_app/models/regular_task/regular_task.dart';
+import 'package:rewind_app/models/task/task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 import './todo_list_state/todo_list_state.dart';
 import 'edit_task.dart';

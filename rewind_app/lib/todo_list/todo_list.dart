@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/regular_task.dart';
-import '../models/task.dart';
+import '../models/regular_task/regular_task.dart';
+import '../models/task/task.dart';
 import 'edit_regular_task.dart';
 import 'goal_list.dart';
 import 'routine_list.dart';

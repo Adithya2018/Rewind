@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:rewind_app/models/regular_task.dart';
-import 'package:rewind_app/models/task.dart';
+import 'package:rewind_app/models/regular_task/regular_task.dart';
+import 'package:rewind_app/models/task/task.dart';
 import 'package:rewind_app/todo_list/todo_list_data/routine_list_data.dart';
 import 'package:rewind_app/todo_list/todo_list_data/goal_list_data.dart';
 

@@ -12,20 +12,7 @@ class JournalTemp extends StatefulWidget {
 }
 
 class _JournalTempState extends State<JournalTemp> {
-  String titleText = "dfv";
-  bool titleInViewMode = true;
-  bool contentInViewMode = true;
-  void changeTitleMode() {
-    setState(() {
-      titleInViewMode = !titleInViewMode;
-    });
-  }
-
-  void changeContentMode() {
-    setState(() {
-      contentInViewMode = !contentInViewMode;
-    });
-  }
+  // String titleText = "dfv";
 
   FocusNode? titleFocus;
 
@@ -54,7 +41,7 @@ class _JournalTempState extends State<JournalTemp> {
         ),
       ),
       child: TextField(
-        enabled: titleInViewMode,
+        // enabled: titleInViewMode,
         focusNode: titleFocus,
         textAlign: TextAlign.center,
         textInputAction: TextInputAction.next,
@@ -71,11 +58,11 @@ class _JournalTempState extends State<JournalTemp> {
       ),
     );
 
-    DateAndTimeFormat dtf = DateAndTimeFormat();
+    /*DateAndTimeFormat dtf = DateAndTimeFormat();
 
     Container dateTime = Container(
       child: Text("${dtf.formatDate(DateTime.now())}"),
-    );
+    );*/
 
     Container contentArea = Container(
       alignment: Alignment.topCenter,
@@ -109,7 +96,6 @@ class _JournalTempState extends State<JournalTemp> {
     );
 
     return Scaffold(
-      //backgroundColor: Color(0xFFF3EFE4),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60.0),
         child: AppBar(

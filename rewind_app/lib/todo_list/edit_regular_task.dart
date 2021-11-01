@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/models/interval.dart';
-import 'package:rewind_app/models/regular_task.dart';
+import 'package:rewind_app/models/interval/interval.dart';
+import 'package:rewind_app/models/regular_task/regular_task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class EditRegularTask extends StatefulWidget {

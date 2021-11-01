@@ -386,7 +386,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
       constraints: BoxConstraints(
         minHeight: 40.0,
-        maxHeight: 200.0,
+        //maxHeight: 200.0,
         //minWidth: MediaQuery.of(context).size.width,
         maxWidth: MediaQuery.of(context).size.width,
       ),
@@ -426,50 +426,51 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
             ),
           ),
-          Expanded(
-            child: Container(
-              height: 155.0,
-              padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  /**/ getMoodStatBar(
-                    current: 70,
-                    day: "M",
-                  ),
-                  getMoodStatBar(
-                    current: 64,
-                    day: "T",
-                    done: true,
-                  ),
-                  getMoodStatBar(
-                    current: 80,
-                    day: "W",
-                    done: false,
-                  ),
-                  getMoodStatBar(
-                    current: 70,
-                    day: "T",
-                  ),
-                  getMoodStatBar(
-                    current: 64,
-                    day: "F",
-                  ),
-                  getMoodStatBar(
-                    current: 80,
-                    day: "S",
-                  ),
-                  getMoodStatBar(
-                    current: 90,
-                    day: "Today",
-                  ),
-                ],
-              ),
+          /*Expanded(
+            child: ,
+          ),*/
+          Container(
+            height: 155.0,
+            padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
             ),
-          ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                /**/ getMoodStatBar(
+                  current: 70,
+                  day: "M",
+                ),
+                getMoodStatBar(
+                  current: 64,
+                  day: "T",
+                  done: true,
+                ),
+                getMoodStatBar(
+                  current: 80,
+                  day: "W",
+                  done: false,
+                ),
+                getMoodStatBar(
+                  current: 70,
+                  day: "T",
+                ),
+                getMoodStatBar(
+                  current: 64,
+                  day: "F",
+                ),
+                getMoodStatBar(
+                  current: 80,
+                  day: "S",
+                ),
+                getMoodStatBar(
+                  current: 90,
+                  day: "Today",
+                ),
+              ],
+            ),
+          )
           //notification,
         ],
       ),
@@ -567,10 +568,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ],
       ),
     );
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0.0),
+        preferredSize: Size.fromHeight(50.0),
         child: AppBar(
           iconTheme: IconThemeData(
             color: Colors.black,
@@ -594,8 +596,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           actions: <Widget>[
             IconButton(
               icon: Icon(
-                Icons.more_vert_sharp,
-                color: Colors.white,
+                Icons.refresh,
+                color: Colors.blue,
                 size: 30.0,
               ),
               tooltip: 'Refresh',
@@ -614,42 +616,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           child: Column(
             children: [
               gameStatus,
-              /*streakGraph,
-              notificationArea,*/
-              GestureDetector(
-                onVerticalDragEnd: (details) {
-                  /*setState(() {
-                    horizontalDrag %= 180;
-                  });*/
-                },
-                onHorizontalDragUpdate: (details) {
-                  setState(() {
-                    showNotificationArea =
-                        ((270 < hd && hd < 360) || (0 < hd && hd < 90));
-                    hd += details.delta.dx;
-                    hd %= 360;
-                  });
-                  print("$hd");
-                },
-                child: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()
-                    ..setEntry(3, 2, -0.001)
-                    ..rotateY(showNotificationArea ? 0 : pi)
-                    ..rotateY(pi * hd / 180),
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      bottom: 50.0,
-                    ),
-                    constraints: BoxConstraints(
-                      minHeight: MediaQuery.of(context).size.height * 0.60,
-                      maxWidth: MediaQuery.of(context).size.width,
-                    ),
-                    child:
-                        showNotificationArea ? notificationArea : streakGraph,
-                  ),
-                ),
-              )
+              TabBarView(
+                controller: tabController,
+                children: [
+                  gameStatus,
+                  streakGraph,
+                  /*notificationArea,*/
+                ],
+              ),
             ],
           ),
         ),
@@ -963,7 +937,7 @@ class _JournalState extends State<Journal> {
           ],
         ),
       ),
-      body: Padding(
+      /*body: Padding(
         child: Column(
           children: <Widget>[
             Expanded(
@@ -977,28 +951,7 @@ class _JournalState extends State<Journal> {
           ],
         ),
         padding: EdgeInsets.all(0.0),
-      ),
-      /*persistentFooterButtons: [
-        IconButton(
-          alignment: Alignment.centerLeft,
-          onPressed: () {},
-          icon: Icon(
-            Icons.arrow_back,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
-        ),
-      ],*/
+      ),*/
 
       bottomNavigationBar: Container(
         height: 70.0,
@@ -1066,3 +1019,39 @@ class _JournalState extends State<Journal> {
     );
   }
 }
+/*
+              GestureDetector(
+                onVerticalDragEnd: (details) {
+                  /*setState(() {
+                    horizontalDrag %= 180;
+                  });*/
+                },
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    showNotificationArea =
+                        ((270 < hd && hd < 360) || (0 < hd && hd < 90));
+                    hd += details.delta.dx;
+                    hd %= 360;
+                  });
+                  print("$hd");
+                },
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, -0.001)
+                    ..rotateY(showNotificationArea ? 0 : pi)
+                    ..rotateY(pi * hd / 180),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      bottom: 50.0,
+                    ),
+                    constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height * 0.60,
+                      maxWidth: MediaQuery.of(context).size.width,
+                    ),
+                    child:
+                        showNotificationArea ? notificationArea : streakGraph,
+                  ),
+                ),
+              )
+ */

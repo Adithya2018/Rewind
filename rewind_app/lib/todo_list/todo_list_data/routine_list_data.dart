@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:rewind_app/models/regular_task.dart';
+import 'package:rewind_app/models/regular_task/regular_task.dart';
 
 class RoutineListData {
   List<RegularTask>? regularTasks;

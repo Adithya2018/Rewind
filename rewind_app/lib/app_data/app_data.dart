@@ -1,6 +1,6 @@
 //https://blog.codemagic.io/choosing-the-right-database-for-your-flutter-app/
 import 'package:flutter/material.dart';
-import 'package:rewind_app/models/regular_task.dart';
+import 'package:rewind_app/models/regular_task/regular_task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class AppDataWrapper extends StatefulWidget {
