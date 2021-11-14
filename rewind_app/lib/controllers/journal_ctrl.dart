@@ -4,7 +4,7 @@ import 'package:rewind_app/journal/journal_data.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
 
 class JournalController extends GetxController {
-  late final String? boxNameSuffix;
+  late String? boxNameSuffix;
   /*const JournalController({
     Key? key,
     required this.child,
@@ -13,8 +13,8 @@ class JournalController extends GetxController {
   @override
   _JournalControllerState createState() => _JournalControllerState();*/
 
-  JournalData? journalData;
-  String journalBoxName = 'journal';
+  Rxn<JournalData> journalData = Rxn<JournalData>();
+  static String journalBoxName = 'journal';
 
   String dateTimeToKey(DateTime date) {
     String result = "";
@@ -39,13 +39,13 @@ class JournalController extends GetxController {
     boxNameSuffix = '';
     journalBoxName = boxNameSuffix! + journalBoxName;
     print(journalBoxName);
-    journalData = JournalData(
+    journalData.value = JournalData(
       pages: List<JournalPage>.from(Hive.box(journalBoxName).values),
       selected: {},
       sortByOption: 0,
       ascendingOrder: true,
     );
-    journalData!.pages!.forEach((element) {
+    journalData.value!.pages.forEach((element) {
       print("regular task: ${element.toString()}");
     });
     /*print("goals=${gldState.tasks.length}");
@@ -63,9 +63,10 @@ class JournalController extends GetxController {
   @override
   void dispose() {
     //Created: 2021-05-07 05:04:04.204453
-    journalData!.pages!.forEach((task) {
-      saveToBox(task!.created!, task, journalBoxName);
+    journalData.value!.pages.forEach((task) {
+      saveToBox(task!.created, task, journalBoxName);
     });
+    print('dispose journal controller');
     super.dispose();
   }
 
@@ -77,9 +78,16 @@ class JournalController extends GetxController {
     );
   }
 
-  void addPage(JournalPage? journalPage) {
-    List<JournalPage?> newList = [journalPage] + journalData!.pages!;
-    //setState(() => jnlState = jnlState!.copy(pages: newList));
+  void addPage(JournalPage page) {
+    List<JournalPage?> newList = [page, ...journalData.value!.pages];
+    journalData.value!.pages = newList;
+    saveToBox(
+      page.created,
+      page,
+      journalBoxName,
+    );
+    print('saved to box');
+    // = journalData.value!.copy(pages: newList,);
   }
 
   /*void sortPages() {
@@ -102,13 +110,16 @@ class JournalController extends GetxController {
     setState(() => gldState = gldState.copy(tasks: newList));
   }*/
 
-  /*void removeRegularTask(RegularTask regularTask) {
-    List<RegularTask> newList = rldState.regularTasks;
-    setState(() => rldState = rldState.copy(regularTasks: newList));
-  }*/
+  void removePage(JournalPage? page) {
+    List<JournalPage?> pages = journalData.value!.pages;
+    print("journal page ${pages.remove(page) ? 'removed' : 'not found'}");
+    journalData.value = journalData.value!.copy(
+      pages: pages,
+    );
+  }
 
   void switchListOrder() {
-    journalData!.ascendingOrder = !journalData!.ascendingOrder!;
+    journalData.value!.ascendingOrder = !journalData.value!.ascendingOrder!;
   }
 
   /*@override

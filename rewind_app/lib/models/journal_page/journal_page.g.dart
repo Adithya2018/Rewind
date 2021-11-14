@@ -17,7 +17,7 @@ class JournalPageAdapter extends TypeAdapter<JournalPage> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return JournalPage()
-      ..created = fields[0] as DateTime?
+      ..created = fields[0] as DateTime
       ..title = fields[1] as String?
       ..content = fields[2] as String?
       ..fav = fields[3] as bool?;

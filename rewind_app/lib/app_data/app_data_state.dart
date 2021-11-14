@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:rewind_app/common_screens/message_scaffold.dart';
 import 'package:rewind_app/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'app_data.dart';
 
 class AppDataWrapper extends StatefulWidget {

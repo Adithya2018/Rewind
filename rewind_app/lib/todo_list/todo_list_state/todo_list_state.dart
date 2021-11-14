@@ -22,7 +22,7 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
   GoalListData? gldState;
   RoutineListData? rldState;
 
-  static const GOAL_BOX_NAME = 'goals';
+  static const GOALS_BOX_NAME = 'goals';
   static const ROUTINE_BOX_NAME = 'routine';
 
   String dateTimeToKey(DateTime date) {
@@ -51,9 +51,9 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
   })*/
     String boxNameSuffix = widget.boxNameSuffix!;
     print("todo list state initState()");
-    print(boxNameSuffix + GOAL_BOX_NAME);
+    print(boxNameSuffix + GOALS_BOX_NAME);
     gldState = GoalListData(
-      tasks: List<Task>.from(Hive.box(boxNameSuffix + GOAL_BOX_NAME).values),
+      tasks: List<Task>.from(Hive.box(boxNameSuffix + GOALS_BOX_NAME).values),
       sortByOption: 0,
       ascendingOrder: true,
     );
@@ -77,10 +77,18 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
   void dispose() {
     //Created: 2021-05-07 05:04:04.204453
     gldState!.tasks!.forEach((task) {
-      saveToBox(task.created!, task, GOAL_BOX_NAME);
+      saveToBox(
+        task.created!,
+        task,
+        GOALS_BOX_NAME,
+      );
     });
     rldState!.regularTasks!.forEach((task) {
-      saveToBox(task.created!, task, ROUTINE_BOX_NAME);
+      saveToBox(
+        task.created!,
+        task,
+        ROUTINE_BOX_NAME,
+      );
     });
     super.dispose();
   }
@@ -132,12 +140,14 @@ class _TodoListWrapperState extends State<TodoListWrapper> {
 
   void removeRegularTask(RegularTask regularTask) {
     List<RegularTask>? newList = rldState!.regularTasks;
+    newList!.remove(regularTask);
     setState(() => rldState = rldState!.copy(regularTasks: newList));
   }
 
   void addRegularTask(RegularTask regularTask) {
     List<RegularTask> newList = rldState!.regularTasks! + [regularTask];
-    newList.sort((RegularTask a, RegularTask b) => a.level!.compareTo(b.level!));
+    newList
+        .sort((RegularTask a, RegularTask b) => a.level!.compareTo(b.level!));
     int id = 0;
     newList.forEach((element) {
       element.orderIndex = id++;

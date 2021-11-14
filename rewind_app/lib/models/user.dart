@@ -8,6 +8,8 @@ class UserData {
   final String? displayName;
   final String? email;
   UserData({
-    this.uid, this.displayName, this.email,
+    this.uid,
+    this.displayName,
+    this.email,
   });
 }

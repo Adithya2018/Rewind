@@ -33,6 +33,7 @@ void main() async {
   )
       .forEach((element) {
     print("${element.uri}");
+    print("${element.uri}");
   });
   Hive.init(appDocDirectory.path);
   Hive.registerAdapter(JournalPageAdapter());
@@ -100,11 +101,6 @@ class _RewindAppState extends State<RewindApp> {
       ],
       routes: <String, WidgetBuilder>{
         '/ach': (BuildContext context) => Achievements(),
-        /*'/jou': (BuildContext context) => JournalWrapper(
-              boxNameSuffix:
-                  '', //AppDataCommon.of(context).appData!.userdata!.uid,
-              child: Journal(),
-            ),*/
         '/tdl': (BuildContext context) => TodoListWrapper(
               boxNameSuffix:
                   '', //AppDataCommon.of(context).appData!.userdata!.uid,

@@ -1,89 +1,27 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rewind_app/models/journal_page/journal_page.dart';
+import 'package:rewind_app/controllers/edit_journal_page_ctrl.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
-class EditJournalPage extends StatefulWidget {
-  final JournalPage? journalPage;
-  final bool editMode;
-  EditJournalPage({required this.journalPage, required this.editMode});
-  @override
-  _EditJournalPageState createState() => _EditJournalPageState();
-}
+class EditJournalPage extends GetWidget<EditJournalPageController> {
+  late final TextEditingController titleFieldCtrl;
+  late final TextEditingController contentFieldCtrl;
 
-class _EditJournalPageState extends State<EditJournalPage> {
-  JournalPage? journalPage;
-  TextEditingController? titleCtrl;
-  TextEditingController? descriptionCtrl;
+  final DateAndTimeFormat dtf = DateAndTimeFormat();
 
-  @override
-  void initState() {
-    super.initState();
-    journalPage = JournalPage.fromJournalPage(widget.journalPage!);
-    titleCtrl = TextEditingController(text: journalPage!.title);
-    descriptionCtrl = TextEditingController(text: journalPage!.content);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  DateAndTimeFormat dtf = DateAndTimeFormat();
-
-  @override
-  Widget build(BuildContext context) {
-    Container titleArea = Container(
-      margin: EdgeInsets.only(
-        top: 0.0,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.symmetric(),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(5.0),
-          //bottom: Radius.zero,
-        ),
-      ),
-      child: TextField(
-        controller: titleCtrl,
-        textAlign: TextAlign.left,
-        textInputAction: TextInputAction.next,
-        cursorColor: Colors.blueGrey,
-        style: TextStyle(
-          fontFamily: 'Gloria',
-          fontSize: 21,
-        ),
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(15.0, 0.0, 20.0, 0.0),
-          hintText: "Title",
-          border: InputBorder.none,
-        ),
-      ),
-    );
-
-
-    DateTime now = DateTime.now();
-    int hour = now.hour;
-    int minute = now.minute;
-    Container dateTime = Container(
-      padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
-      alignment: Alignment.centerRight,
-      child: Text(
-        "${dtf.formatTime(TimeOfDay(
-          hour: hour,
-          minute: minute,
-        ))} ${dtf.formatDate(now)}",
-        textAlign: TextAlign.end,
-        style: GoogleFonts.gloriaHallelujah(
-          fontSize: 14,
-        ),
-      ),
-    );
-
-    Container contentArea = Container(
+  Container textField({
+    required BuildContext context,
+    required FocusNode focusNode,
+    required String labelText,
+    required TextEditingController controller,
+    required TextInputType textInputType,
+    required int? maxLines,
+    required bool expands,
+    required String hintText,
+  }) {
+    return Container(
       alignment: Alignment.topCenter,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -94,7 +32,108 @@ class _EditJournalPageState extends State<EditJournalPage> {
       ),
       child: Scrollbar(
         child: TextField(
-          controller: descriptionCtrl,
+          focusNode: focusNode,
+          controller: controller,
+          expands: expands,
+          maxLines: maxLines,
+          minLines: null,
+          keyboardType: textInputType,
+          textAlign: TextAlign.justify,
+          textAlignVertical: TextAlignVertical.top,
+          cursorColor: Colors.blueGrey,
+          style: GoogleFonts.gloriaHallelujah(
+            fontSize: 16,
+            color: Color(0xFF0938BC),
+          ),
+          decoration: InputDecoration(
+            hintText: hintText, // "Write something",
+            //labelText: labelText,
+            contentPadding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 0.0),
+            border: InputBorder.none,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> showErrorMessage(
+      {required BuildContext context, String? title, String? msg}) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.info,
+                color: Colors.red,
+                size: 35.0,
+              ),
+              Text(
+                title ?? "Try again",
+                style: GoogleFonts.gloriaHallelujah(
+                  fontSize: 20,
+                ),
+              ),
+            ],
+          ),
+          content: Container(
+            child: Text(
+              msg!,
+              style: GoogleFonts.gloriaHallelujah(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Continue"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    int hour = now.hour;
+    int minute = now.minute;
+    print("widget build");
+    Container dateTime = Container(
+      padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
+      alignment: Alignment.centerRight,
+      child: Text(
+        "${dtf.formatTime(
+          TimeOfDay(
+            hour: hour,
+            minute: minute,
+          ),
+        )} ${dtf.formatDate(now)}",
+        textAlign: TextAlign.end,
+        style: GoogleFonts.gloriaHallelujah(
+          fontSize: 14,
+        ),
+      ),
+    );
+
+    /*Container contentArea = Container(
+      alignment: Alignment.topCenter,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(5.0),
+          //bottom: Radius.zero,
+        ),
+      ),
+      child: Scrollbar(
+        child: TextField(
+          controller: contentFieldCtrl,
           expands: true,
           maxLines: null,
           minLines: null,
@@ -113,49 +152,7 @@ class _EditJournalPageState extends State<EditJournalPage> {
           ),
         ),
       ),
-    );
-
-    Future<void> showErrorMessage({String? title, String? msg}) async {
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.info, // MaterialCommunityIcons.alert,
-                  color: Colors.red,
-                  size: 35.0,
-                ),
-                Text(
-                  title ?? "Try again",
-                  style: GoogleFonts.gloriaHallelujah(
-                    fontSize: 20,
-                  ),
-                ),
-              ],
-            ),
-            content: Container(
-              child: Text(
-                msg!,
-                style: GoogleFonts.gloriaHallelujah(
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text("Continue"),
-              ),
-            ],
-          );
-        },
-      );
-    }
+    );*/
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -177,22 +174,26 @@ class _EditJournalPageState extends State<EditJournalPage> {
             ),
           ),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                journalPage!.fav! ? Icons.favorite : Icons.favorite_outline,
-                color: Colors.pinkAccent,
-                size: 30.0,
+            Obx(
+              () => IconButton(
+                icon: Icon(
+                  controller.journalPage.value!.fav!
+                      ? Icons.favorite
+                      : Icons.favorite_outline,
+                  color: Colors.pinkAccent,
+                  size: 30.0,
+                ),
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                tooltip:
+                    '${controller.journalPage.value!.fav! ? "Remove from" : "Add to"} favorites',
+                onPressed: () {
+                  // TODO: change set favorite on tap
+                  controller.journalPage.value!.fav =
+                      !controller.journalPage.value!.fav!;
+                  print("");
+                },
               ),
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              tooltip:
-                  '${journalPage!.fav! ? "Remove from" : "Add to"} favorites',
-              onPressed: () {
-                setState(() {
-                  journalPage!.fav = !journalPage!.fav!;
-                });
-                print("more options");
-              },
             ),
             IconButton(
               icon: Icon(
@@ -210,36 +211,47 @@ class _EditJournalPageState extends State<EditJournalPage> {
           ],
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          dateTime,
-          titleArea,
-          Expanded(
-            child: contentArea,
-          ),
-        ],
+      body: GetBuilder<EditJournalPageController>(
+        initState: (state) {
+          titleFieldCtrl = TextEditingController(
+            text: controller.journalPage.value!.title,
+          );
+          print('title: ${controller.journalPage.value!.title}');
+          contentFieldCtrl = TextEditingController(
+            text: controller.journalPage.value!.content,
+          );
+          print('content: ${controller.journalPage.value!.content}');
+        },
+        builder: (controller) {
+          return Column(
+            children: <Widget>[
+              dateTime,
+              textField(
+                context: context,
+                focusNode: FocusNode(),
+                labelText: 'Title',
+                controller: titleFieldCtrl,
+                textInputType: TextInputType.text,
+                maxLines: 1,
+                expands: false,
+                hintText: 'Title',
+              ),
+              Expanded(
+                child: textField(
+                  context: context,
+                  focusNode: FocusNode(),
+                  labelText: 'Write something',
+                  controller: contentFieldCtrl,
+                  textInputType: TextInputType.multiline,
+                  maxLines: null,
+                  hintText: 'Write something',
+                  expands: true,
+                ),
+              ),
+            ],
+          );
+        },
       ),
-      /*persistentFooterButtons: [
-        IconButton(
-          alignment: Alignment.centerLeft,
-          onPressed: () {},
-          icon: Icon(
-            Icons.arrow_back,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add,
-          ),
-        ),
-      ],*/
       bottomNavigationBar: Container(
         height: 70.0,
         decoration: new BoxDecoration(
@@ -279,16 +291,19 @@ class _EditJournalPageState extends State<EditJournalPage> {
                     ),
                     onPressed: () async {
                       print("Save");
-                      if (titleCtrl!.text.isEmpty) {
+                      if (titleFieldCtrl.text.isEmpty) {
                         await showErrorMessage(
+                          context: context,
                           msg: "Title cannot be empty",
                         );
                         return;
                       }
-                      journalPage!.title = titleCtrl!.text;
-                      journalPage!.content = descriptionCtrl!.text;
-                      journalPage!.created = journalPage!.createdDateTime;
-                      Navigator.pop(context, journalPage);
+                      controller.journalPage.value!.title = titleFieldCtrl.text;
+                      controller.journalPage.value!.content =
+                          contentFieldCtrl.text;
+                      Get.back(
+                        result: controller.journalPage.value,
+                      );
                     },
                   ),
                 ),

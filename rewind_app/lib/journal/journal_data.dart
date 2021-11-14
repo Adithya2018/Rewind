@@ -2,12 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
 
 class JournalData {
-  List<JournalPage?>? pages;
+  late List<JournalPage?> pages;
   bool? ascendingOrder = true;
   int? sortByOption;
   DeepCollectionEquality deepEq = DeepCollectionEquality();
   List<Function> sortByFunction = [
-    (JournalPage a, JournalPage b) => a.created!.compareTo(b.created!),
+    (JournalPage a, JournalPage b) => a.created.compareTo(b.created),
     (JournalPage a, JournalPage b) => a.title!.compareTo(b.title!),
   ];
   Set<int>? selected;
@@ -15,7 +15,7 @@ class JournalData {
       (ascendingOrder! ? 1 : -1) * sortByFunction[sortByOption!](a, b) as int;
 
   JournalData({
-    List<JournalPage?>? pages,
+    required List<JournalPage?> pages,
     Set<int>? selected,
     int? sortByOption,
     bool? ascendingOrder,

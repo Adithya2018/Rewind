@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:hive/hive.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
+import 'package:rewind_app/controllers/auth_controller.dart';
 import 'package:rewind_app/journal/journal_data.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
 import 'package:rewind_app/models/user.dart';
@@ -33,7 +36,7 @@ class _JournalWrapperState extends State<JournalWrapper> {
   }
 
   void setBoxName() {
-    String boxNameSuffix = Provider.of<UserData>(context).uid!;
+    String boxNameSuffix = Get.find<AuthController>().user!.uid;//Provider.of<UserData>(context).uid!;
     journalBoxName = boxNameSuffix + journalBoxName;
   }
 
@@ -59,7 +62,7 @@ class _JournalWrapperState extends State<JournalWrapper> {
       sortByOption: 0,
       ascendingOrder: true,
     );
-    jnlState!.pages!.forEach((element) {
+    jnlState!.pages.forEach((element) {
       print("regular task: ${element.toString()}");
     });
     /*print("goals=${gldState.tasks.length}");

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:rewind_app/app_data/app_data_state.dart';
+import 'package:rewind_app/controllers/edit_journal_page_ctrl.dart';
+import 'package:rewind_app/controllers/journal_ctrl.dart';
 import 'package:rewind_app/journal/edit_journal_page.dart';
-import 'package:rewind_app/dump/journal_state.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
 
 class Home extends StatefulWidget {
@@ -72,7 +73,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   Column getCurrentJournalEntry() {
-    String? boxNameSuffix = '';//AppDataCommon.of(context).appData!.userdata!.uid;
+    String? boxNameSuffix =
+        ''; //AppDataCommon.of(context).appData!.userdata!.uid;
     List<JournalPage> pages =
         List<JournalPage>.from(Hive.box('${boxNameSuffix}journal').values);
     JournalPage temp;
@@ -81,8 +83,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     } else {
       temp = pages.first;
       pages.forEach((element) {
-        if (element.created!.millisecondsSinceEpoch <
-            temp.created!.millisecondsSinceEpoch) {
+        if (element.created.millisecondsSinceEpoch <
+            temp.created.millisecondsSinceEpoch) {
           temp = element;
         }
       });
@@ -325,8 +327,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               children: [
                 Text(
                   "Level $playerLevel",
-                  style: GoogleFonts.openSans(
-                      color: Colors.white, fontSize: 13),
+                  style:
+                      GoogleFonts.openSans(color: Colors.white, fontSize: 13),
                 ),
                 xp,
                 SizedBox(
@@ -433,7 +435,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       return result;
     }
 
-    Widget emptyContainer = Container(
+    /*Widget emptyContainer = Container(
       //margin: EdgeInsets.fromLTRB(25.0, 40.0, 25.0, 0.0),
       constraints: BoxConstraints(
         minHeight: 40.0,
@@ -455,7 +457,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
         ],
       ),
-    );
+    );*/
 
     Widget streakGraph = Container(
       margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
@@ -546,7 +548,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       ),
     );
 
-    Container notification = Container(
+    /*Container notification = Container(
       margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 0.0),
       height: 100.0,
       width: double.maxFinite,
@@ -571,7 +573,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
         ],
       ),
-    );
+    );*/
 
     Container journalOverview = Container(
       margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
@@ -624,8 +626,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onPressed: () {
-                    print("Journal");
-                    //Get.toNamed('/jou');
+                    print('Journal');
                     Get.toNamed('/jou');
                   },
                 ),
@@ -645,21 +646,20 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 child: getCurrentJournalEntry(),
                 onTap: () async {
                   print("Journal");
-                  String? boxNameSuffix = '';//AppDataCommon.of(context).appData!.userdata!.uid;
+                  String? boxNameSuffix = '';
+                  //AppDataCommon.of(context).appData!.userdata!.uid;
                   List<JournalPage> pages = List<JournalPage>.from(
                       Hive.box('${boxNameSuffix}journal').values);
                   if (pages.isEmpty) {
-                    JournalPage? temp = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditJournalPage(
-                          journalPage: JournalPage(),
-                          editMode: false,
-                        ),
-                      ),
+                    var c = EditJournalPageController();
+                    c.journalPage.value = JournalPage();
+                    Get.put(c);
+                    JournalPage? temp = await Get.to(
+                      EditJournalPage(),
                     );
+                    Get.delete<EditJournalPageController>();
                     if (temp != null) {
-                      saveToBox(temp.created!, temp, boxNameSuffix + "journal");
+                      saveToBox(temp.created, temp, boxNameSuffix + "journal");
                       print("Journal page created");
                     } else {
                       print("No journal page created");
@@ -667,25 +667,25 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   } else {
                     JournalPage? firstPage = pages.first;
                     pages.forEach((element) {
-                      if (element.created!.millisecondsSinceEpoch <
-                          firstPage!.created!.millisecondsSinceEpoch) {
+                      if (element.created.millisecondsSinceEpoch <
+                          firstPage!.created.millisecondsSinceEpoch) {
                         firstPage = element;
                       }
                     });
-                    firstPage = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditJournalPage(
-                          journalPage: firstPage,
-                          editMode: false,
-                        ),
-                      ),
+                    var c = EditJournalPageController();
+                    c.journalPage.value = firstPage;
+                    Get.put(c);
+                    firstPage = await Get.to(
+                      EditJournalPage(),
                     );
+                    Get.delete<EditJournalPageController>();
                     if (firstPage != null) {
-                      JournalCommon.of(context).addPage(firstPage);
-                      print("Regular task created");
+                      Get.put(JournalController());
+                      Get.find<JournalController>().addPage(firstPage!);
+                      Get.delete<JournalController>();
+                      print("new page created created");
                     } else {
-                      print("No regular task created");
+                      print("No page created");
                     }
                   }
                 },
@@ -900,13 +900,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   Text(
-                    '',//"${AppDataCommon.of(context).appData!.userName!.isEmpty ? "<no username>" : AppDataCommon.of(context).appData!.userName}",
+                    '', //"${AppDataCommon.of(context).appData!.userName!.isEmpty ? "<no username>" : AppDataCommon.of(context).appData!.userName}",
                     style: GoogleFonts.openSans(
                       fontSize: 20,
                     ),
                   ),
                   Text(
-                    '',//"${AppDataCommon.of(context).appData!.userdata!.email}",
+                    '', //"${AppDataCommon.of(context).appData!.userdata!.email}",
                     style: GoogleFonts.openSans(
                       fontSize: 15,
                     ),

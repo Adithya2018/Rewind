@@ -47,48 +47,6 @@ class _GoalListState extends State<GoalList>
   Container goalsListTile({
     required int index,
   }) {
-    /*Container taskDescription = Container(
-      width: double.maxFinite,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: Colors.grey,
-          width: 1.0,
-        ),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(0.0),
-          //bottom: Radius.zero,
-        ),
-      ),
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          child: Container(
-            alignment: Alignment.topCenter,
-            decoration: BoxDecoration(
-              color: Color(0xFFF3EFE4),
-            ),
-            child: Scrollbar(
-              child: TextField(
-                textCapitalization: TextCapitalization.sentences,
-                maxLines: 15,
-                minLines: 3,
-                keyboardType: TextInputType.multiline,
-                textAlign: TextAlign.justify,
-                style: TextStyle(
-                  fontFamily: 'Gloria',
-                  fontSize: 14,
-                  color: Color(0xFF0938BC),
-                ),
-                decoration: InputDecoration(
-                  hintText: "Write something",
-                  contentPadding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );*/
     final list = TodoListCommon.of(context).gldState!.tasks!;
     final created = list[index].created!;
     final deadline = list[index].deadline!;

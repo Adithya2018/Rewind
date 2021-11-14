@@ -1,15 +1,15 @@
+import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rewind_app/controllers/edit_journal_page_ctrl.dart';
 import 'package:rewind_app/controllers/journal_ctrl.dart';
 import 'package:rewind_app/models/journal_page/journal_page.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
-import 'package:rewind_app/todo_list/todo_list_state/todo_list_state.dart';
 import 'edit_journal_page.dart';
 
 class Journal extends GetWidget<JournalController> {
-  List<Container> listTiles = [];
-  List<Container> test = [];
+  RxList<Container> listTiles = RxList();
   bool? ascendingOrder = true;
   int? sortByOption = 0;
   TaskLevel taskLevel = TaskLevel();
@@ -37,8 +37,8 @@ class Journal extends GetWidget<JournalController> {
   Container listTile({
     required int index,
   }) {
-    final list = controller.journalData!.pages!;
-    DateTime created = list[index]!.created!;
+    final list = controller.journalData.value!.pages;
+    DateTime created = list[index]!.created;
     TimeOfDay timeOfDay = TimeOfDay(
       hour: created.hour,
       minute: created.minute,
@@ -65,7 +65,9 @@ class Journal extends GetWidget<JournalController> {
       ),
     );
     Container titleArea = Container(
-      padding: EdgeInsets.only(left: 10.0),
+      padding: EdgeInsets.only(
+        left: 10.0,
+      ),
       width: double.maxFinite,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -119,27 +121,25 @@ class Journal extends GetWidget<JournalController> {
           timeContainer,
           GestureDetector(
             onTap: () async {
-              print("edit journal${dtf.formatTime(timeOfDay)}");
-              JournalPage? temp = await Get.to(
-                EditJournalPage(
-                  journalPage: list[index],
-                  editMode: true,
-                ),
+              Get.put(EditJournalPageController());
+              var page = JournalPage.fromJournalPage(
+                journalPage: list[index]!,
               );
-              /*JournalPage? temp = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditJournalPage(
-                    journalPage: list[index],
-                    editMode: true,
-                  ),
-                ),
-              );*/
+              Get.find<EditJournalPageController>().journalPage(page);
+              JournalPage? temp = await Get.to(
+                () => EditJournalPage(),
+              );
+              Get.delete<EditJournalPageController>();
               if (temp != null) {
-                /*setState(() {
-                  list[index] = JournalPage.fromJournalPage(temp);
-                });*/
-                list[index] = JournalPage.fromJournalPage(temp);
+                list[index] = JournalPage.fromJournalPage(
+                  journalPage: temp,
+                );
+                controller.saveToBox(
+                  list[index]!.created,
+                  list[index],
+                  JournalController.journalBoxName,
+                );
+                updatePages();
               } else {
                 print("edit journal page cancelled");
               }
@@ -157,9 +157,9 @@ class Journal extends GetWidget<JournalController> {
     return framedContainer;
   }
 
-  void updateGoals() {
-    final list = controller.journalData!.pages!;
-    listTiles = List.generate(
+  void updatePages() {
+    final list = controller.journalData.value!.pages;
+    listTiles.value = List<Container>.generate(
       list.length,
       (index) => listTile(
         index: index,
@@ -171,21 +171,11 @@ class Journal extends GetWidget<JournalController> {
       );
   }
 
-  /*@override
-  void initState() {
-    super.initState();
-  }*/
+  DateAndTimeFormat dtf = DateAndTimeFormat();
 
-  /*@override
-  void dispose() {
-    super.dispose();
-    //Hive.deleteFromDisk();
-  }*/
-
-  DateAndTimeFormat dtf = new DateAndTimeFormat();
   @override
   Widget build(BuildContext context) {
-    updateGoals();
+    updatePages();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -219,13 +209,15 @@ class Journal extends GetWidget<JournalController> {
         ),
       ),
       body: Scrollbar(
-        child: ListView(
-          children: listTiles,
-        ),
+        child: Obx(() {
+          return ListView(
+            children: listTiles,
+          );
+        }),
       ),
       bottomNavigationBar: Container(
         height: 70.0,
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.grey[100],
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(5.0),
@@ -250,25 +242,22 @@ class Journal extends GetWidget<JournalController> {
                     highlightColor: Colors.transparent,
                     onPressed: () async {
                       print("Add page");
-                      JournalPage? temp = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditJournalPage(
-                            journalPage: new JournalPage(),
-                            editMode: false,
-                          ),
-                        ),
-                      );
+                      Get.put(EditJournalPageController());
+                      var c = Get.find<EditJournalPageController>();
+                      c.journalPage.value = JournalPage();
+                      JournalPage? temp = await Get.to(() => EditJournalPage());
                       if (temp != null) {
                         controller.addPage(temp);
                         print("Regular task created");
                       } else {
                         print("No regular task created");
                       }
+                      Get.delete<EditJournalPageController>();
+                      updatePages();
                     },
                     onLongPress: () {},
                     child: Icon(
-                      Icons.add_circle, // MaterialCommunityIcons.plus_circle,
+                      Icons.add_circle,
                       color: Colors.lightBlueAccent,
                       size: 55,
                     ),
@@ -311,7 +300,7 @@ class Journal extends GetWidget<JournalController> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         ListTile(
-                                          title: const Text('Date created'),
+                                          title: Text('Date created'),
                                           leading: Radio<int>(
                                             value: 0,
                                             groupValue: temp,
@@ -323,7 +312,7 @@ class Journal extends GetWidget<JournalController> {
                                           ),
                                         ),
                                         ListTile(
-                                          title: const Text('Deadline'),
+                                          title: Text('Deadline'),
                                           leading: Radio<int>(
                                             value: 1,
                                             groupValue: temp,
@@ -335,7 +324,7 @@ class Journal extends GetWidget<JournalController> {
                                           ),
                                         ),
                                         ListTile(
-                                          title: const Text('Level'),
+                                          title: Text('Level'),
                                           leading: Radio<int>(
                                             value: 2,
                                             groupValue: temp,
@@ -361,15 +350,15 @@ class Journal extends GetWidget<JournalController> {
                                 child: Text("Apply"),
                               ),
                               TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
+                                onPressed: () => Get.back(),
                                 child: Text("Cancel"),
                               ),
                             ],
                           );
                         },
                       );
-                      TodoListCommon.of(context).sortTasksBy(sortByOption);
-                      updateGoals();
+                      //TodoListCommon.of(context).sortTasksBy(sortByOption);
+                      updatePages();
                       print("sorted");
                     },
                     icon: Icon(
@@ -386,8 +375,8 @@ class Journal extends GetWidget<JournalController> {
                   child: IconButton(
                     icon: Icon(
                       ascendingOrder!
-                          ? Icons
-                              .add_circle // MaterialCommunityIcons.alpha_a_circle
+                          ? CommunityMaterialIcons.alpha_a_circle
+                          // MaterialCommunityIcons.alpha_a_circle
                           : Icons
                               .add_circle, // MaterialCommunityIcons.alpha_d_circle,
                       color: Colors.blue[800],
@@ -397,13 +386,10 @@ class Journal extends GetWidget<JournalController> {
                       print("sort in ascending or descending");
                       controller.switchListOrder();
                       print(
-                          "Order: ${controller.journalData!.ascendingOrder! ? "asc" : "desc"}ending");
-                      //controller.sortTasks();
-                      /*setState(() {
-                        ascendingOrder = controller.jnlState!.ascendingOrder;
-                      });*/
-                      ascendingOrder = controller.journalData!.ascendingOrder;
-                      updateGoals();
+                          "Order: ${controller.journalData.value!.ascendingOrder! ? "asc" : "desc"}ending");
+                      ascendingOrder =
+                          controller.journalData.value!.ascendingOrder;
+                      updatePages();
                     },
                     tooltip: "Order: ${ascendingOrder! ? "asc" : "desc"}ending",
                   ),
