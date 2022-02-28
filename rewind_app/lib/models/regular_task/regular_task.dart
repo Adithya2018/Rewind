@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:rewind_app/models/interval/interval.dart';
-import '../interval/interval.dart';
+
 part 'regular_task.g.dart';
 
 @HiveType(typeId: 1)
@@ -51,10 +51,11 @@ class RegularTask extends HiveObject {
     List<String> result = [];
     result.add("created: ${created.toString()}");
     result.add("title: $label");
-    result.add("description: ${description!.isEmpty?"no description":description}");
+    result.add(
+        "description: ${description!.isEmpty ? "no description" : description}");
     result.add("weeklyRepeat: ${weeklyRepeat.toString()}");
     result.add("level: $level");
-    result.add("completionStatus: ${completionStatus!?"":"not"} completed");
+    result.add("completionStatus: ${completionStatus! ? "" : "not"} completed");
     String s = "";
     result.forEach((element) {
       s += "$element\n";

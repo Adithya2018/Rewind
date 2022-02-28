@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rewind_app/controllers/todo_list_ctrl.dart';
 import 'package:rewind_app/models/regular_task/regular_task.dart';
 import 'package:rewind_app/todo_list/edit_regular_task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
-import './todo_list_state/todo_list_state.dart';
 
 class RoutineList extends StatefulWidget {
   @override
   _RoutineListState createState() => _RoutineListState();
 }
 
-class _RoutineListState extends State<RoutineList>
-    with AutomaticKeepAliveClientMixin<RoutineList> {
+class _RoutineListState extends State<
+    RoutineList> /*with AutomaticKeepAliveClientMixin<RoutineList>*/ {
   List<Container> listTiles = [];
   bool ascendingOrder = true;
   int sortByOption = 0;
+
   Function currentSortByFunction() {
     return (RegularTask a, RegularTask b) =>
-    (ascendingOrder ? 1 : -1) * sortByFunction[sortByOption](a, b) as int;
+        (ascendingOrder ? 1 : -1) * sortByFunction[sortByOption](a, b) as int;
   }
+
   List<Function> sortByFunction = [
     //(RegularTask a, RegularTask b) => a.deadline.compareTo(b.deadline),
     (RegularTask a, RegularTask b) => a.level!.compareTo(b.level!),
   ];
 
-  DateAndTimeFormat dtf = new DateAndTimeFormat();
+  DateTimeFormat dtf = DateTimeFormat();
   TaskLevel taskLevel = TaskLevel();
 
   bool isSameDate(DateTime d1, DateTime d2) =>
@@ -50,8 +53,9 @@ class _RoutineListState extends State<RoutineList>
   Container listTile({
     required int index,
   }) {
-    final provider = TodoListCommon.of(context);
-    final list = provider.rldState!.regularTasks!;
+    final provider =
+        Get.find<TodoListController>(); //TodoListCommon.of(context);
+    final list = provider.rldState.regularTasks!;
     Container mainContainer = Container(
       padding: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 10.0),
       decoration: BoxDecoration(
@@ -107,15 +111,16 @@ class _RoutineListState extends State<RoutineList>
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditRegularTask(
-                              taskCurrent: provider.rldState!.regularTasks![index],
+                              taskCurrent:
+                                  provider.rldState.regularTasks![index],
                               editMode: true,
                             ),
                           ),
                         );
                         if (temp != null) {
                           setState(() {
-                            provider.rldState!.regularTasks![index] =
-                            RegularTask.fromRegularTask(temp);
+                            provider.rldState.regularTasks![index] =
+                                RegularTask.fromRegularTask(temp);
                           });
                         }
                         //provider.sortRegularTasks(currentSortByFunction());
@@ -275,7 +280,8 @@ class _RoutineListState extends State<RoutineList>
     DateTime test = DateTime(2021);
     print(test);
     print(now);
-    /**/if (list[index].weekly!) {
+    /**/
+    if (list[index].weekly!) {
       bool thisWeekDay = false;
       bool nextWeekDay = false;
       int weekDay = 1;
@@ -381,17 +387,15 @@ class _RoutineListState extends State<RoutineList>
   }
 
   int count = 0;
+
   @override
   void initState() {
     super.initState();
   }
 
-  @override
-  bool get wantKeepAlive => true;
-
   void updateListTiles() {
-    final list = TodoListCommon.of(context).rldState!.regularTasks!;
-    listTiles = List.generate(
+    final list = Get.find<TodoListController>().rldState.regularTasks!;
+    listTiles = List<Container>.generate(
       list.length,
       (index) => listTile(
         index: index,
@@ -401,7 +405,7 @@ class _RoutineListState extends State<RoutineList>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    // super.build(context);
     updateListTiles();
     return Scrollbar(
       child: ListView(

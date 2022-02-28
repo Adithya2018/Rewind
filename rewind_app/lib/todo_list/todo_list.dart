@@ -1,13 +1,16 @@
+import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rewind_app/controllers/todo_list_ctrl.dart';
 import '../models/regular_task/regular_task.dart';
 import '../models/task/task.dart';
 import 'edit_regular_task.dart';
-import 'goal_list.dart';
+import 'goals_list.dart';
 import 'routine_list.dart';
 import 'edit_task.dart';
 import 'tdl_common.dart';
-import 'todo_list_state/todo_list_state.dart';
+// import 'todo_list_state/todo_list_state.dart';
 
 class TodoList extends StatefulWidget {
   @override
@@ -44,49 +47,9 @@ class _TodoListState extends State<TodoList>
   Container goalsListTile({
     required int index,
   }) {
-    /*Container taskDescription = Container(
-      width: double.maxFinite,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: Colors.grey,
-          width: 1.0,
-        ),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(0.0),
-          //bottom: Radius.zero,
-        ),
-      ),
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          child: Container(
-            alignment: Alignment.topCenter,
-            decoration: BoxDecoration(
-              color: Color(0xFFF3EFE4),
-            ),
-            child: Scrollbar(
-              child: TextField(
-                textCapitalization: TextCapitalization.sentences,
-                maxLines: 15,
-                minLines: 3,
-                keyboardType: TextInputType.multiline,
-                textAlign: TextAlign.justify,
-                style: TextStyle(
-                  fontFamily: 'Gloria',
-                  fontSize: 14,
-                  color: Color(0xFF0938BC),
-                ),
-                decoration: InputDecoration(
-                  hintText: "Write something",
-                  contentPadding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );*/
-    final list = TodoListCommon.of(context).gldState!.tasks!;
+    print('index $index');
+    final list = Get.find<TodoListController>().gldState.tasks!;
+    print('list length ${list.length}');
     final created = list[index].created!;
     final deadline = list[index].deadline!;
     String createdTime = dtf.formatTime(
@@ -168,10 +131,10 @@ class _TodoListState extends State<TodoList>
                         );
                         if (temp != null) {
                           setState(() {
-                            list[index] = new Task.fromTask(temp);
+                            list[index] = Task.fromTask(temp);
                           });
                         }
-                        TodoListCommon.of(context).sortTasks();
+                        //TodoListCommon.of(context).sortTasks();
                         updateGoals();
                       },
                       onLongPress: () {},
@@ -236,7 +199,7 @@ class _TodoListState extends State<TodoList>
             width: 5.0,
           ),
           Icon(
-            Icons.info, // MaterialCommunityIcons.clock_start,
+            CommunityMaterialIcons.clock_start,
             color: Colors.white,
             size: 20,
           ),
@@ -362,7 +325,9 @@ class _TodoListState extends State<TodoList>
   }
 
   void updateGoals() {
-    final list = TodoListCommon.of(context).gldState!.tasks!;
+    final list = Get.find<TodoListController>()
+        .gldState
+        .tasks!; //TodoListCommon.of(context).gldState!.tasks!;
     listTiles = List.generate(
       list.length,
       (index) => goalsListTile(
@@ -382,14 +347,14 @@ class _TodoListState extends State<TodoList>
     );
     tabCtrl!.addListener(() {
       setState(() {
-        final provider = TodoListCommon.of(context);
+        final provider = Get.find<TodoListController>();
         switch (tabCtrl!.index) {
           case 0:
-            ascendingOrder = provider.rldState!.ascendingOrder;
+            ascendingOrder = provider.rldState.ascendingOrder;
             break;
           case 1:
-            sortByOption = provider.gldState!.sortByOption;
-            ascendingOrder = provider.gldState!.ascendingOrder;
+            sortByOption = provider.gldState.sortByOption;
+            ascendingOrder = provider.gldState.ascendingOrder;
             break;
         }
       });
@@ -402,7 +367,8 @@ class _TodoListState extends State<TodoList>
     tabCtrl!.dispose();
   }
 
-  DateAndTimeFormat dtf = new DateAndTimeFormat();
+  DateTimeFormat dtf = DateTimeFormat();
+
   @override
   Widget build(BuildContext context) {
     updateGoals();
@@ -433,10 +399,7 @@ class _TodoListState extends State<TodoList>
                 size: 30.0,
               ),
               tooltip: 'Refresh',
-              onPressed: () {
-                /*Navigator.of(context).popUntil((route) => false);
-                Navigator.of(context).pushNamed('/');*/
-              },
+              onPressed: () {},
             ),
           ],
           bottom: TabBar(
@@ -495,17 +458,11 @@ class _TodoListState extends State<TodoList>
         children: [
           RoutineList(),
           GoalList(),
-          /*Scrollbar(
-            child: ListView(
-              shrinkWrap: true,
-              children: listTiles,
-            ),
-          ),*/
         ],
       ),
       bottomNavigationBar: Container(
         height: 70.0,
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.grey[100],
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(5.0),
@@ -538,13 +495,15 @@ class _TodoListState extends State<TodoList>
                               context,
                               MaterialPageRoute(
                                 builder: (context) => EditRegularTask(
-                                  taskCurrent: new RegularTask(),
+                                  taskCurrent: RegularTask(),
                                   editMode: false,
                                 ),
                               ),
                             );
                             if (temp != null) {
-                              TodoListCommon.of(context).addRegularTask(temp);
+                              Get.find<TodoListController>().addRegularTask(
+                                temp,
+                              );
                               print("Regular task created");
                             } else {
                               print("No regular task created");
@@ -564,7 +523,8 @@ class _TodoListState extends State<TodoList>
                               ),
                             );
                             if (temp != null) {
-                              TodoListCommon.of(context).addTask(
+                              /*TodoListCommon.of(context)*/
+                              Get.find<TodoListController>().addTask(
                                 temp,
                               );
                               updateGoals();
@@ -610,66 +570,63 @@ class _TodoListState extends State<TodoList>
                                       Text("Sort by"),
                                       Spacer(),
                                       Icon(
-                                        Icons.info, // MaterialCommunityIcons.sort,
+                                        Icons.info,
+                                        // MaterialCommunityIcons.sort,
                                         color: Colors.black,
                                       ),
                                     ],
                                   ),
-                                  content: StatefulBuilder(
-                                    builder: (BuildContext context,
-                                        StateSetter setState) {
-                                      return Scrollbar(
-                                        child: SingleChildScrollView(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              ListTile(
-                                                title:
-                                                    const Text('Date created'),
-                                                leading: Radio<int>(
-                                                  value: 0,
-                                                  groupValue: temp,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      temp = value;
-                                                    });
-                                                  },
-                                                ),
+                                  content: Obx(() {
+                                    return Scrollbar(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            ListTile(
+                                              title: const Text('Date created'),
+                                              leading: Radio<int>(
+                                                value: 0,
+                                                groupValue: temp,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    temp = value;
+                                                  });
+                                                },
                                               ),
-                                              ListTile(
-                                                title: const Text('Deadline'),
-                                                leading: Radio<int>(
-                                                  value: 1,
-                                                  groupValue: temp,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      temp = value;
-                                                    });
-                                                  },
-                                                ),
+                                            ),
+                                            ListTile(
+                                              title: const Text('Deadline'),
+                                              leading: Radio<int>(
+                                                value: 1,
+                                                groupValue: temp,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    temp = value;
+                                                  });
+                                                },
                                               ),
-                                              ListTile(
-                                                title: const Text('Level'),
-                                                leading: Radio<int>(
-                                                  value: 2,
-                                                  groupValue: temp,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      temp = value;
-                                                    });
-                                                  },
-                                                ),
+                                            ),
+                                            ListTile(
+                                              title: const Text('Level'),
+                                              leading: Radio<int>(
+                                                value: 2,
+                                                groupValue: temp,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    temp = value;
+                                                  });
+                                                },
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                      );
-                                    },
-                                  ),
+                                      ),
+                                    );
+                                  }),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -687,10 +644,10 @@ class _TodoListState extends State<TodoList>
                                 );
                               },
                             );
-                            TodoListCommon.of(context)
-                                .sortTasksBy(sortByOption);
+                            Get.find<TodoListController>().sortTasksBy(
+                              sortByOption,
+                            );
                             updateGoals();
-                            print("sorted");
                           }
                           break;
                       }
@@ -709,8 +666,9 @@ class _TodoListState extends State<TodoList>
                   child: IconButton(
                     icon: Icon(
                       ascendingOrder!
-                          ? Icons.info// MaterialCommunityIcons.alpha_a_circle
-                          : Icons.info, // MaterialCommunityIcons.alpha_d_circle,
+                          ? Icons.info // MaterialCommunityIcons.alpha_a_circle
+                          : Icons
+                              .info, // MaterialCommunityIcons.alpha_d_circle,
                       color: Colors.blue[800],
                       size: 35,
                     ),
@@ -726,13 +684,17 @@ class _TodoListState extends State<TodoList>
                           break;
                         case 1:
                           {
-                            TodoListCommon.of(context).switchTaskListOrder();
+                            //TodoListCommon.of(context)
+                            Get.find<TodoListController>()
+                                .switchTaskListOrder();
+                            //TodoListCommon.of(context)
                             print(
-                                "Order: ${TodoListCommon.of(context).gldState!.ascendingOrder! ? "asc" : "desc"}ending");
-                            TodoListCommon.of(context).sortTasks();
+                                "Order: ${Get.find<TodoListController>().gldState.ascendingOrder! ? "asc" : "desc"}ending");
+                            Get.find<TodoListController>().sortTasks();
                             setState(() {
-                              ascendingOrder = TodoListCommon.of(context)
-                                  .gldState!
+                              ascendingOrder = Get.find<
+                                      TodoListController>() //TodoListCommon.of(context)
+                                  .gldState
                                   .ascendingOrder;
                             });
                             updateGoals();

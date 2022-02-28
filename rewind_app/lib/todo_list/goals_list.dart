@@ -1,9 +1,11 @@
+import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rewind_app/controllers/todo_list_ctrl.dart';
 import 'package:rewind_app/models/regular_task/regular_task.dart';
 import 'package:rewind_app/models/task/task.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
-import './todo_list_state/todo_list_state.dart';
 import 'edit_task.dart';
 
 class GoalList extends StatefulWidget {
@@ -11,17 +13,17 @@ class GoalList extends StatefulWidget {
   _GoalListState createState() => _GoalListState();
 }
 
-class _GoalListState extends State<GoalList>
-    with AutomaticKeepAliveClientMixin<GoalList> {
+class _GoalListState
+    extends State<GoalList> /*with AutomaticKeepAliveClientMixin<GoalList>*/ {
   List<Container> listTiles = [];
   bool ascendingOrder = true;
   int sortByOption = 0;
   List<Function> sortByFunction = [
-    //(RegularTask a, RegularTask b) => a.deadline.compareTo(b.deadline),
+    // (RegularTask a, RegularTask b) => a.deadline.compareTo(b.deadline),
     (RegularTask a, RegularTask b) => a.level!.compareTo(b.level!),
   ];
 
-  DateAndTimeFormat dtf = new DateAndTimeFormat();
+  DateTimeFormat dtf = DateTimeFormat();
   TaskLevel taskLevel = TaskLevel();
 
   bool isSameDate(DateTime d1, DateTime d2) =>
@@ -47,7 +49,7 @@ class _GoalListState extends State<GoalList>
   Container goalsListTile({
     required int index,
   }) {
-    final list = TodoListCommon.of(context).gldState!.tasks!;
+    final list = Get.find<TodoListController>().gldState.tasks!;
     final created = list[index].created!;
     final deadline = list[index].deadline!;
     String createdTime = dtf.formatTime(
@@ -104,7 +106,7 @@ class _GoalListState extends State<GoalList>
                         setState(() {
                           //final provider = TodoListCommon.of(context);
                           list[index].completionStatus =
-                          !list[index].completionStatus!;
+                              !list[index].completionStatus!;
                         });
                       },
                     );
@@ -129,14 +131,11 @@ class _GoalListState extends State<GoalList>
                           ),
                         );
                         if (temp != null) {
+                          updateListTiles();
                           setState(() {
-                            list[index] = new Task.fromTask(temp);
+                            list[index] = Task.fromTask(temp);
                           });
                         }
-                        /*TodoListCommon.of(context).sortTasks(
-                          currentSortByFunction(),
-                        );*/
-                        updateListTiles();
                       },
                       onLongPress: () {},
                       child: Text(
@@ -200,7 +199,7 @@ class _GoalListState extends State<GoalList>
             width: 5.0,
           ),
           Icon(
-            Icons.info, // MaterialCommunityIcons.clock_start,
+            CommunityMaterialIcons.clock_start,
             color: Colors.white,
             size: 20,
           ),
@@ -250,7 +249,7 @@ class _GoalListState extends State<GoalList>
             width: 5.0,
           ),
           Icon(
-            Icons.info, // MaterialCommunityIcons.flag_checkered,
+            CommunityMaterialIcons.flag_checkered,
             color: Colors.white,
             size: 20,
           ),
@@ -325,18 +324,19 @@ class _GoalListState extends State<GoalList>
     return framedContainer;
   }
 
-  int count = 0;
+  // int count = 0;
   @override
   void initState() {
     super.initState();
   }
 
-  @override
-  bool get wantKeepAlive => true;
+  /*@override
+  bool get wantKeepAlive => true;*/
 
   void updateListTiles() {
-    final list = TodoListCommon.of(context).gldState!.tasks!;
-    listTiles = List.generate(
+    // final list = TodoListCommon.of(context).gldState!.tasks!;
+    final list = Get.find<TodoListController>().gldState.tasks!;
+    listTiles = List<Container>.generate(
       list.length,
       (index) => goalsListTile(
         index: index,
@@ -346,7 +346,7 @@ class _GoalListState extends State<GoalList>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    // super.build(context);
     updateListTiles();
     return Scrollbar(
       child: ListView(

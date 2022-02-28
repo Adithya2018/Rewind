@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rewind_app/models/interval/interval.dart';
 import 'package:rewind_app/models/regular_task/regular_task.dart';
@@ -8,7 +9,9 @@ import 'package:rewind_app/todo_list/tdl_common.dart';
 class EditRegularTask extends StatefulWidget {
   final taskCurrent;
   final bool? editMode;
+
   EditRegularTask({this.taskCurrent, this.editMode});
+
   @override
   _EditRegularTaskState createState() => _EditRegularTaskState();
 }
@@ -16,10 +19,11 @@ class EditRegularTask extends StatefulWidget {
 class _EditRegularTaskState extends State<EditRegularTask>
     with TickerProviderStateMixin {
   late RegularTask taskCurrent;
-  DateAndTimeFormat dtf = DateAndTimeFormat();
+  DateTimeFormat dtf = DateTimeFormat();
   TaskLevel taskLevel = TaskLevel();
 
   DateTime? startDate;
+
   Future<DateTime?> _selectDate(BuildContext context) async {
     DateTime now = DateTime.now();
     final DateTime? pickedDate = await showDatePicker(
@@ -35,7 +39,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
     return pickedDate;
   }
 
-  TimeOfDay? selectedTime;
+  final selectedTime = Rxn<TimeOfDay>();
 
   Future<Null> _selectTime(
     BuildContext context, {
@@ -49,9 +53,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
       initialTime: initialTime,
     );
     if (picked != null) {
-      setState(() {
-        selectedTime = picked;
-      });
+      selectedTime(picked);
     }
   }
 
@@ -69,15 +71,15 @@ class _EditRegularTaskState extends State<EditRegularTask>
   void initState() {
     super.initState();
     taskCurrent = RegularTask.fromRegularTask(widget.taskCurrent);
-    titleFocusNode = new FocusNode();
-    descriptionFocusNode = new FocusNode();
-    titleCtrl = new TextEditingController(
+    titleFocusNode = FocusNode();
+    descriptionFocusNode = FocusNode();
+    titleCtrl = TextEditingController(
       text: taskCurrent.label,
     );
-    descriptionCtrl = new TextEditingController(
+    descriptionCtrl = TextEditingController(
       text: taskCurrent.description,
     );
-    tabController = new TabController(
+    tabController = TabController(
       vsync: this,
       length: 2,
     );
@@ -115,7 +117,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
   List<Widget> createTimeList() {
     int i = -1;
     i = weeklyRepeat![selectedWeekDay - 1].indexWhere((element) {
-      return TimeInterval.toTimeOfDay(element.endTime!) == selectedTime;
+      return TimeInterval.toTimeOfDay(element.endTime!) == selectedTime.value;
     });
     List<Widget> list = List.generate(
       weeklyRepeat![selectedWeekDay - 1].length,
@@ -461,22 +463,22 @@ class _EditRegularTaskState extends State<EditRegularTask>
                           onPressed: () async {
                             timeSelectedAnimationCtrl.reset();
                             TimeOfDay? start, end;
-                            selectedTime = null;
+                            selectedTime.value = null;
                             await _selectTime(
                               context,
                               helpText: "Start time",
                             );
-                            start = selectedTime;
+                            start = selectedTime.value;
                             if (start == null) {
                               return;
                             }
-                            selectedTime = null;
+                            selectedTime.value = null;
                             await _selectTime(
                               context,
                               helpText: "End time",
                               initialTime: start,
                             );
-                            end = selectedTime;
+                            end = selectedTime.value;
                             if (end == null) {
                               return;
                             }
@@ -494,16 +496,19 @@ class _EditRegularTaskState extends State<EditRegularTask>
                               );
                               return;
                             }
-                            bool timeConflict = false;
+                            bool timeConflictExists = false;
                             weeklyRepeat![selectedWeekDay - 1]
                                 .forEach((element) async {
-                              timeConflict = element.containsTime(start!) ||
-                                  element.containsTime(end!);
-                              if (timeConflict) {
-                                TimeOfDay t1 =
-                                    TimeInterval.toTimeOfDay(element.startTime!);
-                                TimeOfDay t2 =
-                                    TimeInterval.toTimeOfDay(element.endTime!);
+                              timeConflictExists =
+                                  element.containsTime(start!) ||
+                                      element.containsTime(end!);
+                              if (timeConflictExists) {
+                                TimeOfDay t1 = TimeInterval.toTimeOfDay(
+                                  element.startTime!,
+                                );
+                                TimeOfDay t2 = TimeInterval.toTimeOfDay(
+                                  element.endTime!,
+                                );
                                 String s1 = "";
                                 s1 += dtf.formatTime(start);
                                 s1 += " to ";
@@ -519,24 +524,24 @@ class _EditRegularTaskState extends State<EditRegularTask>
                                 return;
                               }
                             });
-                            if (!timeConflict) {
+                            if (!timeConflictExists) {
                               setState(() {
                                 weeklyRepeat![selectedWeekDay - 1]
                                   ..add(TimeInterval.fromTimes(start!, end!))
                                   ..sort((TimeInterval a, TimeInterval b) =>
-                                  (a.startTime!['hh'] != b.startTime!['hh'])
-                                      ? (a.startTime!['hh']! >
-                                      b.startTime!['hh']!
-                                      ? 1
-                                      : -1)
-                                      : (a.startTime!['mm']! >
-                                      b.startTime!['mm']!
-                                      ? 1
-                                      : -1));
+                                      (a.startTime!['hh'] != b.startTime!['hh'])
+                                          ? (a.startTime!['hh']! >
+                                                  b.startTime!['hh']!
+                                              ? 1
+                                              : -1)
+                                          : (a.startTime!['mm']! >
+                                                  b.startTime!['mm']!
+                                              ? 1
+                                              : -1));
                                 int i = weeklyRepeat![selectedWeekDay - 1]
                                     .indexWhere((element) {
                                   return TimeInterval.toTimeOfDay(
-                                      element.startTime!) ==
+                                          element.startTime!) ==
                                       start;
                                 });
                                 print("index = $i");
@@ -737,7 +742,7 @@ class _EditRegularTaskState extends State<EditRegularTask>
       ),
       bottomNavigationBar: Container(
         height: 70.0,
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(10.0),
@@ -819,7 +824,10 @@ class _EditRegularTaskState extends State<EditRegularTask>
                       temp.label = titleCtrl!.text;
                       temp.description = descriptionCtrl!.text;
                       temp.created = temp.createdDateTime;
-                      Navigator.pop(context, temp);
+                      Get.back(
+                        result: temp,
+                      );
+                      //Navigator.pop(context, temp);
                     },
                   ),
                 ),

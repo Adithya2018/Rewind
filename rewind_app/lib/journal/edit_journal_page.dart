@@ -3,13 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rewind_app/controllers/edit_journal_page_ctrl.dart';
+import 'package:rewind_app/controllers/journal_ctrl.dart';
 import 'package:rewind_app/todo_list/tdl_common.dart';
 
 class EditJournalPage extends GetWidget<EditJournalPageController> {
   late final TextEditingController titleFieldCtrl;
   late final TextEditingController contentFieldCtrl;
 
-  final DateAndTimeFormat dtf = DateAndTimeFormat();
+  final DateTimeFormat dtf = DateTimeFormat();
 
   Container textField({
     required BuildContext context,
@@ -101,58 +102,7 @@ class EditJournalPage extends GetWidget<EditJournalPageController> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    int hour = now.hour;
-    int minute = now.minute;
-    print("widget build");
-    Container dateTime = Container(
-      padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
-      alignment: Alignment.centerRight,
-      child: Text(
-        "${dtf.formatTime(
-          TimeOfDay(
-            hour: hour,
-            minute: minute,
-          ),
-        )} ${dtf.formatDate(now)}",
-        textAlign: TextAlign.end,
-        style: GoogleFonts.gloriaHallelujah(
-          fontSize: 14,
-        ),
-      ),
-    );
-
-    /*Container contentArea = Container(
-      alignment: Alignment.topCenter,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(5.0),
-          //bottom: Radius.zero,
-        ),
-      ),
-      child: Scrollbar(
-        child: TextField(
-          controller: contentFieldCtrl,
-          expands: true,
-          maxLines: null,
-          minLines: null,
-          keyboardType: TextInputType.multiline,
-          textAlign: TextAlign.justify,
-          textAlignVertical: TextAlignVertical.top,
-          cursorColor: Colors.blueGrey,
-          style: GoogleFonts.gloriaHallelujah(
-            fontSize: 16,
-            color: Color(0xFF0938BC),
-          ),
-          decoration: InputDecoration(
-            hintText: "Write something",
-            contentPadding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 0.0),
-            border: InputBorder.none,
-          ),
-        ),
-      ),
-    );*/
+    Container dateTime;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -177,7 +127,7 @@ class EditJournalPage extends GetWidget<EditJournalPageController> {
             Obx(
               () => IconButton(
                 icon: Icon(
-                  controller.journalPage.value!.fav!
+                  controller.fav.value
                       ? Icons.favorite
                       : Icons.favorite_outline,
                   color: Colors.pinkAccent,
@@ -188,10 +138,8 @@ class EditJournalPage extends GetWidget<EditJournalPageController> {
                 tooltip:
                     '${controller.journalPage.value!.fav! ? "Remove from" : "Add to"} favorites',
                 onPressed: () {
-                  // TODO: change set favorite on tap
-                  controller.journalPage.value!.fav =
-                      !controller.journalPage.value!.fav!;
-                  print("");
+                  controller.fav(controller.journalPage.value!.fav =
+                      !controller.journalPage.value!.fav!);
                 },
               ),
             ),
@@ -206,6 +154,10 @@ class EditJournalPage extends GetWidget<EditJournalPageController> {
               tooltip: 'Delete',
               onPressed: () {
                 print("delete page");
+                Get.find<JournalController>().deletePage(
+                  controller.journalPage.value,
+                );
+                Get.back();
               },
             ),
           ],
@@ -225,7 +177,22 @@ class EditJournalPage extends GetWidget<EditJournalPageController> {
         builder: (controller) {
           return Column(
             children: <Widget>[
-              dateTime,
+              Container(
+                padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
+                alignment: Alignment.centerRight,
+                child: Text(
+                  "${dtf.formatTime(
+                    TimeOfDay(
+                      hour: controller.journalPage.value!.created.hour,
+                      minute: controller.journalPage.value!.created.minute,
+                    ),
+                  )} ${dtf.formatDate(controller.journalPage.value!.created)}",
+                  textAlign: TextAlign.end,
+                  style: GoogleFonts.gloriaHallelujah(
+                    fontSize: 14,
+                  ),
+                ),
+              ),
               textField(
                 context: context,
                 focusNode: FocusNode(),
@@ -254,7 +221,7 @@ class EditJournalPage extends GetWidget<EditJournalPageController> {
       ),
       bottomNavigationBar: Container(
         height: 70.0,
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(10.0),
@@ -327,7 +294,7 @@ class EditJournalPage extends GetWidget<EditJournalPageController> {
                     ),
                     onPressed: () {
                       print("Cancel");
-                      Navigator.pop(context, null);
+                      Get.back();
                     },
                   ),
                 ),

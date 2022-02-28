@@ -5,7 +5,7 @@ import 'package:rewind_app/controllers/auth_controller.dart';
 import 'package:rewind_app/controllers/auth_page_ctrl.dart';
 
 class SignInWithEmail extends GetWidget<AuthController> {
-  TextStyle style = TextStyle(
+  final TextStyle style = TextStyle(
     fontFamily: 'Montserrat',
     fontSize: 20.0,
   );
@@ -14,9 +14,9 @@ class SignInWithEmail extends GetWidget<AuthController> {
   String _email = "";
   String _pwd = "";
 
-  FocusNode? _n1 = FocusNode();
-  FocusNode? _n2 = FocusNode();
-  FocusNode? _n3 = FocusNode();
+  final FocusNode? _n1 = FocusNode();
+  final FocusNode? _n2 = FocusNode();
+  final FocusNode? _n3 = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +35,6 @@ class SignInWithEmail extends GetWidget<AuthController> {
         },
         onChanged: (val) {
           _email = val;
-          /*setState(() {
-            _email = val;
-          });*/
         },
         style: style,
         decoration: InputDecoration(

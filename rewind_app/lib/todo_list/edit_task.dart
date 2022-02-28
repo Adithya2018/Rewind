@@ -1,3 +1,4 @@
+import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rewind_app/models/task/task.dart';
@@ -16,9 +17,9 @@ class EditTask extends StatefulWidget {
 
 class _EditTaskState extends State<EditTask> {
   Task? taskCurrent;
-  DateAndTimeFormat dtf = new DateAndTimeFormat();
-  TaskLevel taskLevel = new TaskLevel();
-  //DateTime deadlineDate;
+  DateTimeFormat dtf = DateTimeFormat();
+  TaskLevel taskLevel = TaskLevel();
+
   Future<void> selectDeadline(BuildContext context) async {
     DateTime now = DateTime.now();
     final DateTime? pickedDate = await showDatePicker(
@@ -61,12 +62,12 @@ class _EditTaskState extends State<EditTask> {
   @override
   void initState() {
     super.initState();
-    titleFocusNode = new FocusNode();
-    descriptionFocusNode = new FocusNode();
-    titleCtrl = new TextEditingController(
+    titleFocusNode = FocusNode();
+    descriptionFocusNode = FocusNode();
+    titleCtrl = TextEditingController(
       text: "${widget.taskCurrent!.label}",
     );
-    descriptionCtrl = new TextEditingController(
+    descriptionCtrl = TextEditingController(
       text: "${widget.taskCurrent!.description}",
     );
     taskCurrent = Task.fromTask(widget.taskCurrent!);
@@ -285,7 +286,7 @@ class _EditTaskState extends State<EditTask> {
                       descriptionFocusNode!.unfocus();
                     },
                     icon: Icon(
-                      Icons.info, // MaterialCommunityIcons.calendar,
+                      CommunityMaterialIcons.calendar,
                     ),
                     tooltip: "Select date",
                   ),
@@ -319,7 +320,7 @@ class _EditTaskState extends State<EditTask> {
                       selectTime(context);
                     },
                     icon: Icon(
-                      Icons.info, // MaterialCommunityIcons.clock_outline,
+                      CommunityMaterialIcons.clock_outline,
                     ),
                     tooltip: "Select time",
                   ),
@@ -377,7 +378,7 @@ class _EditTaskState extends State<EditTask> {
       ),
       bottomNavigationBar: Container(
         height: 70.0,
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(10.0),

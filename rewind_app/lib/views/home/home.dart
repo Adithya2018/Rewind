@@ -6,6 +6,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:rewind_app/controllers/auth_controller.dart';
 import 'package:rewind_app/controllers/edit_journal_page_ctrl.dart';
 import 'package:rewind_app/controllers/journal_ctrl.dart';
 import 'package:rewind_app/journal/edit_journal_page.dart';
@@ -129,6 +130,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   TabController? tabCtrl;
+
   Container createStatContainer(
     String label, {
     IconData? statIconData,
@@ -258,6 +260,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   ScrollController scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     Container health = createStatContainer(
@@ -749,7 +752,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   splashColor: Colors.transparent,
                   onPressed: () {
                     print("Open todo");
-                    Navigator.of(context).pushNamed('/tdl');
+                    Get.toNamed('/tdl');
                   },
                 ),
               ],
@@ -781,6 +784,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
+
         preferredSize: Size.fromHeight(190.0),
         child: AppBar(
           iconTheme: IconThemeData(
@@ -814,10 +818,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 size: 30.0,
               ),
               tooltip: 'Refresh',
-              onPressed: () {
-                Navigator.of(context).popUntil((route) => false);
-                Navigator.of(context).pushNamed('/');
-              },
+              onPressed: () {},
             ),
           ],
         ),
@@ -900,13 +901,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   Text(
-                    '', //"${AppDataCommon.of(context).appData!.userName!.isEmpty ? "<no username>" : AppDataCommon.of(context).appData!.userName}",
+                    '',
+                    //"${AppDataCommon.of(context).appData!.userName!.isEmpty ? "<no username>" : AppDataCommon.of(context).appData!.userName}",
                     style: GoogleFonts.openSans(
                       fontSize: 20,
                     ),
                   ),
                   Text(
-                    '', //"${AppDataCommon.of(context).appData!.userdata!.email}",
+                    '${Get.find<AuthController>().user!.email}',
+                    //"${AppDataCommon.of(context).appData!.userdata!.email}",
                     style: GoogleFonts.openSans(
                       fontSize: 15,
                     ),
@@ -977,14 +980,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  /*Icon(
+                  Icon(
                     Icons.list_alt_rounded,
                     color: Colors.blue[800],
                     size: 28,
-                  ),*/
-                  FaIcon(
+                  ),
+                  /*FaIcon(
                     FontAwesomeIcons.sortAlphaDown,
-                  )
+                  ),*/
                 ],
               ),
             ),

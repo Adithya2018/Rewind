@@ -9,11 +9,8 @@ import 'package:rewind_app/todo_list/tdl_common.dart';
 import 'edit_journal_page.dart';
 
 class Journal extends GetWidget<JournalController> {
-  RxList<Container> listTiles = RxList();
-  bool? ascendingOrder = true;
-  int? sortByOption = 0;
-  TaskLevel taskLevel = TaskLevel();
-  bool showActive = true;
+  final DateTimeFormat dtf = DateTimeFormat();
+  final RxList<Container> listTiles = RxList();
 
   bool isSameDate(DateTime d1, DateTime d2) =>
       d2.day == d1.day && d2.month == d1.month && d2.year == d1.year;
@@ -34,16 +31,17 @@ class Journal extends GetWidget<JournalController> {
     return result;
   }
 
-  Container listTile({
-    required int index,
-  }) {
-    final list = controller.journalData.value!.pages;
-    DateTime created = list[index]!.created;
+  Container listTile(int index) {
+    final list = controller.journalData.pages;
+    DateTime created = list[index].created;
     TimeOfDay timeOfDay = TimeOfDay(
       hour: created.hour,
       minute: created.minute,
     );
-    Container timeContainer = Container(
+    Container dateTimeContainer = Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 10.0,
+      ),
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.vertical(
@@ -51,9 +49,19 @@ class Journal extends GetWidget<JournalController> {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Text(
+            "${dtf.formatDate(
+              created,
+              abbr: true,
+            )}",
+            style: GoogleFonts.gloriaHallelujah(
+              fontSize: 15,
+              color: Colors.white,
+            ),
+          ),
+          Spacer(),
           Text(
             "${dtf.formatTime(timeOfDay)}",
             style: GoogleFonts.gloriaHallelujah(
@@ -73,7 +81,7 @@ class Journal extends GetWidget<JournalController> {
         color: Colors.white,
       ),
       child: Text(
-        list[index]!.title!,
+        list[index].title!,
         style: GoogleFonts.gloriaHallelujah(
           fontSize: 20,
           color: Colors.black,
@@ -90,7 +98,7 @@ class Journal extends GetWidget<JournalController> {
         color: Colors.white,
       ),
       child: Text(
-        list[index]!.content!.isEmpty ? "<no content>" : list[index]!.content!,
+        list[index].content!.isEmpty ? "<no content>" : list[index].content!,
         style: GoogleFonts.gloriaHallelujah(
           fontSize: 12,
           color: Colors.black,
@@ -98,14 +106,12 @@ class Journal extends GetWidget<JournalController> {
         maxLines: 3,
       ),
     );
-
-    Container framedContainer = Container(
+    Container result = Container(
       margin: EdgeInsets.fromLTRB(10.0, 12.0, 10.0, 0.0),
       padding: EdgeInsets.all(2.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(10.0),
-          bottom: Radius.circular(10.0),
         ),
         boxShadow: [
           BoxShadow(
@@ -118,31 +124,36 @@ class Journal extends GetWidget<JournalController> {
       ),
       child: Column(
         children: [
-          timeContainer,
+          dateTimeContainer,
           GestureDetector(
             onTap: () async {
               Get.put(EditJournalPageController());
               var page = JournalPage.fromJournalPage(
-                journalPage: list[index]!,
+                journalPage: list[index],
               );
               Get.find<EditJournalPageController>().journalPage(page);
+              Get.find<EditJournalPageController>().fav(page.fav);
               JournalPage? temp = await Get.to(
                 () => EditJournalPage(),
               );
               Get.delete<EditJournalPageController>();
+              print('ifdvoi');
               if (temp != null) {
                 list[index] = JournalPage.fromJournalPage(
                   journalPage: temp,
                 );
                 controller.saveToBox(
-                  list[index]!.created,
+                  list[index].created,
                   list[index],
                   JournalController.journalBoxName,
                 );
-                updatePages();
+                listTiles[index] = listTile(
+                  index,
+                );
               } else {
                 print("edit journal page cancelled");
               }
+              updatePages();
             },
             child: Column(
               children: [
@@ -154,15 +165,15 @@ class Journal extends GetWidget<JournalController> {
         ],
       ),
     );
-    return framedContainer;
+    return result;
   }
 
   void updatePages() {
-    final list = controller.journalData.value!.pages;
+    final list = controller.journalData.pages;
     listTiles.value = List<Container>.generate(
       list.length,
       (index) => listTile(
-        index: index,
+        index,
       ),
     )..add(
         Container(
@@ -171,11 +182,8 @@ class Journal extends GetWidget<JournalController> {
       );
   }
 
-  DateAndTimeFormat dtf = DateAndTimeFormat();
-
   @override
   Widget build(BuildContext context) {
-    updatePages();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -195,25 +203,18 @@ class Journal extends GetWidget<JournalController> {
               color: Colors.black,
             ),
           ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.more_vert_sharp,
-                color: Colors.black,
-                size: 30.0,
-              ),
-              tooltip: 'Refresh',
-              onPressed: () {},
-            ),
-          ],
         ),
       ),
       body: Scrollbar(
-        child: Obx(() {
-          return ListView(
-            children: listTiles,
-          );
-        }),
+        child: Obx(
+          () {
+            updatePages();
+            print('updating page list');
+            return ListView(
+              children: listTiles,
+            );
+          },
+        ),
       ),
       bottomNavigationBar: Container(
         height: 70.0,
@@ -243,19 +244,23 @@ class Journal extends GetWidget<JournalController> {
                     onPressed: () async {
                       print("Add page");
                       Get.put(EditJournalPageController());
-                      var c = Get.find<EditJournalPageController>();
-                      c.journalPage.value = JournalPage();
-                      JournalPage? temp = await Get.to(() => EditJournalPage());
+                      Get.find<EditJournalPageController>().journalPage(
+                        JournalPage(),
+                      );
+                      JournalPage? temp = await Get.to(
+                        () => EditJournalPage(),
+                      );
                       if (temp != null) {
                         controller.addPage(temp);
-                        print("Regular task created");
+                        print("Regular page created");
                       } else {
-                        print("No regular task created");
+                        print("No page created");
                       }
                       Get.delete<EditJournalPageController>();
-                      updatePages();
                     },
-                    onLongPress: () {},
+                    onLongPress: () {
+                      print('long pressed');
+                    },
                     child: Icon(
                       Icons.add_circle,
                       color: Colors.lightBlueAccent,
@@ -270,99 +275,95 @@ class Journal extends GetWidget<JournalController> {
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () async {
+                      int temp = controller
+                          .journalData.sortByOption.value;
                       await showDialog<int>(
                         context: context,
-                        builder: (BuildContext context) {
-                          int? temp = sortByOption;
+                        builder: (context) {
                           return AlertDialog(
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text("Sort by"),
+                                Text(
+                                  "Sort by",
+                                ),
                                 Spacer(),
                                 Icon(
-                                  Icons
-                                      .add_circle, // MaterialCommunityIcons.sort,
+                                  CommunityMaterialIcons.sort,
                                   color: Colors.black,
                                 ),
                               ],
                             ),
-                            content: StatefulBuilder(
-                              builder:
-                                  (BuildContext context, StateSetter setState) {
-                                return Scrollbar(
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        ListTile(
-                                          title: Text('Date created'),
-                                          leading: Radio<int>(
-                                            value: 0,
-                                            groupValue: temp,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                temp = value;
-                                              });
-                                            },
-                                          ),
+                            content: Obx(() {
+                              return Scrollbar(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      ListTile(
+                                        title: Text(
+                                          'Date created',
                                         ),
-                                        ListTile(
-                                          title: Text('Deadline'),
-                                          leading: Radio<int>(
-                                            value: 1,
-                                            groupValue: temp,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                temp = value;
-                                              });
-                                            },
-                                          ),
+                                        leading: Radio<int>(
+                                          value: 0,
+                                          groupValue: controller
+                                              .journalData.sortByOption.value,
+                                          onChanged: (value) {
+                                            print('Sort by: Date created');
+                                            controller.journalData
+                                                .sortByOption(value);
+                                          },
                                         ),
-                                        ListTile(
-                                          title: Text('Level'),
-                                          leading: Radio<int>(
-                                            value: 2,
-                                            groupValue: temp,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                temp = value;
-                                              });
-                                            },
-                                          ),
+                                      ),
+                                      ListTile(
+                                        title: Text(
+                                          'Title',
                                         ),
-                                      ],
-                                    ),
+                                        leading: Radio<int>(
+                                          value: 1,
+                                          groupValue: controller
+                                              .journalData.sortByOption.value,
+                                          onChanged: (value) {
+                                            print('Sort by: Title');
+                                            controller.journalData
+                                                .sortByOption(value);
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            }),
                             actions: [
                               TextButton(
                                 onPressed: () {
-                                  sortByOption = temp;
-                                  Navigator.of(context).pop();
+                                  print('apply button');
+                                  controller.sortPages();
+                                  updatePages();
+                                  Get.back();
                                 },
                                 child: Text("Apply"),
                               ),
                               TextButton(
-                                onPressed: () => Get.back(),
+                                onPressed: () {
+                                  print('cancel button');
+                                  controller.journalData
+                                      .sortByOption(temp);
+                                  Get.back();
+                                },
                                 child: Text("Cancel"),
                               ),
                             ],
                           );
                         },
                       );
-                      //TodoListCommon.of(context).sortTasksBy(sortByOption);
-                      updatePages();
-                      print("sorted");
                     },
                     icon: Icon(
-                      Icons.add_circle, // MaterialCommunityIcons.sort,
+                      CommunityMaterialIcons.sort,
                       color: Colors.black,
                       size: 30,
                     ),
@@ -373,25 +374,24 @@ class Journal extends GetWidget<JournalController> {
               Expanded(
                 child: Container(
                   child: IconButton(
-                    icon: Icon(
-                      ascendingOrder!
-                          ? CommunityMaterialIcons.alpha_a_circle
-                          // MaterialCommunityIcons.alpha_a_circle
-                          : Icons
-                              .add_circle, // MaterialCommunityIcons.alpha_d_circle,
-                      color: Colors.blue[800],
-                      size: 35,
-                    ),
+                    icon: Obx(() {
+                      return Icon(
+                        controller.journalData.ascendingOrder.value
+                            ? CommunityMaterialIcons.alpha_a_circle
+                            : CommunityMaterialIcons.alpha_d_circle,
+                        color: Colors.blue[800],
+                        size: 35,
+                      );
+                    }),
                     onPressed: () {
-                      print("sort in ascending or descending");
+                      print("sort button gkdjgk");
                       controller.switchListOrder();
                       print(
-                          "Order: ${controller.journalData.value!.ascendingOrder! ? "asc" : "desc"}ending");
-                      ascendingOrder =
-                          controller.journalData.value!.ascendingOrder;
+                          "Order: ${controller.journalData.ascendingOrder.value ? "asc" : "desc"}ending");
                       updatePages();
                     },
-                    tooltip: "Order: ${ascendingOrder! ? "asc" : "desc"}ending",
+                    tooltip:
+                        "Order: ${controller.journalData.ascendingOrder.value ? "Asc" : "Asc"}ending",
                   ),
                 ),
               ),

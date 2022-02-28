@@ -12,7 +12,7 @@ class JournalOverview extends StatefulWidget {
 class _JournalOverviewState extends State<JournalOverview>
     with AutomaticKeepAliveClientMixin<JournalOverview> {
   DateTime selectedDateTime = DateTime.now();
-  DateAndTimeFormat dtf = DateAndTimeFormat();
+  DateTimeFormat dtf = DateTimeFormat();
   Column searchBar() {
     List<Widget> list = [];
     Row searchBar = Row(

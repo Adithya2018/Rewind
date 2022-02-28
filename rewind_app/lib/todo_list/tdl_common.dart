@@ -1,7 +1,7 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 
-class DateAndTimeFormat {
+class DateTimeFormat {
   List<String> month = [
     "Jan",
     "Feb",
@@ -48,13 +48,13 @@ class DateAndTimeFormat {
   ];
 
   List<IconData> weekDayIcon = [
-    CommunityMaterialIcons.alpha_m_box, //MaterialCommunityIcons.alpha_m_box,
-    CommunityMaterialIcons.alpha_t_box, //MaterialCommunityIcons.alpha_t_box,
-    CommunityMaterialIcons.alpha_w_box, //MaterialCommunityIcons.alpha_w_box,
-    CommunityMaterialIcons.alpha_t_box, //MaterialCommunityIcons.alpha_t_box,
-    CommunityMaterialIcons.alpha_f_box, //MaterialCommunityIcons.alpha_f_box,
-    CommunityMaterialIcons.alpha_s_box, //MaterialCommunityIcons.alpha_s_box,
-    CommunityMaterialIcons.alpha_s_box, //MaterialCommunityIcons.alpha_s_box,
+    CommunityMaterialIcons.alpha_m_box,
+    CommunityMaterialIcons.alpha_t_box,
+    CommunityMaterialIcons.alpha_w_box,
+    CommunityMaterialIcons.alpha_t_box,
+    CommunityMaterialIcons.alpha_f_box,
+    CommunityMaterialIcons.alpha_s_box,
+    CommunityMaterialIcons.alpha_s_box,
   ];
 
   String formatTime(TimeOfDay timeOfDay) {
@@ -104,19 +104,19 @@ class TaskLevel {
   ];
 
   List<IconData> diffLevelIcon = [
-    Icons.info, // MaterialCommunityIcons.tea,
-    Icons.info, // MaterialCommunityIcons.cake_variant,
-    Icons.info, // MaterialCommunityIcons.alarm_light,
-    Icons.info, // MaterialCommunityIcons.bomb,
-    Icons.info, // MaterialCommunityIcons.skull,
+    CommunityMaterialIcons.tea,
+    CommunityMaterialIcons.cake_variant,
+    CommunityMaterialIcons.alarm_light,
+    CommunityMaterialIcons.bomb,
+    CommunityMaterialIcons.skull,
   ];
 
   List<IconData> diffLevelNumeric = [
-    CommunityMaterialIcons.numeric_1_box, // MaterialCommunityIcons.numeric_1_box,
-    CommunityMaterialIcons.numeric_2_box, // MaterialCommunityIcons.numeric_2_box,
-    CommunityMaterialIcons.numeric_3_box, // MaterialCommunityIcons.numeric_3_box,
-    CommunityMaterialIcons.numeric_4_box, // MaterialCommunityIcons.numeric_4_box,
-    CommunityMaterialIcons.numeric_5_box, // MaterialCommunityIcons.numeric_5_box,
+    CommunityMaterialIcons.numeric_1_box,
+    CommunityMaterialIcons.numeric_2_box,
+    CommunityMaterialIcons.numeric_3_box,
+    CommunityMaterialIcons.numeric_4_box,
+    CommunityMaterialIcons.numeric_5_box,
   ];
 
   List<Color> diffLevelNumericColor = [

@@ -22,8 +22,6 @@ class JournalPage extends HiveObject {
     fav = false;
   }
 
-
-
   JournalPage.fromJournalPage({
     required JournalPage journalPage,
   }) {

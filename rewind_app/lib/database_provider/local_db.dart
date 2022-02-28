@@ -1,6 +1,6 @@
+import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:rewind_app/app_data/app_data_state.dart';
 import 'package:rewind_app/common_screens/message_scaffold.dart';
 import 'package:rewind_app/views/home/home.dart';
 
@@ -13,9 +13,12 @@ class LocalDBWrapper extends StatefulWidget {
 
 class _LocalDBWrapperState extends State<LocalDBWrapper> {
   String? nameSuffix;
+  String? journalBoxName;
+  String? goalBoxName;
+  String? routineBoxName;
+
   Future<void> openBoxes() async {
-    //print('uid at openBoxes ${AppDataCommon.of(context).appData!.userdata!.uid}');
-    nameSuffix = '';//AppDataCommon.of(context).appData!.userdata!.uid;
+    nameSuffix = ''; // AppDataCommon.of(context).appData!.userdata!.uid;
     journalBoxName = '${nameSuffix}journal';
     goalBoxName = '${nameSuffix}goals';
     routineBoxName = '${nameSuffix}routine';
@@ -24,10 +27,6 @@ class _LocalDBWrapperState extends State<LocalDBWrapper> {
     await Hive.openBox('$goalBoxName');
     await Hive.openBox('$routineBoxName');
   }
-
-  String? journalBoxName;
-  String? goalBoxName;
-  String? routineBoxName;
 
   @override
   void initState() {
@@ -47,11 +46,9 @@ class _LocalDBWrapperState extends State<LocalDBWrapper> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
-            print('${snapshot.stackTrace}');
-            print('snapshot.stackTrace');
             return SimpleMessageScaffold(
               message: "Cannot load",
-              iconData: Icons.not_interested, //MaterialCommunityIcons.robot,
+              iconData: CommunityMaterialIcons.robot,
             );
           } else {
             print('Home()');
